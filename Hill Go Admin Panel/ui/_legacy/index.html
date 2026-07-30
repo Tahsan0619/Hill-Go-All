@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HillGo Admin — Enterprise Control</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <h1>HillGo Admin</h1>
+        <span>Enterprise Control</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active" data-page="overview">
+          <i class="fa-solid fa-grip"></i>
+          <span>Overview</span>
+        </a>
+        <a href="#" class="nav-item" data-page="users">
+          <i class="fa-solid fa-users"></i>
+          <span>Users</span>
+        </a>
+        <a href="#" class="nav-item" data-page="fleet">
+          <i class="fa-solid fa-truck"></i>
+          <span>Fleet</span>
+        </a>
+        <a href="#" class="nav-item" data-page="finance">
+          <i class="fa-solid fa-wallet"></i>
+          <span>Finance</span>
+        </a>
+        <a href="#" class="nav-item" data-page="content">
+          <i class="fa-solid fa-store"></i>
+          <span>Content</span>
+        </a>
+        <a href="#" class="nav-item" data-page="settings">
+          <i class="fa-solid fa-gear"></i>
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="btn-support" id="supportBtn">
+          <i class="fa-solid fa-headset"></i>
+          Support Desk
+        </button>
+        <a href="#" class="nav-logout" id="logoutBtn">
+          <i class="fa-solid fa-right-from-bracket"></i>
+          <span>Logout</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <div class="main-wrapper">
+      <header class="top-header">
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="globalSearch" placeholder="Search data points...">
+        </div>
+        <div class="header-actions">
+          <button class="icon-btn" id="notifBtn" title="Notifications">
+            <i class="fa-solid fa-bell"></i>
+            <span class="badge-dot"></span>
+          </button>
+          <button class="icon-btn" id="helpBtn" title="Help">
+            <i class="fa-solid fa-circle-question"></i>
+          </button>
+          <div class="user-profile">
+            <div class="user-info">
+              <strong>Admin User</strong>
+              <span id="userRole">System Manager</span>
+            </div>
+            <div class="avatar">
+              <img src="https://i.pravatar.cc/80?img=5" alt="Admin">
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main class="content" id="mainContent">
+        <!-- OVERVIEW -->
+        <section class="page active" id="page-overview">
+          <div class="kpi-row">
+            <div class="kpi-card">
+              <div class="kpi-body">
+                <span class="kpi-label">Active Rides</span>
+                <h2 class="kpi-value">1,240</h2>
+                <span class="kpi-trend up"><i class="fa-solid fa-arrow-trend-up"></i> 12% vs last hour</span>
+              </div>
+              <div class="kpi-icon blue"><i class="fa-solid fa-car"></i></div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-body">
+                <span class="kpi-label">Orders</span>
+                <h2 class="kpi-value">856</h2>
+                <span class="kpi-trend up"><i class="fa-solid fa-arrow-trend-up"></i> 8% today</span>
+              </div>
+              <div class="kpi-icon orange"><i class="fa-solid fa-cart-shopping"></i></div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-body">
+                <span class="kpi-label">Revenue</span>
+                <h2 class="kpi-value">$42.5k</h2>
+                <span class="kpi-trend down"><i class="fa-solid fa-arrow-trend-down"></i> 3% from target</span>
+              </div>
+              <div class="kpi-icon green"><i class="fa-solid fa-money-bill-wave"></i></div>
+            </div>
+          </div>
+
+          <div class="card chart-card">
+            <div class="card-header">
+              <div>
+                <h3>Revenue Trends</h3>
+                <p>Across all vertical services over 30 days</p>
+              </div>
+              <div class="pill-filters" id="revenueFilters">
+                <button class="pill active" data-filter="ride">Ride</button>
+                <button class="pill" data-filter="food">Food</button>
+                <button class="pill" data-filter="marketplace">Marketplace</button>
+              </div>
+            </div>
+            <div class="chart-wrap">
+              <canvas id="revenueChart"></canvas>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-header">
+                <h3>Recent Alerts</h3>
+                <a href="#" class="link-btn" data-action="view-all-alerts">View All →</a>
+              </div>
+              <div class="table-wrap">
+                <table class="data-table" id="alertsTable">
+                  <thead>
+                    <tr>
+                      <th>Alert Type</th>
+                      <th>Description</th>
+                      <th>Status</th>
+                      <th>Timestamp</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="card map-card">
+              <div class="card-header">
+                <div>
+                  <h3>Live Fleet Activity</h3>
+                  <p>Regional distribution (Real-time)</p>
+                </div>
+                <span class="live-badge"><span class="pulse"></span> Live: NYC</span>
+              </div>
+              <div id="fleetMap" class="map-container"></div>
+              <div class="map-stats">
+                <div><strong>412</strong><span>Manhattan</span></div>
+                <div><strong>308</strong><span>Brooklyn</span></div>
+                <div><strong>194</strong><span>Queens</span></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- USERS -->
+        <section class="page" id="page-users">
+          <div class="page-header">
+            <div>
+              <h2>User Management</h2>
+              <p>Oversee system access and manage customer and partner accounts.</p>
+            </div>
+            <button class="btn-primary" id="addUserBtn">
+              <i class="fa-solid fa-user-plus"></i> Add New User
+            </button>
+          </div>
+
+          <div class="kpi-row four">
+            <div class="kpi-card compact">
+              <span class="kpi-label">Total Users</span>
+              <h2 class="kpi-value blue-text">14,282</h2>
+              <span class="kpi-trend up"><i class="fa-solid fa-arrow-trend-up"></i> +12% this month</span>
+            </div>
+            <div class="kpi-card compact">
+              <span class="kpi-label">Active Partners</span>
+              <h2 class="kpi-value orange-text">842</h2>
+              <span class="kpi-trend up"><i class="fa-solid fa-check"></i> 98% Compliance</span>
+            </div>
+            <div class="kpi-card compact">
+              <span class="kpi-label">Pending Approval</span>
+              <h2 class="kpi-value red-text">56</h2>
+              <span class="kpi-trend warn"><i class="fa-solid fa-clock"></i> Action required</span>
+            </div>
+            <div class="kpi-card compact">
+              <span class="kpi-label">System Uptime</span>
+              <h2 class="kpi-value green-text">99.9%</h2>
+              <span class="kpi-trend up"><i class="fa-solid fa-check"></i> Healthy</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="tabs-header">
+              <div class="tabs" id="userTabs">
+                <button class="tab active" data-tab="customers">Customers</button>
+                <button class="tab" data-tab="partners">Partners</button>
+              </div>
+              <div class="table-filters">
+                <select id="userStatusFilter">
+                  <option value="all">Status: All</option>
+                  <option value="active">Active</option>
+                  <option value="pending">Pending</option>
+                  <option value="suspended">Suspended</option>
+                </select>
+                <select id="userDateFilter">
+                  <option value="newest">Join Date: Newest</option>
+                  <option value="oldest">Oldest</option>
+                </select>
+                <button class="btn-icon" title="Filter"><i class="fa-solid fa-filter"></i></button>
+                <button class="btn-icon" title="Download" id="exportUsers"><i class="fa-solid fa-download"></i></button>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table class="data-table" id="usersTable">
+                <thead>
+                  <tr>
+                    <th><input type="checkbox" id="selectAllUsers"></th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Joined Date</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <div class="table-footer">
+              <span id="usersPaginationInfo">Showing 1-4 of 14,282 users</span>
+              <div class="pagination" id="usersPagination"></div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <h3>Partner Onboarding Funnel</h3>
+              <div class="chart-wrap small">
+                <canvas id="funnelChart"></canvas>
+              </div>
+            </div>
+            <div class="card alert-card">
+              <div class="alert-icon"><i class="fa-solid fa-shield-halved"></i></div>
+              <h3>Security Alert</h3>
+              <p>3 accounts flagged for suspicious login patterns.</p>
+              <button class="btn-dark" id="reviewFlaggedBtn">Review Flagged Accounts</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- FLEET -->
+        <section class="page" id="page-fleet">
+          <div class="kpi-row">
+            <div class="kpi-card">
+              <div class="kpi-body">
+                <span class="kpi-label">Active Vehicles</span>
+                <h2 class="kpi-value blue-text">1,284</h2>
+                <span class="kpi-trend up"><i class="fa-solid fa-arrow-trend-up"></i> +12% from last week</span>
+              </div>
+              <div class="kpi-icon blue"><i class="fa-solid fa-car-side"></i></div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-body">
+                <span class="kpi-label">Offline</span>
+                <h2 class="kpi-value orange-text">42</h2>
+                <span class="kpi-trend warn">Checking signal status...</span>
+              </div>
+              <div class="kpi-icon orange"><i class="fa-solid fa-signal"></i></div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-body">
+                <span class="kpi-label">Maintenance</span>
+                <h2 class="kpi-value red-text">18</h2>
+                <span class="kpi-trend warn"><i class="fa-solid fa-triangle-exclamation"></i> 5 Critical repairs pending</span>
+              </div>
+              <div class="kpi-icon red"><i class="fa-solid fa-wrench"></i></div>
+            </div>
+          </div>
+
+          <div class="grid-2 map-grid">
+            <div class="card map-card">
+              <span class="live-badge top-left"><span class="pulse"></span> Live Tracking</span>
+              <div id="fleetTrackingMap" class="map-container tall"></div>
+            </div>
+            <div class="card">
+              <h3>Live Service Clusters</h3>
+              <p class="subtitle">Distribution by district</p>
+              <div class="cluster-list" id="clusterList"></div>
+              <button class="btn-primary full" id="optimizeRoutingBtn">
+                <i class="fa-solid fa-route"></i> Optimize Routing
+              </button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3>Pending Verifications</h3>
+                <p>New fleet additions awaiting admin approval</p>
+              </div>
+              <div class="table-filters">
+                <button class="btn-outline-sm"><i class="fa-solid fa-filter"></i> Filter</button>
+                <button class="btn-outline-sm" id="exportFleet"><i class="fa-solid fa-download"></i> Export</button>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table class="data-table" id="fleetTable">
+                <thead>
+                  <tr>
+                    <th>Vehicle ID</th>
+                    <th>Type / Model</th>
+                    <th>Partner Name</th>
+                    <th>Submission Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <div class="table-footer">
+              <span>Showing 3 of 12 pending requests</span>
+              <div class="pagination">
+                <button class="page-btn"><i class="fa-solid fa-chevron-left"></i></button>
+                <button class="page-btn"><i class="fa-solid fa-chevron-right"></i></button>
+              </div>
+            </div>
+          </div>
+          <button class="fab" id="addVehicleFab" title="Add Vehicle"><i class="fa-solid fa-plus"></i></button>
+        </section>
+
+        <!-- FINANCE -->
+        <section class="page" id="page-finance">
+          <div class="page-header">
+            <div>
+              <h2>Financial Audit</h2>
+              <p>Real-time ledger and platform economic health</p>
+            </div>
+            <button class="btn-primary" id="exportCsvBtn">
+              <i class="fa-solid fa-download"></i> Export CSV
+            </button>
+          </div>
+
+          <div class="kpi-row">
+            <div class="kpi-card compact">
+              <div class="kpi-top">
+                <span class="kpi-label">Total Volume</span>
+                <div class="kpi-icon-sm blue"><i class="fa-solid fa-money-bill"></i></div>
+              </div>
+              <h2 class="kpi-value">$1,284,502.00</h2>
+              <span class="kpi-trend up"><i class="fa-solid fa-arrow-trend-up"></i> +12.4% vs last month</span>
+            </div>
+            <div class="kpi-card compact">
+              <div class="kpi-top">
+                <span class="kpi-label">Platform Commission</span>
+                <div class="kpi-icon-sm orange"><i class="fa-solid fa-percent"></i></div>
+              </div>
+              <h2 class="kpi-value">$154,140.24</h2>
+              <span class="kpi-trend up"><i class="fa-solid fa-arrow-trend-up"></i> +8.1% net growth</span>
+            </div>
+            <div class="kpi-card compact">
+              <div class="kpi-top">
+                <span class="kpi-label">Pending Payouts</span>
+                <div class="kpi-icon-sm red"><i class="fa-solid fa-briefcase"></i></div>
+              </div>
+              <h2 class="kpi-value">$42,910.15</h2>
+              <span class="kpi-trend warn"><i class="fa-solid fa-clock"></i> 112 batches in queue</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3>Master Transaction Ledger</h3>
+              <div class="table-filters">
+                <button class="pill active">ALL SERVICES</button>
+                <button class="pill">LAST 30 DAYS</button>
+                <button class="btn-icon"><i class="fa-solid fa-bars"></i></button>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table class="data-table" id="transactionsTable">
+                <thead>
+                  <tr>
+                    <th>Transaction ID</th>
+                    <th>Service</th>
+                    <th>Amount</th>
+                    <th>Commission</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <div class="table-footer">
+              <span id="txnPaginationInfo">Showing 5 of 12,492 transactions</span>
+              <div class="pagination" id="txnPagination"></div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <h3>Volume Forecasting</h3>
+              <p class="subtitle">Predictive modeling based on historical transaction data and seasonal trends.</p>
+              <div class="forecast-stats">
+                <div><span class="label">Projected Net</span><strong class="blue-text">$182K</strong></div>
+                <div><span class="label">Active Merchants</span><strong>1,204</strong></div>
+              </div>
+              <div class="chart-wrap small">
+                <canvas id="forecastChart"></canvas>
+              </div>
+            </div>
+            <div class="card fraud-card">
+              <div class="fraud-icon"><i class="fa-solid fa-shield-halved"></i></div>
+              <h3>Fraud Mitigation Protocol</h3>
+              <p>Protocol v2.4 active — real-time anomaly detection enabled across all payment channels.</p>
+              <button class="btn-outline-white" id="safetyReportBtn">View Safety Report</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- CONTENT -->
+        <section class="page" id="page-content">
+          <div class="page-header">
+            <div>
+              <h2>Marketplace & Content</h2>
+              <p>Audit product health, update inventory, and manage merchant visibility.</p>
+            </div>
+            <div class="header-btns">
+              <button class="btn-outline" id="exportReportBtn"><i class="fa-solid fa-download"></i> Export Report</button>
+              <button class="btn-primary" id="createListingBtn"><i class="fa-solid fa-plus"></i> Create New Listing</button>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <h3>Content Health</h3>
+              <div class="health-bars" id="healthBars"></div>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <h3>Marketplace Activity</h3>
+                <span class="live-badge small">LIVE FEED</span>
+              </div>
+              <div class="activity-stats">
+                <div>
+                  <span class="kpi-label">Active Listings</span>
+                  <h2 class="kpi-value blue-text">2,481</h2>
+                  <span class="kpi-trend up">+12% this week</span>
+                </div>
+                <div>
+                  <span class="kpi-label">Avg. Stock Level</span>
+                  <h2 class="kpi-value">68%</h2>
+                  <span class="subtitle">Across all categories</span>
+                </div>
+                <div>
+                  <span class="kpi-label">Total Merchants</span>
+                  <h2 class="kpi-value orange-text">184</h2>
+                  <span class="subtitle">Verified Partners</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="tabs-header">
+              <div class="tabs" id="contentTabs">
+                <button class="tab active" data-tab="products">Marketplace Products</button>
+                <button class="tab" data-tab="restaurants">Restaurant Listings</button>
+                <button class="tab" data-tab="promotions">Promotions</button>
+              </div>
+            </div>
+            <div class="product-grid" id="productGrid"></div>
+            <div class="table-footer">
+              <span id="productPaginationInfo">Showing 4 of 2,481 items</span>
+              <div class="pagination" id="productPagination"></div>
+            </div>
+          </div>
+          <button class="fab blue" id="quickActionFab" title="Quick Action"><i class="fa-solid fa-bolt"></i></button>
+        </section>
+
+        <!-- SETTINGS -->
+        <section class="page" id="page-settings">
+          <div class="page-header">
+            <div>
+              <h2>System Settings</h2>
+              <p>Configure platform preferences, security, and integrations.</p>
+            </div>
+          </div>
+
+          <div class="settings-grid">
+            <div class="card">
+              <h3><i class="fa-solid fa-building"></i> Organization</h3>
+              <form class="settings-form" id="orgForm">
+                <div class="form-group">
+                  <label>Company Name</label>
+                  <input type="text" value="HillGo Logistics Inc.">
+                </div>
+                <div class="form-group">
+                  <label>Support Email</label>
+                  <input type="email" value="support@hillgo.com">
+                </div>
+                <div class="form-group">
+                  <label>Timezone</label>
+                  <select>
+                    <option>America/New_York (EST)</option>
+                    <option>America/Chicago (CST)</option>
+                    <option>America/Los_Angeles (PST)</option>
+                  </select>
+                </div>
+                <button type="submit" class="btn-primary">Save Changes</button>
+              </form>
+            </div>
+
+            <div class="card">
+              <h3><i class="fa-solid fa-shield-halved"></i> Security</h3>
+              <div class="toggle-list">
+                <label class="toggle-item">
+                  <span>Two-Factor Authentication</span>
+                  <input type="checkbox" checked class="toggle">
+                </label>
+                <label class="toggle-item">
+                  <span>Session Timeout (30 min)</span>
+                  <input type="checkbox" checked class="toggle">
+                </label>
+                <label class="toggle-item">
+                  <span>IP Whitelisting</span>
+                  <input type="checkbox" class="toggle">
+                </label>
+                <label class="toggle-item">
+                  <span>Audit Logging</span>
+                  <input type="checkbox" checked class="toggle">
+                </label>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3><i class="fa-solid fa-bell"></i> Notifications</h3>
+              <div class="toggle-list">
+                <label class="toggle-item">
+                  <span>Email Alerts</span>
+                  <input type="checkbox" checked class="toggle">
+                </label>
+                <label class="toggle-item">
+                  <span>SMS Alerts</span>
+                  <input type="checkbox" class="toggle">
+                </label>
+                <label class="toggle-item">
+                  <span>Push Notifications</span>
+                  <input type="checkbox" checked class="toggle">
+                </label>
+                <label class="toggle-item">
+                  <span>Weekly Reports</span>
+                  <input type="checkbox" checked class="toggle">
+                </label>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3><i class="fa-solid fa-plug"></i> Integrations</h3>
+              <div class="integration-list">
+                <div class="integration-item connected">
+                  <i class="fa-brands fa-stripe"></i>
+                  <div><strong>Stripe Payments</strong><span>Connected</span></div>
+                  <button class="btn-outline-sm">Configure</button>
+                </div>
+                <div class="integration-item connected">
+                  <i class="fa-solid fa-map-location-dot"></i>
+                  <div><strong>Google Maps API</strong><span>Connected</span></div>
+                  <button class="btn-outline-sm">Configure</button>
+                </div>
+                <div class="integration-item">
+                  <i class="fa-brands fa-slack"></i>
+                  <div><strong>Slack Notifications</strong><span>Not connected</span></div>
+                  <button class="btn-primary-sm">Connect</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="app-footer">
+        <p>© 2024 HillGo Logistics Inc. • Enterprise Version 4.2.1-stable • System Status: <span class="status-ok">Operational</span></p>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Mobile sidebar toggle -->
+  <button class="mobile-toggle" id="mobileToggle"><i class="fa-solid fa-bars"></i></button>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal" id="modal">
+      <div class="modal-header">
+        <h3 id="modalTitle">Modal</h3>
+        <button class="modal-close" id="modalClose"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

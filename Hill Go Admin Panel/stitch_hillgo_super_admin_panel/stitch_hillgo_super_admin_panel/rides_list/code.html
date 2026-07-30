@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HillGo Admin - Rides Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-container": "#ffaa8a",
+                        "on-primary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#f8f9fb",
+                        "primary-container": "#0047ab",
+                        "on-error": "#ffffff",
+                        "primary-fixed": "#dae2ff",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed": "#0b1c30",
+                        "on-background": "#191c1e",
+                        "on-tertiary-fixed": "#380d00",
+                        "primary": "#00327d",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "tertiary": "#651f00",
+                        "inverse-surface": "#2e3132",
+                        "surface-container-high": "#e7e8ea",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-container": "#8b2e01",
+                        "on-surface-variant": "#434653",
+                        "secondary-container": "#d0e1fb",
+                        "outline": "#737784",
+                        "on-secondary-container": "#54647a",
+                        "secondary-fixed": "#d3e4fe",
+                        "outline-variant": "#c3c6d5",
+                        "tertiary-fixed-dim": "#ffb59a",
+                        "on-surface": "#191c1e",
+                        "tertiary-fixed": "#ffdbcf",
+                        "secondary": "#505f76",
+                        "error": "#ba1a1a",
+                        "primary-fixed-dim": "#b1c5ff",
+                        "surface-dim": "#d9dadc",
+                        "surface-variant": "#e1e2e4",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "surface": "#f8f9fb",
+                        "on-tertiary-fixed-variant": "#802900",
+                        "on-primary-container": "#a5bdff",
+                        "surface-container": "#edeef0",
+                        "surface-tint": "#2559bd",
+                        "background": "#f8f9fb",
+                        "surface-container-low": "#f3f4f6",
+                        "inverse-primary": "#b1c5ff",
+                        "on-primary-fixed-variant": "#00419e",
+                        "inverse-on-surface": "#f0f1f3",
+                        "surface-container-highest": "#e1e2e4",
+                        "on-primary-fixed": "#001946"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "header_height": "64px",
+                        "base_unit": "4px",
+                        "sidebar_width": "240px",
+                        "card_gap": "20px",
+                        "gutter": "16px",
+                        "container_padding": "24px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Inter"],
+                        "title-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "data-mono": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "title-sm": ["18px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                        "data-mono": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #F3F4F6; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .sidebar-active-indicator { width: 4px; height: 100%; position: absolute; left: 0; top: 0; background-color: #00327d; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+    </style>
+</head>
+<body class="text-on-background">
+<!-- SideNavBar (Authority Source: JSON) -->
+<aside class="fixed left-0 top-0 h-full w-[240px] bg-on-primary-fixed dark:bg-on-background border-r border-outline-variant dark:border-outline shadow-sm flex flex-col py-6 z-50">
+<div class="px-6 mb-8 flex items-center gap-3">
+<div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[20px]">electric_rickshaw</span>
+</div>
+<div>
+<h1 class="text-headline-md font-headline-md font-bold text-surface-bright leading-none">HillGo</h1>
+<p class="text-[10px] text-outline-variant tracking-wider uppercase mt-1">Super Admin</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<!-- Overview -->
+<a class="group flex items-center px-6 py-3 text-surface-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined mr-3">dashboard</span>
+<span class="text-label-md font-label-md">Overview</span>
+</a>
+<!-- Region Lock -->
+<a class="group flex items-center px-6 py-3 text-surface-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined mr-3">location_on</span>
+<span class="text-label-md font-label-md">Region Lock</span>
+</a>
+<!-- Customer Panel (ACTIVE) -->
+<a class="group relative flex items-center px-6 py-3 bg-secondary-container text-primary border-r-[3px] border-primary font-bold cursor-pointer" href="#">
+<span class="material-symbols-outlined mr-3">group</span>
+<span class="text-label-md font-label-md">Customer Panel</span>
+</a>
+<!-- Rider Panel -->
+<a class="group flex items-center px-6 py-3 text-surface-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined mr-3">directions_bike</span>
+<span class="text-label-md font-label-md">Rider Panel</span>
+</a>
+<!-- Merchant Panel -->
+<a class="group flex items-center px-6 py-3 text-surface-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined mr-3">store</span>
+<span class="text-label-md font-label-md">Merchant Panel</span>
+</a>
+<!-- Courier Panel -->
+<a class="group flex items-center px-6 py-3 text-surface-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined mr-3">local_shipping</span>
+<span class="text-label-md font-label-md">Courier Panel</span>
+</a>
+<!-- Finance -->
+<a class="group flex items-center px-6 py-3 text-surface-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined mr-3">payments</span>
+<span class="text-label-md font-label-md">Finance</span>
+</a>
+<!-- Content -->
+<a class="group flex items-center px-6 py-3 text-surface-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined mr-3">description</span>
+<span class="text-label-md font-label-md">Content</span>
+</a>
+<!-- Settings -->
+<a class="group flex items-center px-6 py-3 text-surface-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined mr-3">settings</span>
+<span class="text-label-md font-label-md">Settings</span>
+</a>
+</nav>
+<div class="px-6 mt-auto">
+<div class="bg-surface-container-highest/10 rounded-xl p-4 flex items-center gap-3">
+<img class="w-10 h-10 rounded-full border-2 border-primary-container object-cover" data-alt="A professional headshot of a corporate logistics administrator in a bright, modern office setting. The lighting is clean and professional with a light-mode aesthetic, reflecting a high-tech Bangladeshi corporate environment. The person looks focused and industrious, embodying the reliable persona of HillGo management." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKk68ynHecv90qI7ed8_mPMMfcfHevElVaICHKZO986XuuT6S1wox6V6Viypq15_UEHnyS1CxjgHQrjUX1pVfPQ94Q0KVzdnDLDn48MR4z-ojN5q4wd1ZF0UQ2G3nBJve9QX9hEvPtXEgdNvKBpl3QJPYS3lT9YuzR9UECihOirq4OwgDlRTuMQMYELZtYb4uFbe_xGte5k5oOe9AaTQmKQzzuuHXgz6YeQ5VHpshhR8kVEwAFGCaX"/>
+<div class="overflow-hidden">
+<p class="text-label-md font-label-md text-surface-bright truncate">Admin User</p>
+<p class="text-label-sm font-label-sm text-outline-variant truncate">Logistics Lead</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- TopNavBar (Authority Source: JSON) -->
+<header class="fixed top-0 right-0 h-[64px] bg-surface-container-lowest dark:bg-surface-dim border-b border-outline-variant dark:border-outline shadow-sm flex items-center justify-between px-gutter w-[calc(100%-240px)] ml-[240px] z-40">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative max-w-md w-full focus-within:ring-2 focus-within:ring-primary rounded-full overflow-hidden transition-all">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full bg-surface-container-low border-none pl-10 pr-4 py-2 text-body-sm focus:ring-0" placeholder="Search ride ID, customer, or route..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 hover:bg-surface-container-low dark:hover:bg-surface-variant rounded-full text-on-surface-variant relative transition-all">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-surface-container-lowest"></span>
+</button>
+<button class="p-2 hover:bg-surface-container-low dark:hover:bg-surface-variant rounded-full text-on-surface-variant transition-all">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+<div class="h-6 w-[1px] bg-outline-variant mx-2"></div>
+<div class="flex items-center gap-3 ml-2">
+<span class="text-label-md font-label-md text-primary">HillGo Admin</span>
+<span class="material-symbols-outlined text-outline">expand_more</span>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-[64px] ml-[240px] min-h-screen p-container_padding">
+<!-- Header Section -->
+<div class="mb-8 flex items-center justify-between">
+<div>
+<nav class="flex items-center gap-2 text-label-sm text-outline mb-1">
+<span>Admin</span>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span>Customer Panel</span>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="text-primary font-bold">Rides Management</span>
+</nav>
+<h2 class="text-display-lg font-display-lg text-on-background">Rides Management</h2>
+</div>
+<div class="flex gap-3">
+<button class="px-4 py-2 bg-surface-container-lowest border border-outline-variant rounded-lg text-label-md font-label-md text-secondary hover:bg-surface-container-low transition-all flex items-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">download</span> Export Data
+                </button>
+<button class="px-4 py-2 bg-primary text-white rounded-lg text-label-md font-label-md hover:opacity-90 transition-all flex items-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add</span> Manual Booking
+                </button>
+</div>
+</div>
+<!-- KPI Row -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-card_gap mb-8">
+<!-- Total Rides -->
+<div class="bg-white p-6 rounded-xl border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-secondary-container/50 rounded-lg">
+<span class="material-symbols-outlined text-primary">local_taxi</span>
+</div>
+<span class="text-label-sm font-label-sm text-green-600 bg-green-50 px-2 py-0.5 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">trending_up</span> 12%
+                    </span>
+</div>
+<h3 class="text-label-sm font-label-sm text-outline mb-1">Total Rides</h3>
+<p class="text-headline-md font-headline-md text-on-background">42,109</p>
+</div>
+<!-- Active Now -->
+<div class="bg-white p-6 rounded-xl border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-primary-container/10 rounded-lg">
+<span class="material-symbols-outlined text-primary-container">near_me</span>
+</div>
+<span class="relative flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
+</span>
+</div>
+<h3 class="text-label-sm font-label-sm text-outline mb-1">Active Now</h3>
+<p class="text-headline-md font-headline-md text-on-background">1,248</p>
+</div>
+<!-- Completed Today -->
+<div class="bg-white p-6 rounded-xl border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-tertiary-container/10 rounded-lg">
+<span class="material-symbols-outlined text-tertiary-container">check_circle</span>
+</div>
+<span class="text-label-sm font-label-sm text-green-600 bg-green-50 px-2 py-0.5 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">trending_up</span> 8.4%
+                    </span>
+</div>
+<h3 class="text-label-sm font-label-sm text-outline mb-1">Completed Today</h3>
+<p class="text-headline-md font-headline-md text-on-background">8,410</p>
+</div>
+<!-- Cancelled -->
+<div class="bg-white p-6 rounded-xl border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-error-container/20 rounded-lg">
+<span class="material-symbols-outlined text-error">cancel</span>
+</div>
+<span class="text-label-sm font-label-sm text-error bg-error-container/30 px-2 py-0.5 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">trending_down</span> 2%
+                    </span>
+</div>
+<h3 class="text-label-sm font-label-sm text-outline mb-1">Cancelled</h3>
+<p class="text-headline-md font-headline-md text-on-background">156</p>
+</div>
+</div>
+<!-- Filters Section -->
+<div class="bg-white border border-outline-variant rounded-xl shadow-sm mb-6 overflow-hidden">
+<div class="px-6 py-4 flex flex-wrap items-center justify-between gap-4">
+<div class="flex items-center gap-4">
+<div class="relative">
+<select class="appearance-none bg-surface-container-low border border-outline-variant rounded-lg pl-3 pr-10 py-2 text-label-md font-label-md text-on-surface focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+<option>All Statuses</option>
+<option>Searching</option>
+<option>Assigned</option>
+<option>In Progress</option>
+<option>Completed</option>
+<option>Cancelled</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-outline">expand_more</span>
+</div>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">calendar_today</span>
+<input class="bg-surface-container-low border border-outline-variant rounded-lg pl-10 pr-4 py-2 text-label-md font-label-md text-on-surface focus:ring-2 focus:ring-primary focus:border-primary transition-all w-[220px]" type="text" value="Oct 12 - Oct 19, 2023"/>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-label-sm text-outline">Showing 20 of 42,109 rides</span>
+<div class="flex gap-1">
+<button class="w-8 h-8 flex items-center justify-center rounded-lg border border-outline-variant bg-surface-container-low text-outline cursor-not-allowed">
+<span class="material-symbols-outlined text-[20px]">chevron_left</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg border border-outline-variant bg-white text-on-surface hover:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Data Table (Authority Source: Content Guidance) -->
+<div class="bg-white border border-outline-variant rounded-xl shadow-sm overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="px-6 py-4 text-label-md font-label-md text-outline uppercase tracking-wider">Ride ID</th>
+<th class="px-6 py-4 text-label-md font-label-md text-outline uppercase tracking-wider">Customer</th>
+<th class="px-6 py-4 text-label-md font-label-md text-outline uppercase tracking-wider">Driver</th>
+<th class="px-6 py-4 text-label-md font-label-md text-outline uppercase tracking-wider">Route</th>
+<th class="px-6 py-4 text-label-md font-label-md text-outline uppercase tracking-wider">Fare</th>
+<th class="px-6 py-4 text-label-md font-label-md text-outline uppercase tracking-wider">Status</th>
+<th class="px-6 py-4 text-label-md font-label-md text-outline uppercase tracking-wider">Date/Time</th>
+<th class="px-6 py-4"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/30">
+<!-- Row 1: In Progress -->
+<tr class="hover:bg-surface-container-lowest/50 transition-colors group">
+<td class="px-6 py-4">
+<span class="font-data-mono text-data-mono text-primary font-bold">#RID-8821</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<img class="w-8 h-8 rounded-full object-cover border border-outline-variant" data-alt="Close-up portrait of a Bangladeshi businessman with a confident smile, high-quality professional lighting, light-mode background theme. He represents a frequent user of the HillGo premium service, looking polished and successful in a corporate setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDwSkuvfwIieLE05mWfqMsPqHYVexC817uqNvQtE0haAbHzlUoL4Djeo10Tdb0l-C3s1nAMgze9WPJDdoLqGqdRK-wH_-fAV55Ng8fG3mMatXad6rXQmvs3baNXwq8z1G_rS1_1RDCf65UZ45Candzk6c7_RjBG0H795ad-v6-N2UYsA8pEsLD_MUvR6OG03hr8RJtxuJvwNHBMI89tVacQqPkydoB1kVSmEZd3CFgasW0iE15-eRJj"/>
+<span class="text-body-sm font-label-md text-on-surface">Arifur Rahman</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<img class="w-8 h-8 rounded-full object-cover border border-outline-variant" data-alt="Portrait of a friendly, professional ride-sharing driver wearing a clean uniform. He is standing in front of a modern vehicle in a bright Dhaka city street scene. The lighting is natural and optimistic, fitting the HillGo brand's industrious and reliable aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnt5paTR8u-si1KszFgPyiP0vagnU1X5IWk3utiHvfz-LueA9MTlqt2KO9lRZerM2y70rbNFjctuGO-NDsVvZvSmdxX0XwLfkm4cFJzu9Y2gM7c0D7T0vg51Y0_zj5nRGxm4OieKygKSOx1SO6wknI3UGYAvyRihYKJc6NJ1NOzTtOaBO-UYxl6BNGiOfEpcL9Ybp1jEurFU-B58kZV08RPrykl2fz-qdwm5l9uvguIEe7w1WyIMEF"/>
+<span class="text-body-sm font-label-md text-on-surface">Mehedi Hasan</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5 text-body-sm text-on-surface">
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+<span class="truncate max-w-[150px]">Gulshan 2, Circle</span>
+</div>
+<div class="flex items-center gap-1.5 text-body-sm text-outline">
+<span class="w-2 h-2 rounded-full bg-red-500"></span>
+<span class="truncate max-w-[150px]">Motijheel C/A</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="font-data-mono text-data-mono font-bold text-on-surface">৳ 450.00</span>
+</td>
+<td class="px-6 py-4">
+<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-primary-container/10 text-primary uppercase">In Progress</span>
+</td>
+<td class="px-6 py-4">
+<div class="text-body-sm text-on-surface">Oct 19, 2023</div>
+<div class="text-xs text-outline">02:45 PM</div>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-1 hover:bg-surface-container-high rounded transition-colors text-outline group-hover:text-primary">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 2: Completed -->
+<tr class="hover:bg-surface-container-lowest/50 transition-colors group">
+<td class="px-6 py-4">
+<span class="font-data-mono text-data-mono text-primary font-bold">#RID-8819</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<img class="w-8 h-8 rounded-full object-cover border border-outline-variant" data-alt="Portrait of a young female professional in Bangladesh, wearing elegant traditional attire with a modern corporate twist. The image has soft, high-key lighting and a minimalist, bright aesthetic. She looks satisfied and confident, representing a regular HillGo customer." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPOVcePD2Zn15dBISHYIHtwYtD3_H3kj0tDneMpOpqRrC7hWbj7p-8PmoOV97vPb16mCLcafd5hUmBIf4erArpsIyuqKQFt41xSZMf6Idc3U8phKk0hIEy4mIVaW09aeymzQsXFnYSY4VzdxOB9qQ-7t0hsYt3gNaq94Hs26NqZyQFTTE8vwyOCUBPJoH1LpqIt9Bc951RLASfG2_CKkE4OGDrJjrdvS7g8n2aV7Nq_fkl-vUZefhX"/>
+<span class="text-body-sm font-label-md text-on-surface">Sadia Islam</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<img class="w-8 h-8 rounded-full object-cover border border-outline-variant" data-alt="Professional profile photo of a middle-aged male driver, showing a warm and trustworthy expression. He is wearing a high-visibility branded vest from HillGo. The background is a clean, modern transportation hub with bright light-mode styling." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4lv5h811lOSjHYyM3kPnU2ksPdfqe7rdMMB5M_xs8hytpdV6SWTB0Af5hS2MODQuU2V18DhhdC-hDnNmT-CNdIGz09E_VMi_UrNJTFmSoZjPYFJAkh7P-SBQJ64MaQzUFvh4-gW85sDW4MryEW3gqUsIc30ZDTbiyvBHkITteRjwWXLOCPilixaLfJmh5KP1sb6Vm62mXIrwll5qDgI8iRnwoUcNfkpV-IIX60xeF8Vvmep6WRRQD"/>
+<span class="text-body-sm font-label-md text-on-surface">Jamal Uddin</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5 text-body-sm text-on-surface">
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+<span class="truncate max-w-[150px]">Dhanmondi 32</span>
+</div>
+<div class="flex items-center gap-1.5 text-body-sm text-outline">
+<span class="w-2 h-2 rounded-full bg-red-500"></span>
+<span class="truncate max-w-[150px]">Uttara Sector 7</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="font-data-mono text-data-mono font-bold text-on-surface">৳ 820.50</span>
+</td>
+<td class="px-6 py-4">
+<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700 uppercase">Completed</span>
+</td>
+<td class="px-6 py-4">
+<div class="text-body-sm text-on-surface">Oct 19, 2023</div>
+<div class="text-xs text-outline">01:15 PM</div>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-1 hover:bg-surface-container-high rounded transition-colors text-outline group-hover:text-primary">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 3: Assigned -->
+<tr class="hover:bg-surface-container-lowest/50 transition-colors group">
+<td class="px-6 py-4">
+<span class="font-data-mono text-data-mono text-primary font-bold">#RID-8815</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<img class="w-8 h-8 rounded-full object-cover border border-outline-variant" data-alt="Portrait of a young tech-savvy user in Bangladesh, wearing casual-smart clothing. The lighting is cinematic yet bright, with a cool corporate color palette of blues and greys. He is checking his phone, suggesting he just booked a ride on the HillGo app." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDj00M62xklfi7YSW8XK5mUO2PXxyOQ5JWG2zX-KlMdLGn7wtkDXfI10zT64p5BKikZn7FyNCgi-MNMgdVglj4SUu11gEkL85efy-ynCX_c_KwIEEG1IxX6mvmj8uCKL1Qjb6Pu_mpb2x5v_IN5k901yHJ9q-tAHC6QofFCMuHOiBpCZe92J6y1z-Gps90uzLkwfxU-rfg8YsNwSGOE9auIKo_SagPiZAiObX5UusnjRxhWWHddJW4r"/>
+<span class="text-body-sm font-label-md text-on-surface">Tanvir Ahmed</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<img class="w-8 h-8 rounded-full object-cover border border-outline-variant" data-alt="Close-up of a veteran driver with a kind face and neat appearance, standing next to a modern silver car. High-end photography with sharp focus and a bright, airy feel. The image embodies the reliability and systematic efficiency of HillGo's logistics team." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAhUfO3CuN2CV7Yw-Ak3FREyGJbJtKI_uwAWM73JVRcacbdexJR-BIPgTfB6P7g1lD_HUvswgtxjHZbAPFz2-_81pzDhBH2GMytDplmgpcRzlJQvdkkJtJ4dhMcyBT59FpkFPlP6oufYg6s8zsDLhMZN_Qf3RtfjP_NuEg98dV16kc3Ew0an1GKYTKDk87O6VJOiAwOjqDsOpZoYCrtvWZmqpidWJb-XGs3IbNRgjgX0wkNGZ_5uzh"/>
+<span class="text-body-sm font-label-md text-on-surface">Abdur Rob</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5 text-body-sm text-on-surface">
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+<span class="truncate max-w-[150px]">Banani Rd 11</span>
+</div>
+<div class="flex items-center gap-1.5 text-body-sm text-outline">
+<span class="w-2 h-2 rounded-full bg-red-500"></span>
+<span class="truncate max-w-[150px]">Airport Term. 1</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="font-data-mono text-data-mono font-bold text-on-surface">৳ 380.00</span>
+</td>
+<td class="px-6 py-4">
+<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-secondary-container text-secondary-fixed-variant uppercase">Assigned</span>
+</td>
+<td class="px-6 py-4">
+<div class="text-body-sm text-on-surface">Oct 19, 2023</div>
+<div class="text-xs text-outline">03:10 PM</div>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-1 hover:bg-surface-container-high rounded transition-colors text-outline group-hover:text-primary">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 4: Searching -->
+<tr class="hover:bg-surface-container-lowest/50 transition-colors group">
+<td class="px-6 py-4">
+<span class="font-data-mono text-data-mono text-primary font-bold">#RID-8812</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-primary font-bold text-xs">NK</div>
+<span class="text-body-sm font-label-md text-on-surface">Nadia Khan</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3 text-outline italic">
+<div class="w-8 h-8 rounded-full bg-surface-container-low border border-dashed border-outline-variant flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px]">person_search</span>
+</div>
+<span class="text-body-sm">Awaiting Driver</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5 text-body-sm text-on-surface">
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+<span class="truncate max-w-[150px]">Bashundhara R/A</span>
+</div>
+<div class="flex items-center gap-1.5 text-body-sm text-outline">
+<span class="w-2 h-2 rounded-full bg-red-500"></span>
+<span class="truncate max-w-[150px]">Paltan</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="font-data-mono text-data-mono font-bold text-on-surface">৳ 560.00</span>
+</td>
+<td class="px-6 py-4">
+<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-yellow-100 text-yellow-700 uppercase animate-pulse">Searching</span>
+</td>
+<td class="px-6 py-4">
+<div class="text-body-sm text-on-surface">Oct 19, 2023</div>
+<div class="text-xs text-outline">03:30 PM</div>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-1 hover:bg-surface-container-high rounded transition-colors text-outline group-hover:text-primary">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 5: Cancelled -->
+<tr class="hover:bg-surface-container-lowest/50 transition-colors group opacity-75">
+<td class="px-6 py-4">
+<span class="font-data-mono text-data-mono text-primary font-bold">#RID-8809</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<img class="w-8 h-8 rounded-full object-cover border border-outline-variant" data-alt="Portrait of a university student in Dhaka, wearing trendy apparel. The lighting is soft and modern, highlighting a sleek light-mode UI background. The image is part of a series showcasing diverse demographics of HillGo users in an systematic and industrious design framework." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAp87J0pBlYbrFqupXnc8mWClm_fiq3_tdM8VUI6k8Ur1Sa70tM_mWCel3r5G9SwGlK4ZJ65u9fbh1-_8wyCAiiUdBtjJ9um41a5mMr3bAuldGXB2MTBRoBjdxG4OPGmDlzBMwTc9aCzwH2_MaLsm-QSnuBQeS3PCIiXyoXgcCqaouJvPVW_mrgBEOOLxaXCTs85yqK0teRNl6wTiQC7NbejzM5hUJhz1F76zeak7wjkemsIEPUVDMr"/>
+<span class="text-body-sm font-label-md text-on-surface">Fahim Shahriar</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="text-body-sm text-outline">N/A</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5 text-body-sm text-on-surface">
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+<span class="truncate max-w-[150px]">Farmgate</span>
+</div>
+<div class="flex items-center gap-1.5 text-body-sm text-outline">
+<span class="w-2 h-2 rounded-full bg-red-500"></span>
+<span class="truncate max-w-[150px]">Tejgaon</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="font-data-mono text-data-mono font-bold text-outline line-through">৳ 120.00</span>
+</td>
+<td class="px-6 py-4">
+<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-red-100 text-red-600 uppercase">Cancelled</span>
+</td>
+<td class="px-6 py-4">
+<div class="text-body-sm text-on-surface">Oct 19, 2023</div>
+<div class="text-xs text-outline">11:20 AM</div>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-1 hover:bg-surface-container-high rounded transition-colors text-outline group-hover:text-primary">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="px-6 py-4 bg-surface-container-low border-t border-outline-variant flex items-center justify-between">
+<div class="flex items-center gap-4">
+<span class="text-label-sm text-outline">Rows per page:</span>
+<select class="bg-transparent border-none text-label-sm font-bold text-primary focus:ring-0 cursor-pointer">
+<option>10</option>
+<option selected="">20</option>
+<option>50</option>
+</select>
+</div>
+<div class="flex items-center gap-8">
+<span class="text-label-sm text-outline">1-20 of 42,109</span>
+<div class="flex gap-2">
+<button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors text-outline">
+<span class="material-symbols-outlined text-[18px]">first_page</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors text-outline">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-full bg-primary text-white shadow-sm">
+<span class="text-label-sm">1</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors text-on-surface">
+<span class="text-label-sm">2</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors text-outline">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors text-outline">
+<span class="material-symbols-outlined text-[18px]">last_page</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Contextual FAB (Only for main screens) -->
+<button class="fixed bottom-8 right-8 w-14 h-14 bg-primary text-white rounded-full shadow-lg flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">add</span>
+</button>
+<script>
+        // Simple micro-interaction for active states and hover effects
+        document.querySelectorAll('tr').forEach(row => {
+            row.addEventListener('click', () => {
+                // In a real app, this would navigate to a ride details view
+                console.log('Navigate to Ride Details');
+            });
+        });
+
+        // Search bar interaction
+        const searchInput = document.querySelector('input[type="text"]');
+        searchInput.addEventListener('focus', () => {
+            searchInput.parentElement.classList.add('max-w-xl');
+            searchInput.parentElement.classList.remove('max-w-md');
+        });
+        searchInput.addEventListener('blur', () => {
+            searchInput.parentElement.classList.add('max-w-md');
+            searchInput.parentElement.classList.remove('max-w-xl');
+        });
+    </script>
+</body></html>

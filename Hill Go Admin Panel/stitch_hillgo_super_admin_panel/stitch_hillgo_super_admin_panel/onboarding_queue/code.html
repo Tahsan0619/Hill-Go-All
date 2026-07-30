@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HillGo Admin - Merchant Onboarding Queue</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-surface-variant": "#434653",
+                    "inverse-primary": "#b1c5ff",
+                    "on-primary-fixed": "#001946",
+                    "primary-fixed-dim": "#b1c5ff",
+                    "on-secondary": "#ffffff",
+                    "on-secondary-container": "#54647a",
+                    "tertiary-fixed": "#ffdbcf",
+                    "tertiary": "#651f00",
+                    "on-primary": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-fixed": "#380d00",
+                    "on-primary-container": "#a5bdff",
+                    "surface-bright": "#f8f9fb",
+                    "secondary-fixed-dim": "#b7c8e1",
+                    "surface-variant": "#e1e2e4",
+                    "secondary-container": "#d0e1fb",
+                    "on-secondary-fixed-variant": "#38485d",
+                    "error": "#ba1a1a",
+                    "secondary": "#505f76",
+                    "outline-variant": "#c3c6d5",
+                    "surface": "#f8f9fb",
+                    "tertiary-container": "#8b2e01",
+                    "on-primary-fixed-variant": "#00419e",
+                    "surface-container-low": "#f3f4f6",
+                    "on-error": "#ffffff",
+                    "tertiary-fixed-dim": "#ffb59a",
+                    "on-tertiary-fixed-variant": "#802900",
+                    "on-tertiary-container": "#ffaa8a",
+                    "background": "#f8f9fb",
+                    "inverse-surface": "#2e3132",
+                    "surface-tint": "#2559bd",
+                    "surface-dim": "#d9dadc",
+                    "surface-container-highest": "#e1e2e4",
+                    "primary": "#00327d",
+                    "primary-fixed": "#dae2ff",
+                    "inverse-on-surface": "#f0f1f3",
+                    "surface-container-high": "#e7e8ea",
+                    "on-surface": "#191c1e",
+                    "surface-container": "#edeef0",
+                    "primary-container": "#0047ab",
+                    "error-container": "#ffdad6",
+                    "secondary-fixed": "#d3e4fe",
+                    "on-secondary-fixed": "#0b1c30",
+                    "outline": "#737784",
+                    "on-background": "#191c1e",
+                    "on-error-container": "#93000a",
+                    "on-tertiary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "base_unit": "4px",
+                    "sidebar_width": "240px",
+                    "header_height": "64px",
+                    "card_gap": "20px",
+                    "gutter": "16px",
+                    "container_padding": "24px"
+            },
+            "fontFamily": {
+                    "label-sm": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "data-mono": ["Inter"],
+                    "body-md": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "label-md": ["Inter"],
+                    "title-sm": ["Inter"],
+                    "headline-md": ["Inter"]
+            },
+            "fontSize": {
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "data-mono": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                    "title-sm": ["18px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #F3F4F6; }
+        .sidebar-active-indicator { width: 4px; height: 100%; background-color: #00327d; position: absolute; left: 0; }
+        .glass-panel { backdrop-filter: blur(8px); background: rgba(255, 255, 255, 0.8); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-surface-container-low min-h-screen text-on-surface">
+<!-- Sidebar Navigation -->
+<aside class="fixed left-0 top-0 h-full w-sidebar_width bg-on-primary-fixed dark:bg-on-background flex flex-col py-6 border-r border-outline-variant dark:border-outline shadow-sm z-50">
+<div class="px-6 mb-10 flex items-center gap-3">
+<div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-surface-bright text-headline-md font-bold" data-icon="rocket_launch">rocket_launch</span>
+</div>
+<div>
+<h1 class="text-headline-md font-headline-md font-bold text-surface-bright leading-none">HillGo</h1>
+<p class="text-label-sm text-outline-variant uppercase tracking-wider mt-1">Super Admin</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1 px-3 overflow-y-auto no-scrollbar">
+<!-- Nav Item: Overview -->
+<a class="group flex items-center px-3 py-3 rounded-lg text-surface-variant hover:bg-surface-container-highest/10 transition-colors" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="dashboard">dashboard</span>
+<span class="text-label-md font-label-md">Overview</span>
+</a>
+<!-- Nav Item: Region Lock -->
+<a class="group flex items-center px-3 py-3 rounded-lg text-surface-variant hover:bg-surface-container-highest/10 transition-colors" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="location_on">location_on</span>
+<span class="text-label-md font-label-md">Region Lock</span>
+</a>
+<!-- Nav Item: Customer Panel -->
+<a class="group flex items-center px-3 py-3 rounded-lg text-surface-variant hover:bg-surface-container-highest/10 transition-colors" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="group">group</span>
+<span class="text-label-md font-label-md">Customer Panel</span>
+</a>
+<!-- Nav Item: Rider Panel -->
+<a class="group flex items-center px-3 py-3 rounded-lg text-surface-variant hover:bg-surface-container-highest/10 transition-colors" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="directions_bike">directions_bike</span>
+<span class="text-label-md font-label-md">Rider Panel</span>
+</a>
+<!-- Nav Item: Merchant Panel (ACTIVE) -->
+<a class="group relative flex items-center px-3 py-3 rounded-lg bg-secondary-container text-primary font-bold border-r-[3px] border-primary transition-all" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="store" style="font-variation-settings: 'FILL' 1;">store</span>
+<span class="text-label-md font-label-md">Merchant Panel</span>
+</a>
+<!-- Nav Item: Courier Panel -->
+<a class="group flex items-center px-3 py-3 rounded-lg text-surface-variant hover:bg-surface-container-highest/10 transition-colors" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="local_shipping">local_shipping</span>
+<span class="text-label-md font-label-md">Courier Panel</span>
+</a>
+<!-- Nav Item: Finance -->
+<a class="group flex items-center px-3 py-3 rounded-lg text-surface-variant hover:bg-surface-container-highest/10 transition-colors" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="payments">payments</span>
+<span class="text-label-md font-label-md">Finance</span>
+</a>
+<!-- Nav Item: Content -->
+<a class="group flex items-center px-3 py-3 rounded-lg text-surface-variant hover:bg-surface-container-highest/10 transition-colors" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="description">description</span>
+<span class="text-label-md font-label-md">Content</span>
+</a>
+<!-- Nav Item: Settings -->
+<a class="group flex items-center px-3 py-3 rounded-lg text-surface-variant hover:bg-surface-container-highest/10 transition-colors" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="settings">settings</span>
+<span class="text-label-md font-label-md">Settings</span>
+</a>
+</nav>
+<div class="px-6 pt-6 border-t border-outline-variant/20">
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-full border-2 border-primary-container object-cover" data-alt="A professional headshot of a senior logistics administrator, focused and determined, with a clean corporate background. The lighting is bright and modern, matching the professional interface aesthetic of HillGo." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBiQikdylq9i0FvtiFD-5yOVnliAXSH5B7emN2azfdlFR9aFlw8GjeraurTApOquh1rEhT4tscJUn7_YxteMhIGtSXIcMNEYz8JFIQNUPOI3U1Z9IrALxxswt3PWIyD0Zo6tSSFmgGV2zd3vNcUQlUjICp_VftdZeb5HIUSNEiDwKCgR-YoLlgLr3UO6e_T5epv1b-I2KaiOo_fNhtCROGTPyNpGSZcRXGSdloHwgfed5umlNNJcRG7"/>
+<div class="flex-1 min-w-0">
+<p class="text-label-md font-bold text-surface-bright truncate">Ariful Islam</p>
+<p class="text-[10px] text-outline-variant truncate">ID: AD-99231</p>
+</div>
+<button class="text-surface-variant hover:text-surface-bright transition-colors">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+</button>
+</div>
+</div>
+</aside>
+<!-- Main Header -->
+<header class="fixed top-0 right-0 h-header_height flex items-center justify-between px-gutter w-[calc(100%-240px)] ml-sidebar_width bg-surface-container-lowest dark:bg-surface-dim border-b border-outline-variant dark:border-outline shadow-sm z-40">
+<div class="flex items-center gap-4 flex-1 max-w-xl">
+<div class="relative w-full group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" data-icon="search">search</span>
+<input class="w-full bg-surface-container-low border border-outline-variant rounded-lg pl-10 pr-4 py-2 text-body-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="Search by Merchant Name, ID or District..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="p-2 hover:bg-surface-container-low dark:hover:bg-surface-variant rounded-full text-on-surface-variant relative transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-white"></span>
+</button>
+<div class="h-8 w-[1px] bg-outline-variant mx-2"></div>
+<div class="flex flex-col text-right mr-3">
+<span class="text-label-md text-primary font-bold">HillGo Admin</span>
+<span class="text-[10px] text-on-surface-variant">Bangladesh Operations</span>
+</div>
+</div>
+</header>
+<!-- Main Canvas Area -->
+<main class="pt-[calc(64px+24px)] pl-[calc(240px+24px)] pr-24px pb-24px max-w-[1600px] mx-auto min-h-screen">
+<!-- Page Header & Stats -->
+<div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<nav class="flex items-center gap-2 text-label-sm text-on-surface-variant mb-2">
+<span class="hover:underline cursor-pointer">Merchant Panel</span>
+<span class="material-symbols-outlined text-[16px]" data-icon="chevron_right">chevron_right</span>
+<span class="text-primary font-semibold">Onboarding Queue</span>
+</nav>
+<h2 class="text-display-lg font-display-lg text-on-surface">Onboarding Queue</h2>
+<p class="text-body-md text-on-surface-variant">Manage and review pending business registrations for the HillGo platform.</p>
+</div>
+<div class="flex gap-4">
+<div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-outline-variant flex items-center gap-4 min-w-[200px]">
+<div class="w-12 h-12 bg-primary-container/10 rounded-full flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="pending_actions">pending_actions</span>
+</div>
+<div>
+<p class="text-label-sm text-on-surface-variant">Pending Reviews</p>
+<p class="text-headline-md font-bold">24</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-outline-variant flex items-center gap-4 min-w-[200px]">
+<div class="w-12 h-12 bg-tertiary-container/10 rounded-full flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined" data-icon="error_outline">error_outline</span>
+</div>
+<div>
+<p class="text-label-sm text-on-surface-variant">Action Required</p>
+<p class="text-headline-md font-bold">08</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Filter Bar -->
+<div class="bg-white rounded-t-xl border-x border-t border-outline-variant p-4 flex flex-wrap gap-4 items-center">
+<button class="flex items-center gap-2 px-4 py-2 bg-surface-container-low rounded-lg text-label-md hover:bg-surface-container-highest/20 transition-all">
+<span class="material-symbols-outlined text-[20px]" data-icon="filter_list">filter_list</span>
+                Filters
+            </button>
+<div class="flex gap-2">
+<span class="px-3 py-1 bg-primary text-white rounded-full text-label-sm">All Requests</span>
+<span class="px-3 py-1 bg-surface-container-low text-on-surface-variant rounded-full text-label-sm hover:bg-outline-variant/30 cursor-pointer transition-all">Today</span>
+<span class="px-3 py-1 bg-surface-container-low text-on-surface-variant rounded-full text-label-sm hover:bg-outline-variant/30 cursor-pointer transition-all">Dhaka</span>
+</div>
+<div class="ml-auto text-body-sm text-on-surface-variant">
+                Showing <span class="font-bold text-on-surface">1-10</span> of 32 merchants
+            </div>
+</div>
+<!-- Data Table Section -->
+<div class="bg-white rounded-b-xl border border-outline-variant shadow-sm overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="px-6 py-4 text-label-md text-on-surface-variant font-semibold">Business Name</th>
+<th class="px-6 py-4 text-label-md text-on-surface-variant font-semibold">Category / Sub</th>
+<th class="px-6 py-4 text-label-md text-on-surface-variant font-semibold">District</th>
+<th class="px-6 py-4 text-label-md text-on-surface-variant font-semibold">Date Submitted</th>
+<th class="px-6 py-4 text-label-md text-on-surface-variant font-semibold text-center">Documents</th>
+<th class="px-6 py-4 text-label-md text-on-surface-variant font-semibold">Status</th>
+<th class="px-6 py-4 text-label-md text-on-surface-variant font-semibold text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/40">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-secondary-container flex items-center justify-center text-primary font-bold">
+                                        DS
+                                    </div>
+<div>
+<p class="text-body-md font-bold text-on-surface">Dhaka Sweets Ltd.</p>
+<p class="text-[12px] text-on-surface-variant">ID: MH-88219</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="text-body-sm font-medium">Food &amp; Beverage</span>
+<span class="text-[12px] text-on-surface-variant">Confectionery, Traditional</span>
+</div>
+</td>
+<td class="px-6 py-4 text-body-sm">Dhaka South</td>
+<td class="px-6 py-4 text-body-sm">Oct 24, 2023</td>
+<td class="px-6 py-4">
+<div class="flex justify-center gap-4">
+<button class="group/btn relative text-on-surface-variant hover:text-primary transition-colors" title="View Storefront Photo">
+<span class="material-symbols-outlined" data-icon="image">image</span>
+<span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-on-surface text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover/btn:opacity-100 transition-opacity whitespace-nowrap">Storefront Photo</span>
+</button>
+<button class="group/btn relative text-on-surface-variant hover:text-primary transition-colors" title="View Trade License">
+<span class="material-symbols-outlined" data-icon="assignment">assignment</span>
+<span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-on-surface text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover/btn:opacity-100 transition-opacity whitespace-nowrap">Trade License</span>
+</button>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 bg-secondary-container/30 text-primary text-[12px] font-bold rounded-full flex items-center gap-1 w-fit">
+<span class="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></span>
+                                    Pending
+                                </span>
+</td>
+<td class="px-6 py-4">
+<div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 bg-primary text-white rounded hover:bg-primary-container transition-all" title="Approve">
+<span class="material-symbols-outlined" data-icon="check">check</span>
+</button>
+<button class="p-1.5 bg-error/10 text-error rounded hover:bg-error/20 transition-all" title="Reject">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+<button class="p-1.5 bg-secondary-container/50 text-secondary rounded hover:bg-secondary-container transition-all" title="Request Changes">
+<span class="material-symbols-outlined" data-icon="edit_note">edit_note</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-tertiary-container/10 flex items-center justify-center text-tertiary font-bold">
+                                        RB
+                                    </div>
+<div>
+<p class="text-body-md font-bold text-on-surface">Red-Blue Boutique</p>
+<p class="text-[12px] text-on-surface-variant">ID: MH-77421</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="text-body-sm font-medium">Apparel</span>
+<span class="text-[12px] text-on-surface-variant">Women's Fashion, Ethnic</span>
+</div>
+</td>
+<td class="px-6 py-4 text-body-sm">Chittagong</td>
+<td class="px-6 py-4 text-body-sm">Oct 23, 2023</td>
+<td class="px-6 py-4">
+<div class="flex justify-center gap-4">
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="image">image</span>
+</button>
+<button class="text-error font-bold transition-colors">
+<span class="material-symbols-outlined" data-icon="warning">warning</span>
+</button>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 bg-error-container text-on-error-container text-[12px] font-bold rounded-full flex items-center gap-1 w-fit">
+<span class="material-symbols-outlined text-[14px]" data-icon="feedback">feedback</span>
+                                    Action Required
+                                </span>
+</td>
+<td class="px-6 py-4">
+<div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 bg-primary text-white rounded hover:bg-primary-container transition-all" title="Approve">
+<span class="material-symbols-outlined" data-icon="check">check</span>
+</button>
+<button class="p-1.5 bg-error/10 text-error rounded hover:bg-error/20 transition-all" title="Reject">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+<button class="p-1.5 bg-secondary-container/50 text-secondary rounded hover:bg-secondary-container transition-all" title="Request Changes">
+<span class="material-symbols-outlined" data-icon="edit_note">edit_note</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-primary-container/10 flex items-center justify-center text-primary font-bold">
+                                        TM
+                                    </div>
+<div>
+<p class="text-body-md font-bold text-on-surface">Techno Mart BD</p>
+<p class="text-[12px] text-on-surface-variant">ID: MH-99104</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="text-body-sm font-medium">Electronics</span>
+<span class="text-[12px] text-on-surface-variant">Accessories, Gadgets</span>
+</div>
+</td>
+<td class="px-6 py-4 text-body-sm">Sylhet</td>
+<td class="px-6 py-4 text-body-sm">Oct 25, 2023</td>
+<td class="px-6 py-4">
+<div class="flex justify-center gap-4">
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="image">image</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="assignment">assignment</span>
+</button>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 bg-secondary-container/30 text-primary text-[12px] font-bold rounded-full flex items-center gap-1 w-fit">
+<span class="w-1.5 h-1.5 bg-primary rounded-full"></span>
+                                    Pending
+                                </span>
+</td>
+<td class="px-6 py-4">
+<div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 bg-primary text-white rounded hover:bg-primary-container transition-all" title="Approve">
+<span class="material-symbols-outlined" data-icon="check">check</span>
+</button>
+<button class="p-1.5 bg-error/10 text-error rounded hover:bg-error/20 transition-all" title="Reject">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+<button class="p-1.5 bg-secondary-container/50 text-secondary rounded hover:bg-secondary-container transition-all" title="Request Changes">
+<span class="material-symbols-outlined" data-icon="edit_note">edit_note</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-on-secondary-container/10 flex items-center justify-center text-on-secondary-container font-bold">
+                                        GM
+                                    </div>
+<div>
+<p class="text-body-md font-bold text-on-surface">Gourmet Mania</p>
+<p class="text-[12px] text-on-surface-variant">ID: MH-55210</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="text-body-sm font-medium">Food &amp; Beverage</span>
+<span class="text-[12px] text-on-surface-variant">Fast Food, Beverage</span>
+</div>
+</td>
+<td class="px-6 py-4 text-body-sm">Khulna</td>
+<td class="px-6 py-4 text-body-sm">Oct 24, 2023</td>
+<td class="px-6 py-4">
+<div class="flex justify-center gap-4">
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="image">image</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="assignment">assignment</span>
+</button>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 bg-secondary-container/30 text-primary text-[12px] font-bold rounded-full flex items-center gap-1 w-fit">
+<span class="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></span>
+                                    Pending
+                                </span>
+</td>
+<td class="px-6 py-4">
+<div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 bg-primary text-white rounded hover:bg-primary-container transition-all" title="Approve">
+<span class="material-symbols-outlined" data-icon="check">check</span>
+</button>
+<button class="p-1.5 bg-error/10 text-error rounded hover:bg-error/20 transition-all" title="Reject">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+<button class="p-1.5 bg-secondary-container/50 text-secondary rounded hover:bg-secondary-container transition-all" title="Request Changes">
+<span class="material-symbols-outlined" data-icon="edit_note">edit_note</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-error-container/20 flex items-center justify-center text-error font-bold">
+                                        AF
+                                    </div>
+<div>
+<p class="text-body-md font-bold text-on-surface">Apex Footwear Outlet</p>
+<p class="text-[12px] text-on-surface-variant">ID: MH-11029</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="text-body-sm font-medium">Footwear</span>
+<span class="text-[12px] text-on-surface-variant">Formal, Casual</span>
+</div>
+</td>
+<td class="px-6 py-4 text-body-sm">Rajshahi</td>
+<td class="px-6 py-4 text-body-sm">Oct 21, 2023</td>
+<td class="px-6 py-4">
+<div class="flex justify-center gap-4">
+<button class="text-error font-bold">
+<span class="material-symbols-outlined" data-icon="warning">warning</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="assignment">assignment</span>
+</button>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 bg-error-container text-on-error-container text-[12px] font-bold rounded-full flex items-center gap-1 w-fit">
+<span class="material-symbols-outlined text-[14px]" data-icon="feedback">feedback</span>
+                                    Action Required
+                                </span>
+</td>
+<td class="px-6 py-4">
+<div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 bg-primary text-white rounded hover:bg-primary-container transition-all" title="Approve">
+<span class="material-symbols-outlined" data-icon="check">check</span>
+</button>
+<button class="p-1.5 bg-error/10 text-error rounded hover:bg-error/20 transition-all" title="Reject">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+<button class="p-1.5 bg-secondary-container/50 text-secondary rounded hover:bg-secondary-container transition-all" title="Request Changes">
+<span class="material-symbols-outlined" data-icon="edit_note">edit_note</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="px-6 py-4 bg-surface-container-low flex items-center justify-between border-t border-outline-variant">
+<button class="px-4 py-2 text-label-md text-on-surface-variant bg-white border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors disabled:opacity-50" disabled="">
+                    Previous
+                </button>
+<div class="flex gap-2">
+<button class="w-8 h-8 rounded bg-primary text-white text-label-sm font-bold">1</button>
+<button class="w-8 h-8 rounded hover:bg-outline-variant/20 text-label-sm">2</button>
+<button class="w-8 h-8 rounded hover:bg-outline-variant/20 text-label-sm">3</button>
+<span class="flex items-center px-1">...</span>
+<button class="w-8 h-8 rounded hover:bg-outline-variant/20 text-label-sm">4</button>
+</div>
+<button class="px-4 py-2 text-label-md text-on-surface-variant bg-white border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors">
+                    Next
+                </button>
+</div>
+</div>
+<!-- Detail Preview Sidebar (Hidden by default, used for interaction) -->
+<div class="fixed right-0 top-header_height h-[calc(100%-64px)] w-[400px] bg-white shadow-2xl border-l border-outline-variant translate-x-full transition-transform duration-300 z-30 overflow-y-auto" id="detail-pane">
+<div class="p-6">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-title-sm font-bold">Review Details</h3>
+<button class="p-2 hover:bg-surface-container-low rounded-full transition-colors" onclick="closeDetails()">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+</div>
+<div class="aspect-video bg-surface-container rounded-lg mb-4 overflow-hidden relative group">
+<img class="w-full h-full object-cover" data-alt="A clear, bright photograph of a physical store entrance in Bangladesh, showing the sign 'Dhaka Sweets' with colorful displays of traditional desserts. The image has a warm, inviting lighting suitable for a business verification process in a high-end application." id="preview-image" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtTYJjIEf-DRSefAS3E-5jokuENJzL1VlTa1Q85zQ2mt8LGA5O5ePe0u-73lD8MtRfdecYCTRgQJ-diISw8ygwjxM4p2wxhub9BrbMZg8Ee6RiW107ECl596lf4z8U5DSiRH2exHiJrNjwdmbLFTQD0CGs4k1QHHfxJckOda4MZ2w-iyheeAtONVH6eYbhCQDOY2Gb__OSPHy1EpDo0wpIQ1VliAeNe284vartFBFuo0YQWpzwf2Vm"/>
+<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+<span class="text-white text-label-md font-bold">Storefront Photo</span>
+</div>
+</div>
+<div class="space-y-6">
+<div>
+<p class="text-label-sm text-on-surface-variant mb-1 uppercase tracking-tighter">Business Overview</p>
+<h4 class="text-headline-md font-bold" id="detail-name">Dhaka Sweets Ltd.</h4>
+<p class="text-body-sm text-on-surface-variant">Registered as: Private Limited Company</p>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="p-3 bg-surface-container-low rounded-lg">
+<p class="text-[10px] text-on-surface-variant uppercase">Owner Name</p>
+<p class="text-label-md font-bold">Mahbubur Rahman</p>
+</div>
+<div class="p-3 bg-surface-container-low rounded-lg">
+<p class="text-[10px] text-on-surface-variant uppercase">Contact</p>
+<p class="text-label-md font-bold">+880 1712 345678</p>
+</div>
+</div>
+<div>
+<p class="text-label-sm text-on-surface-variant mb-3">Verification Checklist</p>
+<div class="space-y-2">
+<label class="flex items-center gap-3 p-3 bg-surface-container-lowest border border-outline-variant rounded-lg cursor-pointer hover:bg-surface-container-low">
+<input class="rounded border-outline-variant text-primary focus:ring-primary h-5 w-5" type="checkbox"/>
+<span class="text-body-sm">Trade License validity (expires 2025)</span>
+</label>
+<label class="flex items-center gap-3 p-3 bg-surface-container-lowest border border-outline-variant rounded-lg cursor-pointer hover:bg-surface-container-low">
+<input class="rounded border-outline-variant text-primary focus:ring-primary h-5 w-5" type="checkbox"/>
+<span class="text-body-sm">NID of Managing Director verified</span>
+</label>
+<label class="flex items-center gap-3 p-3 bg-surface-container-lowest border border-outline-variant rounded-lg cursor-pointer hover:bg-surface-container-low">
+<input class="rounded border-outline-variant text-primary focus:ring-primary h-5 w-5" type="checkbox"/>
+<span class="text-body-sm">Location geo-tagged &amp; confirmed</span>
+</label>
+</div>
+</div>
+<div class="pt-4 flex gap-3">
+<button class="flex-1 py-3 bg-primary text-white rounded-lg font-bold hover:bg-primary-container transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]" data-icon="verified">verified</span>
+                            Approve
+                        </button>
+<button class="flex-1 py-3 border border-outline text-on-surface rounded-lg font-bold hover:bg-surface-container-low transition-all">
+                            Reject
+                        </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Overlay for Modal -->
+<div class="fixed inset-0 bg-black/40 backdrop-blur-sm z-20 hidden transition-opacity duration-300" id="overlay" onclick="closeDetails()"></div>
+<script>
+        function openDetails(name) {
+            const pane = document.getElementById('detail-pane');
+            const overlay = document.getElementById('overlay');
+            const nameEl = document.getElementById('detail-name');
+            
+            nameEl.innerText = name;
+            pane.classList.remove('translate-x-full');
+            overlay.classList.remove('hidden');
+        }
+
+        function closeDetails() {
+            const pane = document.getElementById('detail-pane');
+            const overlay = document.getElementById('overlay');
+            
+            pane.classList.add('translate-x-full');
+            overlay.classList.add('hidden');
+        }
+
+        // Add event listeners to rows for demo
+        document.querySelectorAll('tbody tr').forEach(row => {
+            row.addEventListener('click', (e) => {
+                // Don't trigger if a button was clicked
+                if (e.target.closest('button')) return;
+                
+                const name = row.querySelector('.font-bold.text-on-surface').innerText;
+                openDetails(name);
+            });
+            row.style.cursor = 'pointer';
+        });
+    </script>
+</body></html>

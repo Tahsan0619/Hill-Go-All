@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="HillGo - One app for rides, food delivery, and parcel courier. Trusted by millions across the nation.">
+  <title>HillGo - One App, Every Service</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo">HillGo</a>
+      <nav class="nav">
+        <div class="nav-links">
+          <a href="services.html">Services</a>
+          <a href="merchant.html">Partners</a>
+          <a href="about.html">About</a>
+        </div>
+        <div class="nav-actions">
+          <a href="contact.html" class="btn btn-outline btn-sm">Log In</a>
+          <a href="merchant.html" class="btn btn-primary btn-sm">Get Started</a>
+        </div>
+      </nav>
+      <button class="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <nav class="mobile-nav">
+    <a href="services.html">Services</a>
+    <a href="ride.html">Ride</a>
+    <a href="food.html">Food</a>
+    <a href="parcel.html">Parcel</a>
+    <a href="driver.html">Drive</a>
+    <a href="merchant.html">Partners</a>
+    <a href="about.html">About</a>
+    <a href="blog.html">Newsroom</a>
+    <a href="faq.html">Help Center</a>
+    <a href="contact.html">Contact</a>
+    <a href="merchant.html" class="btn btn-primary">Get Started</a>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div class="hero-content">
+        <span class="badge badge-blue">Trusted by 10M+ Users</span>
+        <h1>One App, <span>Every Service</span></h1>
+        <p>HillGo is your all-in-one ecosystem for mobility and logistics. Book rides, order food, and send parcels — all from a single platform built for speed and reliability.</p>
+        <form class="availability-form" onsubmit="event.preventDefault(); showToast('HillGo is available in your city! Download the app to get started.');">
+          <input type="text" placeholder="Enter your city to check availability" required>
+          <button type="submit" class="btn btn-primary">Check Availability →</button>
+        </form>
+        <div class="hero-btns" style="margin-bottom:20px;">
+          <a href="parcel.html" class="btn btn-orange">Send Parcel Now</a>
+          <a href="merchant.html" class="btn btn-outline">Become a Merchant</a>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+          <a href="#" class="btn btn-sm" style="background:#000;color:#fff;border-radius:6px;padding:8px 14px;"> App Store</a>
+          <a href="#" class="btn btn-sm" style="background:#000;color:#fff;border-radius:6px;padding:8px 14px;">Google Play</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-image-wrap">
+          <img src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&q=80" alt="Woman using HillGo app in city">
+          <div class="hero-float-card top">
+            <strong>12,580</strong>
+            <span>Active Rides</span>
+          </div>
+          <div class="hero-float-card bottom">
+            <strong>18.5k</strong>
+            <span>Deliveries Today</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Bar (Pathao-style) -->
+  <section class="stats-bar">
+    <div class="container stats-grid">
+      <div class="stat-item">
+        <h3 data-count="200000" data-suffix="+">0</h3>
+        <p>Businesses</p>
+      </div>
+      <div class="stat-item">
+        <h3 data-count="130" data-suffix="M+">0</h3>
+        <p>Deliveries</p>
+      </div>
+      <div class="stat-item">
+        <h3 data-count="64">0</h3>
+        <p>Districts Home Delivery</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Track Order (Pathao-style) -->
+  <section class="track-section" id="track">
+    <div class="container">
+      <div class="track-card">
+        <h2>Track Your Order</h2>
+        <p>Sign in now to have a reliable product delivery experience</p>
+        <form class="track-form" id="trackForm">
+          <input type="text" placeholder="Enter Tracking Number" required>
+          <button type="submit" class="btn btn-orange">Track Order</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trusted Merchants -->
+  <section class="trusted-section">
+    <div class="container">
+      <h3>Trusted by 3000+ Merchants</h3>
+      <div class="merchant-logos">
+        <span>Believers Sign</span>
+        <span>Fabrilife</span>
+        <span>Naturals</span>
+        <span>Shajgoj</span>
+        <span>Bata</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature Cards (Pathao-style) -->
+  <section class="features-section">
+    <div class="container">
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">📍</div>
+          <h3>Live Parcel Tracking</h3>
+          <p>Our courier app enables you to live track and know the real-time status of your parcel anytime, anywhere.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🛡️</div>
+          <h3>100% Safe Delivery</h3>
+          <p>We deliver parcels with full responsibility in every corner of the nation by providing 100% safety coverage.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📞</div>
+          <h3>24/7 Call Center Support</h3>
+          <p>HillGo ensures 24/7 call center agent support for all sorts of queries and dedicated relationship managers.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Our Services -->
+  <section class="services-section" id="services">
+    <div class="container">
+      <h2 class="section-title">Our Services</h2>
+      <p class="section-subtitle">From express delivery to fulfillment solutions — everything your business needs to grow.</p>
+      <div class="services-grid">
+        <div class="service-card">
+          <div class="service-card-icon">⚡</div>
+          <div>
+            <h3>Express & Standard Delivery</h3>
+            <p>Metropolitan delivery within 24-72 hours with express on-demand within 4-6 hours.</p>
+          </div>
+        </div>
+        <div class="service-card">
+          <div class="service-card-icon">🗺️</div>
+          <div>
+            <h3>Nationwide Delivery</h3>
+            <p>Home delivery in every district. Send products to customers' doorstep within 48-72 hours.</p>
+          </div>
+        </div>
+        <div class="service-card">
+          <div class="service-card-icon">📦</div>
+          <div>
+            <h3>Fulfillment Solution</h3>
+            <p>Customized service with inventory management, order processing, packaging, and after-sales support.</p>
+          </div>
+        </div>
+        <div class="service-card">
+          <div class="service-card-icon">💰</div>
+          <div>
+            <h3>Cash on Delivery</h3>
+            <p>100% cash on delivery anywhere. Receive COD payments instantly with HillGo Pay.</p>
+          </div>
+        </div>
+        <div class="service-card">
+          <div class="service-card-icon">🏢</div>
+          <div>
+            <h3>Corporate Logistics</h3>
+            <p>Customized corporate services including warehouse and inventory management support.</p>
+          </div>
+        </div>
+        <div class="service-card">
+          <div class="service-card-icon">↩️</div>
+          <div>
+            <h3>Parcel Return</h3>
+            <p>Reverse logistics facility allowing end customers to return or exchange products with merchants.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Service Cards (HillGo design) -->
+  <section class="service-cards-section">
+    <div class="container">
+      <h2 class="section-title">Our Services</h2>
+      <p class="section-subtitle">Everything you need for mobility, food, and logistics — in one powerful platform.</p>
+      <div class="service-cards-grid">
+        <div class="service-card-lg">
+          <div class="icon-wrap blue">🚗</div>
+          <h3>Premium Rides</h3>
+          <p>Book safe, comfortable rides with real-time tracking and verified drivers.</p>
+          <ul>
+            <li>5-Min Average ETA</li>
+            <li>Real-time Tracking</li>
+            <li>24/7 safety support</li>
+          </ul>
+          <a href="ride.html" class="btn btn-outline">Book Now</a>
+        </div>
+        <div class="service-card-lg">
+          <div class="icon-wrap orange">🍔</div>
+          <h3>Food Delivery</h3>
+          <p>Order from top restaurants with zero delivery fees and group ordering.</p>
+          <ul>
+            <li>Zero Delivery Fees</li>
+            <li>Group Ordering</li>
+            <li>Exclusive partner deals</li>
+          </ul>
+          <a href="food.html" class="btn btn-outline">Order Food</a>
+        </div>
+        <div class="service-card-lg">
+          <div class="icon-wrap purple">📦</div>
+          <h3>Parcel Courier</h3>
+          <p>Send parcels with photo proof, insurance, and same-day express options.</p>
+          <ul>
+            <li>Photo Proof of Delivery</li>
+            <li>Insurance Included</li>
+            <li>API for businesses</li>
+          </ul>
+          <a href="parcel.html" class="btn btn-outline">Send Parcel</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Merchant Satisfaction (Pathao-style split) -->
+  <section class="split-section">
+    <div class="container split-grid">
+      <div class="split-image">
+        <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800&q=80" alt="Logistics delivery">
+      </div>
+      <div class="split-content">
+        <h2>Merchant and Customer Satisfaction is Our First Priority</h2>
+        <p>We offer the lowest delivery charge with the highest value along with 100% safety of your product. HillGo delivers your parcels in every corner of the nation right on time.</p>
+        <a href="merchant.html" class="btn btn-orange">Become a Merchant</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Choose HillGo -->
+  <section class="why-section">
+    <div class="container">
+      <h2 class="section-title">Why Choose HillGo?</h2>
+      <p class="section-subtitle">Built for speed, safety, and scale — trusted by millions every day.</p>
+      <div class="why-grid">
+        <div class="why-card large">
+          <h3>Uncompromising Safety</h3>
+          <p>Every trip and delivery is monitored with AI-powered safety systems and verified partners.</p>
+          <div class="why-stats">
+            <div class="why-stat"><strong>99.9%</strong><span>Safe Trips</span></div>
+            <div class="why-stat"><strong>24/7</strong><span>Live Support</span></div>
+            <div class="why-stat"><strong>100%</strong><span>Verified</span></div>
+          </div>
+        </div>
+        <div class="why-card navy">
+          <h3>Unmatched Speed</h3>
+          <p>Our algorithmic routing ensures the fastest delivery times in the industry.</p>
+        </div>
+        <div class="why-card orange">
+          <h3>Maximize Earnings</h3>
+          <p>Drivers and merchants earn more with our transparent, low-commission model.</p>
+          <a href="merchant.html" style="color:#fff;font-weight:600;margin-top:12px;display:inline-block;">Learn how it works →</a>
+        </div>
+        <div class="why-card gradient" style="grid-column: span 2;">
+          <h3>Global Network</h3>
+          <p>Operating across 500+ cities with a unified platform for rides, food, and logistics.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing Plans (Pathao-style) -->
+  <section class="pricing-section" id="pricing">
+    <div class="container">
+      <h2 class="section-title">Courier Charge Plans</h2>
+      <p class="section-subtitle">Select your service type to view transparent pricing</p>
+
+      <div class="pricing-tabs">
+        <button class="pricing-tab active" data-tab="same-city">Same City Delivery</button>
+        <button class="pricing-tab" data-tab="suburbs">Suburbs Delivery</button>
+        <button class="pricing-tab" data-tab="inter-dhaka">Inter City</button>
+        <button class="pricing-tab" data-tab="outside">Outside City</button>
+      </div>
+
+      <div class="pricing-panel active" id="same-city">
+        <div class="pricing-table-wrap">
+          <table class="pricing-table">
+            <thead>
+              <tr>
+                <th>Delivery Time</th>
+                <th>Up to 500g</th>
+                <th>500g to 1 Kg</th>
+                <th>1 Kg to 2 Kg</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>24 Hours</td><td>BDT 60</td><td>BDT 70</td><td>BDT 90</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <ul class="pricing-notes">
+          <li>1% COD charge will be applicable</li>
+          <li>This price/plan is exclusive of any VAT/TAX</li>
+          <li>For weight more than 2KG, additional 15 TK/Per KG will be applicable</li>
+        </ul>
+      </div>
+
+      <div class="pricing-panel" id="suburbs">
+        <div class="pricing-table-wrap">
+          <table class="pricing-table">
+            <thead>
+              <tr>
+                <th>Delivery Time</th>
+                <th>Up to 500g</th>
+                <th>500g to 1 Kg</th>
+                <th>1 Kg to 2 Kg</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>72 Hours</td><td>BDT 80</td><td>BDT 100</td><td>BDT 130</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <ul class="pricing-notes">
+          <li>1% COD charge will be applicable</li>
+          <li>For weight more than 2KG, additional 25 TK/Per KG will be applicable</li>
+        </ul>
+      </div>
+
+      <div class="pricing-panel" id="inter-dhaka">
+        <div class="pricing-table-wrap">
+          <table class="pricing-table">
+            <thead>
+              <tr>
+                <th>Delivery Time</th>
+                <th>Up to 500g</th>
+                <th>500g to 1 Kg</th>
+                <th>1 Kg to 2 Kg</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>72 Hours</td><td>BDT 110</td><td>BDT 130</td><td>BDT 170</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <ul class="pricing-notes">
+          <li>1% COD charge on the price of the product</li>
+          <li>For weight more than 2KG, additional 25 TK/Per KG will be applicable</li>
+        </ul>
+      </div>
+
+      <div class="pricing-panel" id="outside">
+        <div class="pricing-table-wrap">
+          <table class="pricing-table">
+            <thead>
+              <tr>
+                <th>Delivery Time</th>
+                <th>Up to 500g</th>
+                <th>500g to 1 Kg</th>
+                <th>1 Kg to 2 Kg</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>72 Hours</td><td>BDT 120</td><td>BDT 145</td><td>BDT 180</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <ul class="pricing-notes">
+          <li>1% COD charge will be applicable</li>
+          <li>For weight more than 2KG, additional 25 TK/Per KG will be applicable</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Partner Cards -->
+  <section class="partner-section">
+    <div class="container">
+      <div class="trusted-section" style="padding:0 0 48px;">
+        <h3>Powering the Ecosystem with Global Leaders</h3>
+        <div class="merchant-logos">
+          <span>TECHCORP</span>
+          <span>GLOBEX</span>
+          <span>SKYNET</span>
+          <span>UMBRELLA</span>
+          <span>CYBERDYNE</span>
+          <span>SOYLENT</span>
+        </div>
+      </div>
+      <div class="partner-grid">
+        <div class="partner-card">
+          <div class="partner-card-bg" style="background-image:url('https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=800&q=80')"></div>
+          <div class="partner-card-content">
+            <h3>Become a Driver</h3>
+            <p>Earn on your schedule with flexible hours and competitive rates.</p>
+            <a href="driver.html" class="btn btn-orange">Apply to Drive</a>
+          </div>
+        </div>
+        <div class="partner-card">
+          <div class="partner-card-bg" style="background-image:url('https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=800&q=80')"></div>
+          <div class="partner-card-content">
+            <h3>Partner as Merchant</h3>
+            <p>Grow your business with our delivery network and merchant tools.</p>
+            <a href="merchant.html" class="btn btn-white">Join as Merchant</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Banner -->
+  <section class="cta-banner">
+    <div class="container">
+      <h2>Powering Growth for Amazing Businesses</h2>
+      <p>Sign up with your business and become a merchant of HillGo Courier service.</p>
+      <a href="merchant.html" class="btn btn-orange btn-lg">Become a Merchant</a>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="testimonials-section">
+    <div class="container">
+      <div class="testimonials-header">
+        <h2>Stories from the Hill</h2>
+        <div class="testimonial-nav">
+          <button class="testimonial-prev" aria-label="Previous">←</button>
+          <button class="testimonial-next" aria-label="Next">→</button>
+        </div>
+      </div>
+      <div class="testimonials-grid">
+        <div class="testimonial-card">
+          <div class="testimonial-stars">★★★★★</div>
+          <blockquote>"HillGo has completely changed how I commute. Fast, safe, and always on time."</blockquote>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar">JD</div>
+            <div><strong>James D.</strong><span>Frequent Traveller</span></div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="testimonial-stars">★★★★★</div>
+          <blockquote>"As a restaurant owner, HillGo's merchant platform helped us triple our delivery orders."</blockquote>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar">SK</div>
+            <div><strong>Sarah K.</strong><span>Restaurant Owner</span></div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="testimonial-stars">★★★★★</div>
+          <blockquote>"Reliable parcel delivery with live tracking. My e-commerce business depends on HillGo."</blockquote>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar">MR</div>
+            <div><strong>Michael R.</strong><span>E-commerce Seller</span></div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="testimonial-stars">★★★★★</div>
+          <blockquote>"The food delivery is incredibly fast. Best app I've used for ordering lunch at work."</blockquote>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar">AL</div>
+            <div><strong>Amanda L.</strong><span>Food Lover</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Strip -->
+  <section class="contact-strip">
+    <div class="container">
+      <h2>Contact Us With Any Query</h2>
+      <div class="contact-info">
+        <a href="tel:09610003030">📞 0961-0003030</a>
+        <a href="mailto:support@hillgo.com">✉️ support@hillgo.com</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq-section" id="faq">
+    <div class="container">
+      <h2 class="section-title">Frequently Asked Questions</h2>
+      <p class="section-subtitle">Find answers to common questions about HillGo services</p>
+      <div class="faq-list">
+        <div class="faq-item">
+          <button class="faq-question">How do I become a HillGo Courier Merchant? <span class="faq-icon">+</span></button>
+          <div class="faq-answer"><div class="faq-answer-inner">Complete the online registration at our merchant portal. Provide your business name, owner name, mobile number, and email. After signing up, you'll receive login credentials via SMS to access the merchant panel where you can set up your store and payment information.</div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question">How can I deliver my parcel in one day? <span class="faq-icon">+</span></button>
+          <div class="faq-answer"><div class="faq-answer-inner">Same-day delivery is available in metropolitan areas. The last entry time is 12:00 PM with maximum delivery by 8:00 PM. Regular delivery times: same city 24 hours, inter-city 48-72 hours.</div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question">What is the COD & Parcel Return Charge? <span class="faq-icon">+</span></button>
+          <div class="faq-answer"><div class="faq-answer-inner">COD charge is 0.5% within metropolitan city and 1% outside. For parcel returns, 50% of the delivery charge is added as return charge for outside metro deliveries.</div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question">How can I track my parcel? <span class="faq-icon">+</span></button>
+          <div class="faq-answer"><div class="faq-answer-inner">Track your parcel using the HillGo app under More > Tracking, or enter your consignment ID and phone number on our website's Track Order section above.</div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question">In which areas are HillGo services available? <span class="faq-icon">+</span></button>
+          <div class="faq-answer"><div class="faq-answer-inner">HillGo is available in every district. We deliver parcels in every corner of the nation with 100% guaranteed safety and home delivery coverage.</div></div>
+        </div>
+      </div>
+      <div class="text-center mt-4">
+        <a href="faq.html" class="btn btn-outline">View All FAQ</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <span class="logo">HillGo</span>
+          <p>Advancing urban logistics through precision and professional transparency. One app for every service.</p>
+          <div class="footer-social">
+            <a href="#" aria-label="Facebook">f</a>
+            <a href="#" aria-label="Twitter">𝕏</a>
+            <a href="#" aria-label="LinkedIn">in</a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <a href="about.html">About Us</a>
+          <a href="contact.html">Careers</a>
+          <a href="blog.html">Pressroom</a>
+          <a href="contact.html">Contact</a>
+        </div>
+        <div class="footer-col">
+          <h4>Services</h4>
+          <a href="ride.html">Rides</a>
+          <a href="food.html">Food</a>
+          <a href="parcel.html">Parcel</a>
+          <a href="services.html">All Services</a>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <a href="privacy.html">Privacy Policy</a>
+          <a href="terms.html">Terms of Use</a>
+          <a href="faq.html">Cookie Policy</a>
+          <a href="faq.html">Help Center</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 HillGo Inc. All rights reserved.</span>
+        <span>English (US)</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

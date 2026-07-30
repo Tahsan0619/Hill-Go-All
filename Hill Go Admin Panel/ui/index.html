@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HillGo Super Admin</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#00327d',
+            'primary-container': '#0047ab',
+            'on-primary': '#ffffff',
+            'on-primary-fixed': '#001946',
+            'on-surface': '#191c1e',
+            'on-surface-variant': '#434653',
+            'surface-container-low': '#f3f4f6',
+            'surface-container-lowest': '#ffffff',
+            'surface-container-highest': '#e1e2e4',
+            'surface-bright': '#f8f9fb',
+            'surface-variant': '#e1e2e4',
+            outline: '#737784',
+            'outline-variant': '#c3c6d5',
+            'secondary-container': '#d0e1fb',
+            error: '#ba1a1a',
+            background: '#f8f9fb',
+          },
+          spacing: {
+            sidebar_width: '240px',
+            header_height: '64px',
+            container_padding: '24px',
+          },
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+        },
+      },
+    };
+  </script>
+  <style>
+    html, body { height: 100%; margin: 0; }
+    body { font-family: Inter, system-ui, sans-serif; overflow: hidden; }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .sidebar-scroll::-webkit-scrollbar { width: 4px; }
+    .sidebar-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
+    .nav-link.active { background: #d0e1fb; color: #00327d; border-right: 3px solid #0047ab; font-weight: 700; border-radius: 0.375rem 0 0 0.375rem; }
+    .nav-sub a.active { color: #a5bdff; font-weight: 600; }
+    .nav-sub { display: none; }
+    .nav-group.open .nav-sub { display: block; }
+    .nav-group.open > button .chev { transform: rotate(180deg); }
+    .leaflet-container { font-family: Inter, system-ui, sans-serif; background: #eef1f5; }
+    .hg-marker { background: transparent !important; border: none !important; }
+    #app-content {
+      height: calc(100vh - 64px);
+      max-height: calc(100vh - 64px);
+      overflow-y: auto !important;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+    }
+  </style>
+</head>
+<body class="bg-surface-container-low text-on-surface">
+  <aside class="fixed left-0 top-0 h-full w-sidebar_width bg-on-primary-fixed border-r border-outline-variant/20 shadow-sm flex flex-col py-6 z-50" id="sidebar">
+    <div class="px-6 mb-6 flex items-center gap-3">
+      <div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center text-white">
+        <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">mountain_flag</span>
+      </div>
+      <div>
+        <h1 class="text-xl font-bold text-surface-bright leading-none">HillGo</h1>
+        <p class="text-[10px] text-outline-variant uppercase tracking-widest mt-1">Super Admin</p>
+      </div>
+    </div>
+    <nav class="flex-1 overflow-y-auto sidebar-scroll px-3 space-y-1" id="sidebar-nav">
+      <a href="#/overview" data-route="overview" class="nav-link flex items-center gap-3 px-3 py-2.5 text-surface-variant hover:text-surface-bright hover:bg-white/5 transition-colors rounded-md">
+        <span class="material-symbols-outlined">dashboard</span>
+        <span class="text-sm font-medium">Overview</span>
+      </a>
+      <a href="#/region" data-route="region" class="nav-link flex items-center gap-3 px-3 py-2.5 text-surface-variant hover:text-surface-bright hover:bg-white/5 transition-colors rounded-md">
+        <span class="material-symbols-outlined">location_on</span>
+        <span class="text-sm font-medium">Region Lock</span>
+      </a>
+
+      <p class="px-3 pt-4 pb-2 text-[10px] font-bold text-outline-variant uppercase tracking-[0.1em]">Service Hubs</p>
+
+      <div class="nav-group" data-group="customer">
+        <button type="button" class="w-full flex items-center justify-between px-3 py-2.5 text-surface-variant hover:text-surface-bright hover:bg-white/5 rounded-md">
+          <span class="flex items-center gap-3"><span class="material-symbols-outlined">group</span><span class="text-sm font-medium">Customer Panel</span></span>
+          <span class="material-symbols-outlined text-sm chev transition-transform">expand_more</span>
+        </button>
+        <div class="nav-sub pl-4 space-y-0.5 pb-2">
+          <a href="#/customer" class="block px-3 py-1.5 text-xs text-outline-variant hover:text-white rounded">Dashboard</a>
+          <a href="#/customer/customers" class="block px-3 py-1.5 text-xs text-outline-variant hover:text-white rounded">Customers</a>
+          <a href="#/customer/rides" class="block px-3 py-1.5 text-xs text-outline-variant hover:text-white rounded">Rides</a>
+          <a href="#/customer/food" class="block px-3 py-1.5 text-xs text-outline-variant hover:text-white rounded">Food Orders</a>
+          <a href="#/customer/parcels" class="block px-3 py-1.5 text-xs text-outline-variant hover:text-white rounded">Parcels</a>
+          <a href="#/customer/pricing" class="block px-3 py-1.5 text-xs text-outline-variant hover:text-white rounded">Pricing</a>
+        </div>
+      </div>
+
+      <div class="nav-group" data-group="rider">
+        <button type="button" class="w-full flex items-center justify-between px-3 py-2.5 text-surface-variant hover:text-surface-bright hover:bg-white/5 rounded-md">
+          <span class="flex items-center gap-3"><span class="material-symbols-outlined">directions_bike</span><span class="text-sm font-medium">Rider Panel</span></span>
+          <span class="material-symbols-outlined text-sm chev transition-transform">expand_more</span>
+        </button>
+        <div class="nav-sub pl-4 space-y-0.5 pb-2">
+          <a href="#/rider" class="block px-3 py-1.5 text-xs text-outline-variant hover:text-white rounded">Dashboard</a>
+          <a href="#/rider/riders" class="block px-3 py-1.5 text-xs text-outline-variant hover:text-white rounded">Riders</a>
+          <a href="#/rider/kyc" class="block px-3 py-1.5 text-xs text-outline-variant hover:text-white rounded">KYC Queue</a>
+          <a href="#/rider/trips" class="block px-3 py-1.5 text-xs text-outline-variant hover:text-white rounded">Trips / Jobs</a>
+          <a href="#/rider/map" class="block px-3 py-1.5 text-xs text-outline-variant hover:text-white rounded">Live Map</a>
+          <a href="#/rider/pay" class="block px-3 py-1.5 text-xs text-outline-variant hover:text-white rounded">Pay Salary</a>
+          <a href="#/rider/payouts" class="block px-3 py-1.5 text-xs text-outline-variant hover:text-white rounded">Payout Log</a>
+          <a href="#/rider/pricing" class="block px-3 py-1.5 text-xs text-outline-variant hover:text-white rounded">Pricing</a>
+        </div>
+      </div>
+
+      <div class="nav-group" data-group="merchant">
+        <button type="button" class="w-full flex items-center justify-between px-3 py-2.5 text-surface-variant hover:text-surface-bright hover:bg-white/5 rounded-md">
+          <span class="flex items-center gap-3"><span class="material-symbols-outlined">store</span><span class="text-sm font-medium">Merchant Panel</span></span>
+          <span class="material-symbols-outlined text-sm chev transition-transform">expand_more</span>
+        </button>
+        <div class="nav-sub pl-4 space-y-0.5 pb-2">
+          <a href="#/merchant" class="block px-3 py-1.5 text-xs text-outline-variant hover:text-white rounded">Dashboard</a>
+          <a href="#/merchant/stores" class="block px-3 py-1.5 text-xs text-outline-variant hover:text-white rounded">Stores</a>
+          <a href="#/merchant/onboarding" class="block px-3 py-1.5 text-xs text-outline-variant hover:text-white rounded">Onboarding</a>
+          <a href="#/merchant/orders" class="block px-3 py-1.5 text-xs text-outline-variant hover:text-white rounded">Orders</a>
+          <a href="#/merchant/payouts" class="block px-3 py-1.5 text-xs text-outline-variant hover:text-white rounded">Payouts</a>
+          <a href="#/merchant/pricing" class="block px-3 py-1.5 text-xs text-outline-variant hover:text-white rounded">Pricing</a>
+        </div>
+      </div>
+
+      <div class="nav-group" data-group="courier">
+        <button type="button" class="w-full flex items-center justify-between px-3 py-2.5 text-surface-variant hover:text-surface-bright hover:bg-white/5 rounded-md">
+          <span class="flex items-center gap-3"><span class="material-symbols-outlined">local_shipping</span><span class="text-sm font-medium">Courier Panel</span></span>
+          <span class="material-symbols-outlined text-sm chev transition-transform">expand_more</span>
+        </button>
+        <div class="nav-sub pl-4 space-y-0.5 pb-2">
+          <a href="#/courier" class="block px-3 py-1.5 text-xs text-outline-variant hover:text-white rounded">Dashboard</a>
+          <a href="#/courier/agents" class="block px-3 py-1.5 text-xs text-outline-variant hover:text-white rounded">Agents</a>
+          <a href="#/courier/kyc" class="block px-3 py-1.5 text-xs text-outline-variant hover:text-white rounded">KYC / Docs</a>
+          <a href="#/courier/parcels" class="block px-3 py-1.5 text-xs text-outline-variant hover:text-white rounded">Parcels</a>
+          <a href="#/courier/withdrawals" class="block px-3 py-1.5 text-xs text-outline-variant hover:text-white rounded">Withdrawals</a>
+          <a href="#/courier/incentives" class="block px-3 py-1.5 text-xs text-outline-variant hover:text-white rounded">Incentives</a>
+          <a href="#/courier/pricing" class="block px-3 py-1.5 text-xs text-outline-variant hover:text-white rounded">Pricing</a>
+        </div>
+      </div>
+
+      <div class="pt-4 border-t border-white/10 space-y-1">
+        <a href="#/settings" data-route="settings" class="nav-link flex items-center gap-3 px-3 py-2.5 text-surface-variant hover:text-surface-bright hover:bg-white/5 rounded-md">
+          <span class="material-symbols-outlined">settings</span>
+          <span class="text-sm font-medium">Settings</span>
+        </a>
+      </div>
+    </nav>
+    <div class="mt-auto px-4">
+      <div class="bg-white/5 rounded-xl p-4 border border-white/10">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
+          <span class="text-xs text-surface-bright">System Active</span>
+        </div>
+        <div class="text-[11px] text-outline-variant">v5.0.0 · Frontend store</div>
+        <button type="button" id="btn-reset-data" class="mt-3 text-[11px] text-red-300 hover:text-red-200 underline">Reset mock data</button>
+      </div>
+    </div>
+  </aside>
+
+  <main class="ml-sidebar_width w-[calc(100%-240px)] h-screen flex flex-col overflow-hidden">
+    <header class="shrink-0 h-header_height bg-white border-b border-outline-variant/40 shadow-sm flex items-center justify-between px-container_padding z-40">
+      <div class="relative w-full max-w-md">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+        <input id="global-search" class="w-full bg-surface-container-low border-none rounded-full pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-primary-container" placeholder="Search customers, riders, merchants..." type="search" />
+      </div>
+      <div class="flex items-center gap-3">
+        <button type="button" id="btn-notifications" class="w-10 h-10 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-low rounded-full relative" title="Activity log">
+          <span class="material-symbols-outlined">notifications</span>
+          <span class="absolute top-2 right-2.5 w-2 h-2 bg-error rounded-full border-2 border-white"></span>
+        </button>
+        <div class="h-8 w-px bg-outline-variant/30"></div>
+        <div class="flex items-center gap-3 pl-1">
+          <div class="text-right">
+            <p class="text-sm font-semibold text-primary leading-tight">Admin User</p>
+            <p class="text-[10px] text-outline uppercase tracking-wider">Super Administrator</p>
+          </div>
+          <div class="w-10 h-10 rounded-full bg-primary-container text-white flex items-center justify-center font-bold text-sm">SA</div>
+        </div>
+      </div>
+    </header>
+
+    <section id="app-content" class="p-container_padding flex-1 bg-surface-container-low"></section>
+  </main>
+
+  <!-- Modal -->
+  <div id="modal-overlay" class="hidden fixed inset-0 z-[70] bg-black/40 backdrop-blur-sm flex items-center justify-center p-4" aria-hidden="true">
+    <div id="modal-box" class="bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col">
+      <div class="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+        <h3 id="modal-title" class="text-lg font-semibold"></h3>
+        <button type="button" id="modal-close" class="w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div id="modal-body" class="px-5 py-4 overflow-y-auto flex-1"></div>
+      <div id="modal-footer" class="px-5 py-3 border-t border-slate-100 flex justify-end gap-2"></div>
+    </div>
+  </div>
+
+  <!-- Drawer -->
+  <div id="drawer-overlay" class="hidden fixed inset-0 z-[60] bg-black/40">
+    <div id="drawer-panel" class="ml-auto h-full w-full max-w-md bg-white shadow-2xl flex flex-col">
+      <div class="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+        <h3 id="drawer-title" class="text-lg font-semibold"></h3>
+        <button type="button" id="drawer-close" class="w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div id="drawer-body" class="flex-1 overflow-y-auto px-5 py-4"></div>
+    </div>
+  </div>
+
+  <div id="global-notice" class="hidden"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/data/seed.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/maps.js"></script>
+  <script src="js/pages/overview.js"></script>
+  <script src="js/pages/region.js"></script>
+  <script src="js/pages/customer.js"></script>
+  <script src="js/pages/rider.js"></script>
+  <script src="js/pages/merchant.js"></script>
+  <script src="js/pages/courier.js"></script>
+  <script src="js/pages/settings.js"></script>
+  <script src="js/router.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

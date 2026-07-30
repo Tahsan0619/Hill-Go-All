@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HillGo Courier Panel - Agents List</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom scrollbar for data tables */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "inverse-primary": "#b1c5ff",
+                        "on-surface": "#191c1e",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed-dim": "#ffb59a",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#f3f4f6",
+                        "on-error-container": "#93000a",
+                        "tertiary": "#651f00",
+                        "surface-bright": "#f8f9fb",
+                        "primary-fixed-dim": "#b1c5ff",
+                        "outline": "#737784",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "tertiary-container": "#8b2e01",
+                        "on-primary-fixed-variant": "#00419e",
+                        "on-primary": "#ffffff",
+                        "secondary": "#505f76",
+                        "on-tertiary-container": "#ffaa8a",
+                        "on-primary-fixed": "#001946",
+                        "surface": "#f8f9fb",
+                        "surface-container": "#edeef0",
+                        "on-secondary-fixed": "#0b1c30",
+                        "on-secondary-container": "#54647a",
+                        "inverse-surface": "#2e3132",
+                        "surface-container-high": "#e7e8ea",
+                        "primary-container": "#0047ab",
+                        "on-background": "#191c1e",
+                        "outline-variant": "#c3c6d5",
+                        "on-tertiary-fixed-variant": "#802900",
+                        "on-primary-container": "#a5bdff",
+                        "on-tertiary-fixed": "#380d00",
+                        "secondary-fixed": "#d3e4fe",
+                        "secondary-container": "#d0e1fb",
+                        "surface-container-highest": "#e1e2e4",
+                        "primary": "#00327d",
+                        "tertiary-fixed": "#ffdbcf",
+                        "surface-tint": "#2559bd",
+                        "on-surface-variant": "#434653",
+                        "inverse-on-surface": "#f0f1f3",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "surface-variant": "#e1e2e4",
+                        "surface-dim": "#d9dadc",
+                        "on-tertiary": "#ffffff",
+                        "background": "#f8f9fb",
+                        "primary-fixed": "#dae2ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.8px",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "sidebar_width": "240px",
+                        "header_height": "64px",
+                        "gutter": "16px",
+                        "base_unit": "4px",
+                        "container_padding": "24px",
+                        "card_gap": "20px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "data-mono": ["Inter"],
+                        "title-sm": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "data-mono": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+                        "title-sm": ["18px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background font-body-md text-on-background min-h-screen">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full w-sidebar_width bg-on-primary-fixed dark:bg-on-background border-r border-outline-variant dark:border-outline shadow-sm flex flex-col py-6 z-50">
+<div class="px-6 mb-8">
+<h1 class="text-headline-md font-headline-md font-bold text-surface-bright">HillGo</h1>
+<p class="text-label-sm font-label-sm text-surface-variant/70">Super Admin</p>
+</div>
+<nav class="flex-1 space-y-1">
+<!-- Navigation Items Mapping -->
+<a class="flex items-center px-6 py-3 text-surface-variant dark:text-outline-variant hover:bg-surface-container-highest/10 transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined mr-3">dashboard</span>
+<span class="text-label-md font-label-md">Overview</span>
+</a>
+<a class="flex items-center px-6 py-3 text-surface-variant dark:text-outline-variant hover:bg-surface-container-highest/10 transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined mr-3">location_on</span>
+<span class="text-label-md font-label-md">Region Lock</span>
+</a>
+<a class="flex items-center px-6 py-3 text-surface-variant dark:text-outline-variant hover:bg-surface-container-highest/10 transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined mr-3">group</span>
+<span class="text-label-md font-label-md">Customer Panel</span>
+</a>
+<a class="flex items-center px-6 py-3 text-surface-variant dark:text-outline-variant hover:bg-surface-container-highest/10 transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined mr-3">directions_bike</span>
+<span class="text-label-md font-label-md">Rider Panel</span>
+</a>
+<a class="flex items-center px-6 py-3 text-surface-variant dark:text-outline-variant hover:bg-surface-container-highest/10 transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined mr-3">store</span>
+<span class="text-label-md font-label-md">Merchant Panel</span>
+</a>
+<!-- Active State: Courier Panel -->
+<a class="flex items-center px-6 py-3 bg-secondary-container text-primary border-r-[3px] border-primary font-bold transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined mr-3">local_shipping</span>
+<span class="text-label-md font-label-md">Courier Panel</span>
+</a>
+<a class="flex items-center px-6 py-3 text-surface-variant dark:text-outline-variant hover:bg-surface-container-highest/10 transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined mr-3">payments</span>
+<span class="text-label-md font-label-md">Finance</span>
+</a>
+<a class="flex items-center px-6 py-3 text-surface-variant dark:text-outline-variant hover:bg-surface-container-highest/10 transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined mr-3">description</span>
+<span class="text-label-md font-label-md">Content</span>
+</a>
+<a class="flex items-center px-6 py-3 text-surface-variant dark:text-outline-variant hover:bg-surface-container-highest/10 transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined mr-3">settings</span>
+<span class="text-label-md font-label-md">Settings</span>
+</a>
+</nav>
+<div class="px-6 mt-auto">
+<div class="flex items-center gap-3 p-2 bg-surface-variant/10 rounded-lg">
+<img class="w-10 h-10 rounded-full object-cover border border-outline-variant" data-alt="Professional headshot of a female operations executive in a modern office setting, wearing corporate attire with a soft focus background of Dhaka skyline through glass windows. High contrast, professional lighting, corporate aesthetics." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCv5egJGW1bPWYEyxNxrWZRoWXB8hIPZyj7rxF8_ZqisdjvHOfi-rZKda6__C-PSooHWkOviL8zEJLn_jntRqOSjJSmOOKcrY8p9VY1UlUZ9UonWhM6wmSdLD3OuQTS3RtPOsLX2i9hpLQERc-MaDaL5TnQZh9rOPcwIFbfmv5MHJwI9Z9R72Rv_rKPx-3b-noqMlQw3lPhEc3_6_Ak17zeD8w68F6RRr-ZTy7m38voAjiZg70nG7Y0"/>
+<div class="overflow-hidden">
+<p class="text-label-md font-label-md text-surface-bright truncate">HillGo Admin</p>
+<p class="text-label-sm font-label-sm text-surface-variant/60 truncate">Logistics Lead</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- TopNavBar -->
+<header class="fixed top-0 right-0 h-header_height bg-surface-container-lowest dark:bg-surface-dim border-b border-outline-variant dark:border-outline shadow-sm flex items-center justify-between px-gutter w-[calc(100%-240px)] ml-sidebar_width z-40">
+<div class="flex items-center flex-1 max-w-xl">
+<div class="relative w-full group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">search</span>
+<input class="w-full bg-surface-container-low border-none rounded-full py-2 pl-10 pr-4 text-body-md focus:ring-2 focus:ring-primary transition-all" placeholder="Search agents, plates, or phone numbers..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-surface-container-low dark:hover:bg-surface-variant rounded-full text-on-surface-variant transition-all relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<div class="h-8 w-[1px] bg-outline-variant"></div>
+<div class="flex items-center gap-2">
+<span class="text-label-md font-label-md text-on-surface">Courier Operations</span>
+<span class="material-symbols-outlined text-outline">expand_more</span>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-sidebar_width pt-header_height min-h-screen">
+<div class="p-container_padding">
+<!-- Page Header Actions -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+<div>
+<h2 class="text-display-lg font-display-lg text-on-surface">Agent Management</h2>
+<p class="text-body-md font-body-md text-on-surface-variant mt-1">Manage, onboard, and monitor courier agents across Bangladesh.</p>
+</div>
+<button class="bg-primary text-white px-6 py-2.5 rounded-lg flex items-center gap-2 font-label-md hover:shadow-lg active:opacity-90 transition-all">
+<span class="material-symbols-outlined text-[20px]">person_add</span>
+                    Onboard New Agent
+                </button>
+</div>
+<!-- Bento Filter & KPI Section -->
+<div class="grid grid-cols-1 lg:grid-cols-4 gap-card_gap mb-8">
+<!-- Filters Card -->
+<div class="lg:col-span-3 bg-white p-6 rounded-xl border border-outline-variant shadow-sm flex flex-wrap items-center gap-4">
+<div class="space-y-1 flex-1 min-w-[200px]">
+<label class="text-label-sm font-label-sm text-outline uppercase tracking-wider">District</label>
+<select class="w-full border-outline-variant rounded-lg focus:border-primary focus:ring-primary text-body-sm h-11">
+<option>All Districts</option>
+<option>Dhaka</option>
+<option>Chattogram</option>
+<option>Sylhet</option>
+<option>Rajshahi</option>
+</select>
+</div>
+<div class="space-y-1 flex-1 min-w-[200px]">
+<label class="text-label-sm font-label-sm text-outline uppercase tracking-wider">Vehicle Type</label>
+<select class="w-full border-outline-variant rounded-lg focus:border-primary focus:ring-primary text-body-sm h-11">
+<option>All Vehicles</option>
+<option>Motorbike</option>
+<option>Cycle</option>
+<option>Van</option>
+<option>Mini Truck</option>
+</select>
+</div>
+<div class="space-y-1 flex-1 min-w-[200px]">
+<label class="text-label-sm font-label-sm text-outline uppercase tracking-wider">Status</label>
+<div class="flex gap-2">
+<button class="px-4 h-11 bg-surface-container text-on-surface-variant rounded-lg font-label-md hover:bg-surface-variant transition-all">Reset</button>
+<button class="px-4 h-11 bg-primary-fixed-dim text-primary rounded-lg font-label-md hover:bg-primary-fixed transition-all flex-1">Apply Filters</button>
+</div>
+</div>
+</div>
+<!-- Quick Stats -->
+<div class="bg-primary-container text-on-primary-container p-6 rounded-xl shadow-sm flex flex-col justify-between relative overflow-hidden">
+<div class="relative z-10">
+<p class="text-label-sm font-label-sm text-on-primary-container/80 uppercase tracking-wider">Active Agents</p>
+<h3 class="text-display-lg font-display-lg mt-1">1,248</h3>
+<div class="flex items-center gap-1 mt-2 text-on-primary-container font-label-sm">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+<span>12% from last month</span>
+</div>
+</div>
+<span class="material-symbols-outlined absolute -right-4 -bottom-4 text-[120px] opacity-10">local_shipping</span>
+</div>
+</div>
+<!-- Data Table Section -->
+<div class="bg-white rounded-xl border border-outline-variant shadow-sm overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-low border-b border-outline-variant sticky top-0 z-10">
+<tr>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant">Agent Name</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant">Phone</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant">Vehicle</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant">Plate</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant text-center">Rating</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant text-center">Total Deliveries</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant">Verified</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant">District</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant">Status</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/30">
+<!-- Agent Row 1 -->
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 bg-primary-fixed text-primary rounded-full flex items-center justify-center font-bold text-label-md">RH</div>
+<span class="font-label-md text-on-surface">Rakibul Hasan</span>
+</div>
+</td>
+<td class="px-6 py-4 font-data-mono text-body-sm text-on-surface-variant">+880 1711-223344</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 text-body-sm">
+<span class="material-symbols-outlined text-[18px] text-outline">motorcycle</span>
+                                        Motorbike
+                                    </div>
+</td>
+<td class="px-6 py-4 font-data-mono text-body-sm text-outline">DHK-METRO-LA-1234</td>
+<td class="px-6 py-4 text-center">
+<div class="flex items-center justify-center gap-1 text-label-md font-bold text-on-surface">
+<span>4.8</span>
+<span class="material-symbols-outlined text-yellow-500 text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+</td>
+<td class="px-6 py-4 text-center font-data-mono text-body-sm">1,432</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1 bg-green-100 text-green-700 px-2.5 py-0.5 rounded-full text-label-sm font-bold">
+<span class="material-symbols-outlined text-[14px]">verified</span>
+                                        YES
+                                    </span>
+</td>
+<td class="px-6 py-4 text-body-sm text-on-surface-variant">Dhaka (Gulshan)</td>
+<td class="px-6 py-4">
+<span class="inline-block w-24 px-2 py-1 bg-green-50 text-green-700 border border-green-200 text-center rounded text-label-sm font-bold uppercase">Active</span>
+</td>
+<td class="px-6 py-4">
+<button class="p-1.5 hover:bg-surface-container rounded-lg text-outline hover:text-primary transition-all">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Agent Row 2 -->
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 bg-tertiary-fixed text-tertiary rounded-full flex items-center justify-center font-bold text-label-md">JS</div>
+<span class="font-label-md text-on-surface">Jasim S.</span>
+</div>
+</td>
+<td class="px-6 py-4 font-data-mono text-body-sm text-on-surface-variant">+880 1812-334455</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 text-body-sm">
+<span class="material-symbols-outlined text-[18px] text-outline">pedal_bike</span>
+                                        Cycle
+                                    </div>
+</td>
+<td class="px-6 py-4 font-data-mono text-body-sm text-outline">N/A</td>
+<td class="px-6 py-4 text-center">
+<div class="flex items-center justify-center gap-1 text-label-md font-bold text-on-surface">
+<span>4.2</span>
+<span class="material-symbols-outlined text-yellow-500 text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+</td>
+<td class="px-6 py-4 text-center font-data-mono text-body-sm">215</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1 bg-yellow-100 text-yellow-700 px-2.5 py-0.5 rounded-full text-label-sm font-bold">
+<span class="material-symbols-outlined text-[14px]">pending</span>
+                                        PENDING
+                                    </span>
+</td>
+<td class="px-6 py-4 text-body-sm text-on-surface-variant">Chattogram</td>
+<td class="px-6 py-4">
+<span class="inline-block w-24 px-2 py-1 bg-blue-50 text-blue-700 border border-blue-200 text-center rounded text-label-sm font-bold uppercase">Onboarding</span>
+</td>
+<td class="px-6 py-4">
+<button class="p-1.5 hover:bg-surface-container rounded-lg text-outline hover:text-primary transition-all">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Agent Row 3 -->
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 bg-error-container text-on-error-container rounded-full flex items-center justify-center font-bold text-label-md">MK</div>
+<span class="font-label-md text-on-surface">Mahmud Khan</span>
+</div>
+</td>
+<td class="px-6 py-4 font-data-mono text-body-sm text-on-surface-variant">+880 1610-112233</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 text-body-sm">
+<span class="material-symbols-outlined text-[18px] text-outline">local_shipping</span>
+                                        Mini Truck
+                                    </div>
+</td>
+<td class="px-6 py-4 font-data-mono text-body-sm text-outline">CTG-METRO-MA-8899</td>
+<td class="px-6 py-4 text-center">
+<div class="flex items-center justify-center gap-1 text-label-md font-bold text-on-surface">
+<span>3.5</span>
+<span class="material-symbols-outlined text-yellow-500 text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+</td>
+<td class="px-6 py-4 text-center font-data-mono text-body-sm">842</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1 bg-green-100 text-green-700 px-2.5 py-0.5 rounded-full text-label-sm font-bold">
+<span class="material-symbols-outlined text-[14px]">verified</span>
+                                        YES
+                                    </span>
+</td>
+<td class="px-6 py-4 text-body-sm text-on-surface-variant">Sylhet</td>
+<td class="px-6 py-4">
+<span class="inline-block w-24 px-2 py-1 bg-red-50 text-red-700 border border-red-200 text-center rounded text-label-sm font-bold uppercase">Suspended</span>
+</td>
+<td class="px-6 py-4">
+<button class="p-1.5 hover:bg-surface-container rounded-lg text-outline hover:text-primary transition-all">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Additional Rows for Density -->
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 bg-secondary-container text-secondary rounded-full flex items-center justify-center font-bold text-label-md">TR</div>
+<span class="font-label-md text-on-surface">Tanvir Rahman</span>
+</div>
+</td>
+<td class="px-6 py-4 font-data-mono text-body-sm text-on-surface-variant">+880 1515-556677</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 text-body-sm">
+<span class="material-symbols-outlined text-[18px] text-outline">motorcycle</span>
+                                        Motorbike
+                                    </div>
+</td>
+<td class="px-6 py-4 font-data-mono text-body-sm text-outline">DHK-METRO-HA-5678</td>
+<td class="px-6 py-4 text-center">
+<div class="flex items-center justify-center gap-1 text-label-md font-bold text-on-surface">
+<span>4.9</span>
+<span class="material-symbols-outlined text-yellow-500 text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+</td>
+<td class="px-6 py-4 text-center font-data-mono text-body-sm">3,102</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1 bg-green-100 text-green-700 px-2.5 py-0.5 rounded-full text-label-sm font-bold">
+<span class="material-symbols-outlined text-[14px]">verified</span>
+                                        YES
+                                    </span>
+</td>
+<td class="px-6 py-4 text-body-sm text-on-surface-variant">Dhaka (Uttara)</td>
+<td class="px-6 py-4">
+<span class="inline-block w-24 px-2 py-1 bg-green-50 text-green-700 border border-green-200 text-center rounded text-label-sm font-bold uppercase">Active</span>
+</td>
+<td class="px-6 py-4">
+<button class="p-1.5 hover:bg-surface-container rounded-lg text-outline hover:text-primary transition-all">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination Footer -->
+<div class="px-6 py-4 border-t border-outline-variant flex items-center justify-between bg-surface-container-low">
+<span class="text-body-sm text-on-surface-variant">Showing 1 to 4 of 1,248 agents</span>
+<div class="flex items-center gap-2">
+<button class="p-2 border border-outline-variant rounded hover:bg-white transition-all disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<button class="px-3 py-1 bg-primary text-white rounded font-label-md">1</button>
+<button class="px-3 py-1 border border-outline-variant rounded hover:bg-white font-label-md">2</button>
+<button class="px-3 py-1 border border-outline-variant rounded hover:bg-white font-label-md">3</button>
+<span class="px-2 text-outline">...</span>
+<button class="px-3 py-1 border border-outline-variant rounded hover:bg-white font-label-md">125</button>
+<button class="p-2 border border-outline-variant rounded hover:bg-white transition-all">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Action Button (Mobile Context Only) -->
+<button class="md:hidden fixed bottom-6 right-6 w-14 h-14 bg-primary text-white rounded-full shadow-xl flex items-center justify-center z-50">
+<span class="material-symbols-outlined">person_add</span>
+</button>
+<script>
+        // Simple micro-interaction for rows
+        document.querySelectorAll('tr').forEach(row => {
+            row.addEventListener('mouseenter', () => {
+                row.style.transform = 'translateY(-1px)';
+                row.style.boxShadow = '0 4px 6px -1px rgb(0 0 0 / 0.05)';
+            });
+            row.addEventListener('mouseleave', () => {
+                row.style.transform = 'none';
+                row.style.boxShadow = 'none';
+            });
+        });
+    </script>
+</body></html>

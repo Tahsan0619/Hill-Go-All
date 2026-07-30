@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HillGo Admin - Customer Directory</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* Drawer animation */
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+        .drawer-open { animation: slideIn 0.3s cubic-bezier(0, 0, 0.2, 1) forwards; }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-container": "#ffaa8a",
+                        "on-primary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#f8f9fb",
+                        "primary-container": "#0047ab",
+                        "on-error": "#ffffff",
+                        "primary-fixed": "#dae2ff",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed": "#0b1c30",
+                        "on-background": "#191c1e",
+                        "on-tertiary-fixed": "#380d00",
+                        "primary": "#00327d",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "tertiary": "#651f00",
+                        "inverse-surface": "#2e3132",
+                        "surface-container-high": "#e7e8ea",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-container": "#8b2e01",
+                        "on-surface-variant": "#434653",
+                        "secondary-container": "#d0e1fb",
+                        "outline": "#737784",
+                        "on-secondary-container": "#54647a",
+                        "secondary-fixed": "#d3e4fe",
+                        "outline-variant": "#c3c6d5",
+                        "tertiary-fixed-dim": "#ffb59a",
+                        "on-surface": "#191c1e",
+                        "tertiary-fixed": "#ffdbcf",
+                        "secondary": "#505f76",
+                        "error": "#ba1a1a",
+                        "primary-fixed-dim": "#b1c5ff",
+                        "surface-dim": "#d9dadc",
+                        "surface-variant": "#e1e2e4",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "surface": "#f8f9fb",
+                        "on-tertiary-fixed-variant": "#802900",
+                        "on-primary-container": "#a5bdff",
+                        "surface-container": "#edeef0",
+                        "surface-tint": "#2559bd",
+                        "background": "#f8f9fb",
+                        "surface-container-low": "#f3f4f6",
+                        "inverse-primary": "#b1c5ff",
+                        "on-primary-fixed-variant": "#00419e",
+                        "inverse-on-surface": "#f0f1f3",
+                        "surface-container-highest": "#e1e2e4",
+                        "on-primary-fixed": "#001946"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "header_height": "64px",
+                        "base_unit": "4px",
+                        "sidebar_width": "240px",
+                        "card_gap": "20px",
+                        "gutter": "16px",
+                        "container_padding": "24px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Inter"],
+                        "title-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "data-mono": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "title-sm": ["18px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                        "data-mono": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background font-body-md text-on-background antialiased overflow-hidden">
+<!-- SIDEBAR -->
+<aside class="fixed left-0 top-0 h-full w-sidebar_width bg-on-primary-fixed dark:bg-on-background border-r border-outline-variant dark:border-outline shadow-sm flex flex-col py-6 z-50">
+<div class="px-6 mb-8 flex items-center gap-3">
+<div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-container" style="font-variation-settings: 'FILL' 1;">rocket_launch</span>
+</div>
+<div>
+<h1 class="text-headline-md font-headline-md font-bold text-surface-bright leading-none">HillGo</h1>
+<p class="text-label-sm text-outline-variant opacity-70">Super Admin</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1 px-3">
+<!-- Nav Item (Overview) -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-surface-variant dark:text-outline-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-label-md font-label-md">Overview</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-surface-variant dark:text-outline-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="location_on">location_on</span>
+<span class="text-label-md font-label-md">Region Lock</span>
+</a>
+<!-- Active Nav Item (Customer Panel) -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-secondary-container text-primary border-r-[3px] border-primary font-bold transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="text-label-md font-label-md">Customer Panel</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-surface-variant dark:text-outline-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="directions_bike">directions_bike</span>
+<span class="text-label-md font-label-md">Rider Panel</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-surface-variant dark:text-outline-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="store">store</span>
+<span class="text-label-md font-label-md">Merchant Panel</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-surface-variant dark:text-outline-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="local_shipping">local_shipping</span>
+<span class="text-label-md font-label-md">Courier Panel</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-surface-variant dark:text-outline-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="text-label-md font-label-md">Finance</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-surface-variant dark:text-outline-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+<span class="text-label-md font-label-md">Content</span>
+</a>
+<div class="pt-4 border-t border-white/5 mt-4">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-surface-variant dark:text-outline-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-label-md font-label-md">Settings</span>
+</a>
+</div>
+</nav>
+</aside>
+<!-- HEADER -->
+<header class="fixed top-0 right-0 h-header_height z-40 bg-surface-container-lowest dark:bg-surface-dim border-b border-outline-variant dark:border-outline shadow-sm flex items-center justify-between px-gutter w-[calc(100%-240px)] ml-sidebar_width">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-full max-w-md group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" data-icon="search">search</span>
+<input class="w-full bg-surface-container-low border border-outline-variant rounded-full py-2 pl-10 pr-4 text-body-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="Search customers, ID, or phone..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<button class="relative p-2 rounded-full hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-white"></span>
+</button>
+<div class="h-8 w-px bg-outline-variant"></div>
+<div class="flex items-center gap-3 cursor-pointer hover:bg-surface-container-low p-1 rounded-lg transition-colors">
+<div class="text-right hidden sm:block">
+<p class="text-label-md leading-none mb-0.5">HillGo Admin</p>
+<p class="text-label-sm text-outline">Operation Lead</p>
+</div>
+<img class="w-10 h-10 rounded-full border border-outline-variant object-cover" data-alt="A professional corporate headshot of a Middle Eastern male operations manager in his 40s, wearing a crisp white shirt, clean lighting, blurred modern office background with high-end tech vibe, professional photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuApOJuPb5HAsB2ioOkxuqShI6XOMBLw0f_kWeN_NAGrWEJkrEpWMZm7ZtMTCbClNw4WE7Q20-aeb5wugfdpJaH4RM_Ij-qhD3Y3-Tg6WnIjsSrD2EgunVJHM3Rf_qIrfghsYMGmgmstMQcxK0CLzYKwp-Y-7oIICPZeQGfm0OR13T-rSmvRVOyYnGxnKvWtTE1yF-gzrzJ5vkGda6H3HKlxSInKYme4fLNTIPc_ke6NLFfRPsfJ4MfZ"/>
+</div>
+</div>
+</header>
+<!-- MAIN CANVAS -->
+<main class="ml-sidebar_width pt-header_height h-screen overflow-hidden relative">
+<div class="p-container_padding h-full overflow-y-auto">
+<!-- PAGE HEADER -->
+<div class="mb-6 flex justify-between items-end">
+<div>
+<h2 class="font-display-lg text-display-lg text-primary tracking-tight">Customer Directory</h2>
+<p class="text-body-md text-on-surface-variant">Manage and monitor your HillGo user base in Bangladesh.</p>
+</div>
+<button class="bg-primary text-on-primary px-6 py-2.5 rounded-lg flex items-center gap-2 font-label-md shadow-sm hover:opacity-90 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[20px]" data-icon="person_add">person_add</span>
+                    Register New Customer
+                </button>
+</div>
+<!-- KPI SECTION -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter mb-8">
+<div class="bg-surface-container-lowest border border-outline-variant p-4 rounded-xl shadow-sm">
+<div class="flex items-center justify-between mb-2">
+<span class="text-label-sm text-outline uppercase tracking-wider">Total Users</span>
+<span class="material-symbols-outlined text-primary bg-primary-container/10 p-1.5 rounded-lg text-[20px]" data-icon="groups">groups</span>
+</div>
+<p class="text-headline-md font-headline-md">12,482</p>
+<div class="flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[14px] text-green-600" data-icon="trending_up">trending_up</span>
+<span class="text-label-sm text-green-600">+12% this month</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant p-4 rounded-xl shadow-sm">
+<div class="flex items-center justify-between mb-2">
+<span class="text-label-sm text-outline uppercase tracking-wider">Active Today</span>
+<span class="material-symbols-outlined text-secondary bg-secondary-container/30 p-1.5 rounded-lg text-[20px]" data-icon="bolt">bolt</span>
+</div>
+<p class="text-headline-md font-headline-md">4,891</p>
+<div class="flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[14px] text-green-600" data-icon="trending_up">trending_up</span>
+<span class="text-label-sm text-green-600">+5% vs yesterday</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant p-4 rounded-xl shadow-sm">
+<div class="flex items-center justify-between mb-2">
+<span class="text-label-sm text-outline uppercase tracking-wider">Total Wallet Balance</span>
+<span class="material-symbols-outlined text-tertiary bg-tertiary-container/10 p-1.5 rounded-lg text-[20px]" data-icon="payments">payments</span>
+</div>
+<p class="text-headline-md font-headline-md">৳ 842.1k</p>
+<span class="text-label-sm text-outline mt-1 block">Platform-wide float</span>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant p-4 rounded-xl shadow-sm">
+<div class="flex items-center justify-between mb-2">
+<span class="text-label-sm text-outline uppercase tracking-wider">Tier Distribution</span>
+<span class="material-symbols-outlined text-primary bg-primary-container/10 p-1.5 rounded-lg text-[20px]" data-icon="stars">stars</span>
+</div>
+<div class="flex items-center gap-2">
+<p class="text-headline-md font-headline-md">420</p>
+<span class="px-2 py-0.5 bg-yellow-100 text-yellow-800 text-[10px] font-bold rounded uppercase">Gold Tier</span>
+</div>
+<span class="text-label-sm text-outline mt-1 block">3.4% of total base</span>
+</div>
+</div>
+<!-- DATA TABLE -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm overflow-hidden mb-12">
+<div class="p-4 border-b border-outline-variant flex justify-between items-center bg-surface-container-low/30">
+<div class="flex gap-2">
+<button class="px-4 py-1.5 bg-primary text-on-primary rounded-full text-label-sm">All Customers</button>
+<button class="px-4 py-1.5 border border-outline-variant hover:bg-surface-container-low rounded-full text-label-sm text-on-surface-variant transition-colors">Active</button>
+<button class="px-4 py-1.5 border border-outline-variant hover:bg-surface-container-low rounded-full text-label-sm text-on-surface-variant transition-colors">Suspended</button>
+</div>
+<button class="flex items-center gap-1.5 text-label-md text-primary hover:underline">
+<span class="material-symbols-outlined text-[18px]" data-icon="filter_list">filter_list</span>
+                        Advanced Filters
+                    </button>
+</div>
+<table class="w-full text-left">
+<thead>
+<tr class="bg-surface-container-low text-on-surface-variant border-b border-outline-variant">
+<th class="px-6 py-3 text-label-md uppercase tracking-wider">Customer</th>
+<th class="px-6 py-3 text-label-md uppercase tracking-wider">ID &amp; District</th>
+<th class="px-6 py-3 text-label-md uppercase tracking-wider">Wallet Balance</th>
+<th class="px-6 py-3 text-label-md uppercase tracking-wider">Tier</th>
+<th class="px-6 py-3 text-label-md uppercase tracking-wider">Status</th>
+<th class="px-6 py-3 text-label-md uppercase tracking-wider text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/50">
+<!-- Target Row -->
+<tr class="hover:bg-primary/5 transition-colors cursor-pointer group bg-primary/10">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="A portrait of a young Bangladeshi man named Ariful Salman, late 20s, with a friendly expression, short dark hair, wearing a casual polo shirt. Professional lighting, vibrant warm tones, modern portrait aesthetic consistent with a high-end mobile app user profile." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVNm0s3bfVW6HFw739g1EOe0yxPCQaOadPFhlm-vxJgGO_JM7xjdWib6R0n1GpdULwmbKp941WEmorJTlkyUswLh8ICxEO_LijIvw-tu8Y-fRYNFFSKqs4lxWOWvy5V7H8l52hIuyxEPHixQD-UV7zsNPHFhoB9OcWpbti5P9PjFFZNpdgCL2Q1FgvvhIQXTeBJPQzBJ-m_bsS1dNELEgm5W8UnNrvwUBnrJiyBej6m6XmfD3-h-Qk"/>
+<span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
+</div>
+<div>
+<p class="text-label-md font-bold text-primary">Ariful Salman</p>
+<p class="text-body-sm text-outline">ariful.salman@email.com</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<p class="text-label-sm font-bold">HG-88021</p>
+<p class="text-body-sm text-outline">Dhaka North</p>
+</td>
+<td class="px-6 py-4 text-data-mono font-bold text-on-surface">৳ 1,240.50</td>
+<td class="px-6 py-4">
+<span class="px-2.5 py-1 bg-yellow-100 text-yellow-800 text-[11px] font-bold rounded-full border border-yellow-200">GOLD</span>
+</td>
+<td class="px-6 py-4">
+<span class="flex items-center gap-1.5 text-body-sm text-green-600 font-medium">
+<span class="w-2 h-2 rounded-full bg-green-600"></span>
+                                    Active
+                                </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-2 hover:bg-surface-container-high rounded-lg transition-colors">
+<span class="material-symbols-outlined text-outline group-hover:text-primary" data-icon="visibility">visibility</span>
+</button>
+</td>
+</tr>
+<!-- More Rows -->
+<tr class="hover:bg-primary/5 transition-colors cursor-pointer group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="Close-up portrait of a Bangladeshi woman in her 30s, professional attire, soft neutral studio lighting, high resolution, corporate directory style, clean background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAso69-WuNlvseHjbt5WhbwG88f47sJA4mQTCgDE0hcJYFCFHrUvRi0eQ_U0svBZpQtw1qn5kfUoAMSirv_FtCb0QQJaMTQAqwilYnkusvCcNygH_oU0n131IlQ1-vrAYbLJVVKm_bQvJx6Eql2tGv6NIM97Xtz5X3WVOTWE3B5qpZk8_w_zHygk15C9GzXpFQycdf9OLWnPL4SgZ8ki0yvHbzgO8Ee3SWvnj1aaWO6YFwpE1unAoEb"/>
+<div>
+<p class="text-label-md font-bold">Sumaiya Akhter</p>
+<p class="text-body-sm text-outline">sumaiya.ak@gmail.com</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<p class="text-label-sm font-bold">HG-88022</p>
+<p class="text-body-sm text-outline">Chittagong</p>
+</td>
+<td class="px-6 py-4 text-data-mono font-bold">৳ 450.25</td>
+<td class="px-6 py-4">
+<span class="px-2.5 py-1 bg-gray-100 text-gray-700 text-[11px] font-bold rounded-full border border-gray-200 uppercase">Silver</span>
+</td>
+<td class="px-6 py-4">
+<span class="flex items-center gap-1.5 text-body-sm text-green-600 font-medium">
+<span class="w-2 h-2 rounded-full bg-green-600"></span>
+                                    Active
+                                </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-2 hover:bg-surface-container-high rounded-lg transition-colors">
+<span class="material-symbols-outlined text-outline group-hover:text-primary" data-icon="visibility">visibility</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-primary/5 transition-colors cursor-pointer group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="Portrait of an elderly Bangladeshi gentleman, white beard, traditional cap, kind eyes, soft daylight, professional photography, modern app style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBuIzJuXbQ8z_eSrdDXLLYFj8B_7RnYUMrja6LbQ9AkuA4MhjAAvCE_KJEy6HLCLmajr9uvDZVKRllAHtHxzuPxrDbg1NnvVI9NybwRnvfDrRMo--ApsiW3yTM1Mrg0OdFuHCx0f34Cu9zHb3KiH0n64DEqEPILPTfrpoB3t0yE15CUF3alKGmaTjlI2Hv4KjI5tiFsq9QV6KQruWDSoG47OHKz7XhblZV6gYZsbJfX_t3iJrWfX3aZ"/>
+<div>
+<p class="text-label-md font-bold">Mofizur Rahman</p>
+<p class="text-body-sm text-outline">mofiz.r@outlook.com</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<p class="text-label-sm font-bold">HG-88025</p>
+<p class="text-body-sm text-outline">Sylhet</p>
+</td>
+<td class="px-6 py-4 text-data-mono font-bold">৳ 3,420.00</td>
+<td class="px-6 py-4">
+<span class="px-2.5 py-1 bg-blue-100 text-blue-800 text-[11px] font-bold rounded-full border border-blue-200 uppercase">Platinum</span>
+</td>
+<td class="px-6 py-4">
+<span class="flex items-center gap-1.5 text-body-sm text-error font-medium">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+                                    Suspended
+                                </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-2 hover:bg-surface-container-high rounded-lg transition-colors">
+<span class="material-symbols-outlined text-outline group-hover:text-primary" data-icon="visibility">visibility</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- DRAWER OVERLAY -->
+<div class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60] flex justify-end">
+<!-- DRAWER CONTENT -->
+<div class="w-[480px] bg-white h-full shadow-2xl drawer-open flex flex-col">
+<!-- Drawer Header -->
+<div class="p-6 border-b border-outline-variant flex items-center justify-between">
+<h3 class="text-title-sm font-title-sm text-primary">Customer Details</h3>
+<button class="p-2 hover:bg-surface-container-low rounded-full transition-colors text-outline">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto">
+<!-- Profile Header -->
+<div class="p-8 bg-surface-container-low/30 border-b border-outline-variant flex flex-col items-center">
+<div class="relative mb-4 group cursor-pointer">
+<img class="w-24 h-24 rounded-full border-4 border-white shadow-md object-cover" data-alt="A high-quality, professional avatar of Ariful Salman, a Bangladeshi male in his 20s, vibrant colors, clear features, friendly expression, centered against a soft blurred background, luxury app aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCU4U0Z8CDCl9WGoiXWjwF2BATI8B_X_hFH27IvghGdmLlyb7XmAKQIHqNTt3HasohcW_2XUOS9E1fIuSwjPHkxTCSkHkC1xrO007ZFtZQDjPyDSufKSTl7TbY_NlUrT4Z6-LWhMB3Bdd9UZkNUWHeV2CvHATxg5M904UepszxvtWtmgR1RZAVxgqsmz1rXHP3fSv4YLAp0RiscskxILj5m76CbipoIRgabYDrZ6um0J4nEadbQ0MsR"/>
+<div class="absolute inset-0 bg-black/20 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-white" data-icon="photo_camera">photo_camera</span>
+</div>
+</div>
+<h4 class="text-headline-md font-headline-md text-on-surface">Ariful Salman</h4>
+<div class="flex items-center gap-2 mt-1">
+<span class="px-2 py-0.5 bg-primary-container text-white text-[10px] font-bold rounded uppercase tracking-tighter">Verified</span>
+<span class="text-label-md text-outline font-data-mono">HG-88021</span>
+</div>
+</div>
+<!-- Personal Info -->
+<section class="p-6">
+<h5 class="text-label-sm font-bold text-outline uppercase tracking-wider mb-4">Personal Information</h5>
+<div class="grid grid-cols-2 gap-y-4">
+<div>
+<p class="text-label-sm text-outline">Phone Number</p>
+<p class="text-body-md font-bold text-on-surface">+880 1712-345678</p>
+</div>
+<div>
+<p class="text-label-sm text-outline">Email Address</p>
+<p class="text-body-md font-bold text-on-surface">ariful.salman@email.com</p>
+</div>
+<div>
+<p class="text-label-sm text-outline">District</p>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-primary text-[18px]" data-icon="location_on">location_on</span>
+<p class="text-body-md font-bold text-on-surface">Dhaka North</p>
+</div>
+</div>
+<div>
+<p class="text-label-sm text-outline">Member Since</p>
+<p class="text-body-md font-bold text-on-surface">12 May, 2021</p>
+</div>
+</div>
+</section>
+<!-- Account Stats -->
+<section class="p-6 bg-surface-container-low/10">
+<h5 class="text-label-sm font-bold text-outline uppercase tracking-wider mb-4">Account Stats</h5>
+<div class="grid grid-cols-3 gap-4">
+<div class="bg-white border border-outline-variant rounded-xl p-3 shadow-sm">
+<p class="text-label-sm text-outline mb-1">Wallet</p>
+<p class="text-title-sm font-bold text-primary font-data-mono">৳ 1,240.50</p>
+</div>
+<div class="bg-white border border-outline-variant rounded-xl p-3 shadow-sm">
+<p class="text-label-sm text-outline mb-1">Loyalty</p>
+<p class="text-title-sm font-bold text-secondary font-data-mono">12,450</p>
+<p class="text-[10px] text-outline">points</p>
+</div>
+<div class="bg-white border border-outline-variant rounded-xl p-3 shadow-sm">
+<p class="text-label-sm text-outline mb-1">Tier</p>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-yellow-500 text-[18px]" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<p class="text-title-sm font-bold text-yellow-700">Gold</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Activity -->
+<section class="p-6">
+<h5 class="text-label-sm font-bold text-outline uppercase tracking-wider mb-4">Activity Insights</h5>
+<div class="space-y-4">
+<div class="flex items-center justify-between p-3 border border-outline-variant rounded-lg">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-outline" data-icon="history">history</span>
+<span class="text-body-md">Last Ride Activity</span>
+</div>
+<span class="text-label-md font-bold text-on-surface">2 hours ago</span>
+</div>
+<div class="flex items-center justify-between p-3 border border-outline-variant rounded-lg">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-outline" data-icon="shopping_bag">shopping_bag</span>
+<span class="text-body-md">Total Platform Orders</span>
+</div>
+<span class="text-label-md font-bold text-on-surface">142 orders</span>
+</div>
+<div class="flex items-center justify-between p-3 border border-outline-variant rounded-lg">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-outline" data-icon="star_rate">star_rate</span>
+<span class="text-body-md">Avg. Satisfaction Rating</span>
+</div>
+<span class="text-label-md font-bold text-on-surface">4.8 / 5.0</span>
+</div>
+</div>
+</section>
+</div>
+<!-- Drawer Actions -->
+<div class="p-6 border-t border-outline-variant bg-surface-container-low/30 space-y-3">
+<div class="grid grid-cols-2 gap-3">
+<button class="w-full border border-primary text-primary py-2.5 rounded-lg font-label-md hover:bg-primary/5 transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span>
+                            Edit Profile
+                        </button>
+<button class="w-full border border-secondary text-secondary py-2.5 rounded-lg font-label-md hover:bg-secondary/5 transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]" data-icon="account_balance_wallet">account_balance_wallet</span>
+                            Adjust Wallet
+                        </button>
+</div>
+<button class="w-full bg-error text-on-error py-3 rounded-lg font-label-md shadow-sm hover:opacity-90 transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]" data-icon="block">block</span>
+                        Suspend Account
+                    </button>
+</div>
+</div>
+</div>
+</main>
+<script>
+        // Micro-interactions for active state simulation
+        document.querySelectorAll('nav a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                if (link.classList.contains('cursor-not-allowed')) return;
+                document.querySelectorAll('nav a').forEach(l => {
+                    l.classList.remove('bg-secondary-container', 'text-primary', 'border-r-[3px]', 'border-primary', 'font-bold');
+                    l.classList.add('text-surface-variant', 'dark:text-outline-variant', 'hover:text-surface-bright');
+                });
+                link.classList.add('bg-secondary-container', 'text-primary', 'border-r-[3px]', 'border-primary', 'font-bold');
+                link.classList.remove('text-surface-variant', 'dark:text-outline-variant', 'hover:text-surface-bright');
+            });
+        });
+
+        // Close drawer logic
+        document.querySelector('.fixed.inset-0.bg-black\\/40').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.add('opacity-0');
+                this.querySelector('.drawer-open').style.transform = 'translateX(100%)';
+                this.querySelector('.drawer-open').style.transition = 'transform 0.3s ease-in-out';
+                setTimeout(() => {
+                    this.style.display = 'none';
+                }, 300);
+            }
+        });
+        
+        document.querySelector('button .material-symbols-outlined[data-icon="close"]').parentElement.addEventListener('click', function() {
+            const overlay = document.querySelector('.fixed.inset-0.bg-black\\/40');
+            overlay.classList.add('opacity-0');
+            overlay.querySelector('.drawer-open').style.transform = 'translateX(100%)';
+            overlay.querySelector('.drawer-open').style.transition = 'transform 0.3s ease-in-out';
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 300);
+        });
+    </script>
+</body></html>

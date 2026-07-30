@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HillGo Admin - Dhaka Division Region Lock</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-fixed": "#380d00",
+                    "primary": "#00327d",
+                    "on-background": "#191c1e",
+                    "on-surface-variant": "#434653",
+                    "secondary-fixed": "#d3e4fe",
+                    "tertiary-fixed-dim": "#ffb59a",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-fixed": "#ffdbcf",
+                    "on-surface": "#191c1e",
+                    "error": "#ba1a1a",
+                    "surface-bright": "#f8f9fb",
+                    "surface-tint": "#2559bd",
+                    "on-secondary-fixed": "#0b1c30",
+                    "secondary-container": "#d0e1fb",
+                    "on-primary-fixed": "#001946",
+                    "surface-container-lowest": "#ffffff",
+                    "background": "#f8f9fb",
+                    "on-tertiary-fixed-variant": "#802900",
+                    "inverse-primary": "#b1c5ff",
+                    "surface-container-high": "#e7e8ea",
+                    "on-primary-fixed-variant": "#00419e",
+                    "on-secondary": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "surface-variant": "#e1e2e4",
+                    "on-primary-container": "#a5bdff",
+                    "primary-fixed-dim": "#b1c5ff",
+                    "inverse-surface": "#2e3132",
+                    "tertiary": "#651f00",
+                    "on-tertiary-container": "#ffaa8a",
+                    "error-container": "#ffdad6",
+                    "tertiary-container": "#8b2e01",
+                    "on-error-container": "#93000a",
+                    "on-secondary-container": "#54647a",
+                    "secondary": "#505f76",
+                    "surface-container-low": "#f3f4f6",
+                    "surface-dim": "#d9dadc",
+                    "surface-container-highest": "#e1e2e4",
+                    "on-error": "#ffffff",
+                    "secondary-fixed-dim": "#b7c8e1",
+                    "inverse-on-surface": "#f0f1f3",
+                    "outline-variant": "#c3c6d5",
+                    "on-secondary-fixed-variant": "#38485d",
+                    "outline": "#737784",
+                    "surface": "#f8f9fb",
+                    "primary-fixed": "#dae2ff",
+                    "surface-container": "#edeef0",
+                    "primary-container": "#0047ab"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "card_gap": "20px",
+                    "gutter": "16px",
+                    "header_height": "64px",
+                    "sidebar_width": "240px",
+                    "container_padding": "24px",
+                    "base_unit": "4px"
+            },
+            "fontFamily": {
+                    "data-mono": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "label-md": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "body-md": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "title-sm": ["Inter"],
+                    "display-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "data-mono": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "title-sm": ["18px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .sidebar-active-indicator {
+            width: 4px;
+            height: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+            background-color: #00327d;
+        }
+    </style>
+</head>
+<body class="bg-surface-container-low text-on-surface">
+<!-- SIDEBAR -->
+<aside class="fixed left-0 top-0 h-full w-sidebar_width bg-on-primary-fixed dark:bg-on-background flex flex-col py-6 border-r border-outline-variant dark:border-outline shadow-sm z-50">
+<div class="px-6 mb-8 flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-primary flex items-center justify-center text-white font-bold text-headline-md">H</div>
+<div>
+<h1 class="text-surface-bright font-headline-md text-headline-md font-bold leading-none">HillGo</h1>
+<p class="text-surface-variant text-[10px] uppercase tracking-wider mt-1">Super Admin</p>
+</div>
+</div>
+<nav class="flex-1 overflow-y-auto px-3 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-surface-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-label-md font-label-md">Overview</span>
+</a>
+<a class="relative flex items-center gap-3 px-4 py-3 bg-secondary-container text-primary border-r-[3px] border-primary font-bold transition-all rounded-r-none rounded-l-lg" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">location_on</span>
+<span class="text-label-md font-label-md">Region Lock</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-surface-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="text-label-md font-label-md">Customer Panel</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-surface-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">directions_bike</span>
+<span class="text-label-md font-label-md">Rider Panel</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-surface-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">store</span>
+<span class="text-label-md font-label-md">Merchant Panel</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-surface-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">local_shipping</span>
+<span class="text-label-md font-label-md">Courier Panel</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-surface-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="text-label-md font-label-md">Finance</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-surface-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="text-label-md font-label-md">Content</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-surface-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-label-md font-label-md">Settings</span>
+</a>
+</nav>
+<div class="px-6 mt-auto pt-6 border-t border-outline-variant/20">
+<div class="flex items-center gap-3 cursor-pointer">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a middle-aged South Asian operations manager with a confident and serious expression. The background is a clean, corporate office setting with soft natural lighting and subtle blue accent tones. The person is wearing a tailored navy blue blazer over a crisp white shirt, representing industrial reliability and systematic leadership in a modern Bangladeshi corporate environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtObXA9EPmInvjacgYntXmDI3MNPkYkA2mT1ARAosKuxJ8jn2uFF9x29tmyNEdrSWcDC3weWgPCk9oRSDRMnYJbx65_vohNjJIIHeCeHSzJs6jAer727lhHZeZV7e999ihB2hei1r03UbNRUSQdPComO8Q_PzCHda_Ndz76tqOtHQV87tBi0Env15zK1jrWPJ0q1i8X3t4AnB5gfl7HU-10KHPfkav3KF48XoJhBwAy9NdkuVD3fSp"/>
+</div>
+<div class="overflow-hidden">
+<p class="text-surface-bright text-label-md truncate">Kabir Ahmed</p>
+<p class="text-surface-variant text-[12px] truncate">Ops Lead</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- HEADER -->
+<header class="fixed top-0 right-0 h-header_height bg-surface-container-lowest dark:bg-surface-dim z-40 flex items-center justify-between px-gutter w-[calc(100%-240px)] ml-sidebar_width border-b border-outline-variant dark:border-outline shadow-sm">
+<div class="flex items-center gap-4">
+<nav class="flex items-center text-label-md gap-2">
+<span class="text-on-surface-variant">Region Lock</span>
+<span class="material-symbols-outlined text-outline-variant text-[16px]">chevron_right</span>
+<span class="text-primary font-bold">Dhaka Division</span>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative flex items-center bg-surface-container-low rounded-full px-4 py-2 focus-within:ring-2 focus-within:ring-primary transition-all">
+<span class="material-symbols-outlined text-outline">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-sm w-64 ml-2 outline-none" placeholder="Search District..." type="text"/>
+</div>
+<button class="relative p-2 text-on-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-variant rounded-full transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-surface-container-lowest"></span>
+</button>
+</div>
+</header>
+<!-- MAIN CANVAS -->
+<main class="pt-[calc(header_height+24px)] pl-[calc(sidebar_width+24px)] pr-6 pb-12 min-h-screen">
+<!-- BENTO HEADER -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+<div class="space-y-1">
+<h2 class="text-display-lg font-display-lg text-on-surface">Dhaka Division Control</h2>
+<p class="text-body-md text-on-surface-variant">Manage operational status and app availability for all 13 districts within the division.</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-lg font-label-md text-label-md hover:bg-opacity-90 transition-all shadow-md active:scale-95">
+<span class="material-symbols-outlined text-[20px]">check_circle</span>
+                    Open All
+                </button>
+<button class="flex items-center gap-2 px-6 py-2.5 border-2 border-primary text-primary rounded-lg font-label-md text-label-md hover:bg-primary/5 transition-all active:scale-95">
+<span class="material-symbols-outlined text-[20px]">block</span>
+                    Close All
+                </button>
+</div>
+</div>
+<!-- KPI SUMMARY ROW (Subtle Glassmorphism) -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-card_gap mb-8">
+<div class="bg-white p-5 rounded-xl border border-outline-variant shadow-sm">
+<p class="text-label-sm text-on-surface-variant mb-2">Total Districts</p>
+<div class="flex items-baseline gap-2">
+<span class="text-headline-md font-headline-md">13</span>
+<span class="text-label-sm text-on-surface-variant">Active Area</span>
+</div>
+</div>
+<div class="bg-white p-5 rounded-xl border border-outline-variant shadow-sm">
+<p class="text-label-sm text-on-surface-variant mb-2">Currently Open</p>
+<div class="flex items-baseline gap-2">
+<span class="text-headline-md font-headline-md text-[#2e7d32]">11</span>
+<span class="text-label-sm text-[#2e7d32] bg-[#e8f5e9] px-1.5 rounded">+2 Today</span>
+</div>
+</div>
+<div class="bg-white p-5 rounded-xl border border-outline-variant shadow-sm">
+<p class="text-label-sm text-on-surface-variant mb-2">Currently Closed</p>
+<div class="flex items-baseline gap-2">
+<span class="text-headline-md font-headline-md text-error">02</span>
+<span class="text-label-sm text-error bg-error-container/30 px-1.5 rounded">-1 Critical</span>
+</div>
+</div>
+<div class="bg-white p-5 rounded-xl border border-outline-variant shadow-sm">
+<p class="text-label-sm text-on-surface-variant mb-2">Impacted Users</p>
+<div class="flex items-baseline gap-2">
+<span class="text-headline-md font-headline-md">1.2M</span>
+<span class="text-label-sm text-on-surface-variant">Est. Reach</span>
+</div>
+</div>
+</div>
+<!-- DATA TABLE CONTAINER -->
+<div class="bg-white rounded-xl border border-outline-variant shadow-sm overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-[#F8FAFC] border-b border-outline-variant sticky top-0 z-10">
+<tr>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant">District Name</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant">Status</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant">Opened At</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant">Note</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant">Affected Apps</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/40">
+<!-- DHAKA -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-3">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary-container/20 flex items-center justify-center text-primary font-bold">DK</div>
+<span class="text-body-md font-semibold text-on-surface">Dhaka</span>
+</div>
+</td>
+<td class="px-6 py-3">
+<div class="flex items-center gap-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#e8f5e9] text-[#2e7d32]">Open</span>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-9 h-5 bg-outline-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</td>
+<td class="px-6 py-3 text-data-mono text-body-sm text-on-surface-variant">2023-11-15</td>
+<td class="px-6 py-3 text-body-sm text-on-surface-variant italic max-w-[200px] truncate">Regular operation...</td>
+<td class="px-6 py-3">
+<div class="flex gap-2">
+<div class="flex items-center gap-1.5 bg-surface-container px-2 py-1 rounded border border-outline-variant/30" title="Customer">
+<input checked="" class="w-3.5 h-3.5 rounded text-primary focus:ring-primary border-outline" type="checkbox"/>
+<span class="material-symbols-outlined text-[14px]">person</span>
+</div>
+<div class="flex items-center gap-1.5 bg-surface-container px-2 py-1 rounded border border-outline-variant/30" title="Rider">
+<input checked="" class="w-3.5 h-3.5 rounded text-primary focus:ring-primary border-outline" type="checkbox"/>
+<span class="material-symbols-outlined text-[14px]">directions_bike</span>
+</div>
+<div class="flex items-center gap-1.5 bg-surface-container px-2 py-1 rounded border border-outline-variant/30" title="Merchant">
+<input checked="" class="w-3.5 h-3.5 rounded text-primary focus:ring-primary border-outline" type="checkbox"/>
+<span class="material-symbols-outlined text-[14px]">store</span>
+</div>
+<div class="flex items-center gap-1.5 bg-surface-container px-2 py-1 rounded border border-outline-variant/30" title="Courier">
+<input checked="" class="w-3.5 h-3.5 rounded text-primary focus:ring-primary border-outline" type="checkbox"/>
+<span class="material-symbols-outlined text-[14px]">local_shipping</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-3 text-right">
+<button class="text-outline hover:text-primary transition-colors">
+<span class="material-symbols-outlined">edit</span>
+</button>
+</td>
+</tr>
+<!-- GAZIPUR (Closed Example) -->
+<tr class="hover:bg-surface-container-low transition-colors group bg-error-container/5">
+<td class="px-6 py-3">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary-container/20 flex items-center justify-center text-primary font-bold">GZ</div>
+<span class="text-body-md font-semibold text-on-surface">Gazipur</span>
+</div>
+</td>
+<td class="px-6 py-3">
+<div class="flex items-center gap-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-error-container text-error">Closed</span>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-9 h-5 bg-outline-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</td>
+<td class="px-6 py-3 text-data-mono text-body-sm text-on-surface-variant">---</td>
+<td class="px-6 py-3 text-body-sm text-on-surface-variant italic max-w-[200px] truncate">Strike at factory area...</td>
+<td class="px-6 py-3">
+<div class="flex gap-2">
+<div class="flex items-center gap-1.5 bg-surface-container px-2 py-1 rounded border border-outline-variant/30" title="Customer">
+<input class="w-3.5 h-3.5 rounded text-primary focus:ring-primary border-outline" type="checkbox"/>
+<span class="material-symbols-outlined text-[14px]">person</span>
+</div>
+<div class="flex items-center gap-1.5 bg-surface-container px-2 py-1 rounded border border-outline-variant/30" title="Rider">
+<input class="w-3.5 h-3.5 rounded text-primary focus:ring-primary border-outline" type="checkbox"/>
+<span class="material-symbols-outlined text-[14px]">directions_bike</span>
+</div>
+<div class="flex items-center gap-1.5 bg-surface-container px-2 py-1 rounded border border-outline-variant/30" title="Merchant">
+<input class="w-3.5 h-3.5 rounded text-primary focus:ring-primary border-outline" type="checkbox"/>
+<span class="material-symbols-outlined text-[14px]">store</span>
+</div>
+<div class="flex items-center gap-1.5 bg-surface-container px-2 py-1 rounded border border-outline-variant/30" title="Courier">
+<input class="w-3.5 h-3.5 rounded text-primary focus:ring-primary border-outline" type="checkbox"/>
+<span class="material-symbols-outlined text-[14px]">local_shipping</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-3 text-right">
+<button class="text-outline hover:text-primary transition-colors">
+<span class="material-symbols-outlined">edit</span>
+</button>
+</td>
+</tr>
+<!-- REMAINING DISTRICTS (Loop Simulation) -->
+<script>
+                            const districts = [
+                                "Faridpur", "Gopalganj", "Kishoreganj", "Madaripur", "Manikganj", 
+                                "Munshiganj", "Narayanganj", "Narsingdi", "Rajbari", "Shariatpur", "Tangail"
+                            ];
+                            const tbody = document.currentScript.parentElement;
+                            districts.forEach(d => {
+                                const tr = document.createElement('tr');
+                                tr.className = "hover:bg-surface-container-low transition-colors group";
+                                tr.innerHTML = `
+                                    <td class="px-6 py-3">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 rounded bg-primary-container/20 flex items-center justify-center text-primary font-bold">${d.substring(0,2).toUpperCase()}</div>
+                                            <span class="text-body-md font-semibold text-on-surface">${d}</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-3">
+                                        <div class="flex items-center gap-4">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#e8f5e9] text-[#2e7d32]">Open</span>
+                                            <label class="relative inline-flex items-center cursor-pointer">
+                                                <input type="checkbox" checked class="sr-only peer">
+                                                <div class="w-9 h-5 bg-outline-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-3 text-data-mono text-body-sm text-on-surface-variant">2023-11-20</td>
+                                    <td class="px-6 py-3 text-body-sm text-on-surface-variant italic max-w-[200px] truncate">No issues reported...</td>
+                                    <td class="px-6 py-3">
+                                        <div class="flex gap-2">
+                                            ${['person', 'directions_bike', 'store', 'local_shipping'].map(icon => `
+                                                <div class="flex items-center gap-1.5 bg-surface-container px-2 py-1 rounded border border-outline-variant/30">
+                                                    <input type="checkbox" checked class="w-3.5 h-3.5 rounded text-primary focus:ring-primary border-outline">
+                                                    <span class="material-symbols-outlined text-[14px]">${icon}</span>
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-3 text-right">
+                                        <button class="text-outline hover:text-primary transition-colors">
+                                            <span class="material-symbols-outlined">edit</span>
+                                        </button>
+                                    </td>
+                                `;
+                                tbody.appendChild(tr);
+                            });
+                        </script>
+</tbody>
+</table>
+</div>
+<!-- TABLE FOOTER -->
+<div class="px-6 py-4 bg-[#F8FAFC] border-t border-outline-variant flex items-center justify-between">
+<span class="text-body-sm text-on-surface-variant">Showing 13 of 13 districts in Dhaka Division</span>
+<div class="flex gap-2">
+<button class="p-1.5 border border-outline-variant rounded hover:bg-white transition-colors disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="p-1.5 border border-outline-variant rounded hover:bg-white transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- ASYMMETRIC LOGS / NOTES SECTION -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-card_gap mt-8">
+<div class="lg:col-span-2 bg-white rounded-xl border border-outline-variant p-6 shadow-sm">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-title-sm font-title-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">history</span>
+                        Recent Activity Log
+                    </h3>
+<button class="text-primary text-label-md font-label-md hover:underline">View All</button>
+</div>
+<div class="space-y-4">
+<div class="flex gap-4 p-3 rounded-lg bg-surface-container-low border-l-4 border-primary">
+<div class="text-data-mono text-body-sm font-bold text-on-surface-variant whitespace-nowrap">09:12 AM</div>
+<div class="text-body-sm">
+<span class="font-bold">System</span> opened <span class="text-primary font-bold">Munshiganj</span> for <span class="bg-secondary-container px-1 rounded">Courier</span>.
+                        </div>
+</div>
+<div class="flex gap-4 p-3 rounded-lg hover:bg-surface-container-low transition-colors">
+<div class="text-data-mono text-body-sm text-on-surface-variant whitespace-nowrap">08:45 AM</div>
+<div class="text-body-sm">
+<span class="font-bold">Admin (Kabir)</span> closed <span class="text-error font-bold">Gazipur</span> for all apps due to emergency maintenance.
+                        </div>
+</div>
+<div class="flex gap-4 p-3 rounded-lg hover:bg-surface-container-low transition-colors">
+<div class="text-data-mono text-body-sm text-on-surface-variant whitespace-nowrap">Yesterday</div>
+<div class="text-body-sm">
+<span class="font-bold">System</span> auto-closed <span class="text-error font-bold">Madaripur</span> during curfew hours (10PM - 6AM).
+                        </div>
+</div>
+</div>
+</div>
+<div class="bg-primary text-white rounded-xl p-6 shadow-xl relative overflow-hidden group">
+<div class="relative z-10">
+<h3 class="text-title-sm font-title-sm mb-4">Quick Insights</h3>
+<div class="space-y-6">
+<div>
+<p class="text-label-sm text-on-primary-container/80 mb-1">Division Performance</p>
+<div class="h-2 w-full bg-on-primary-fixed/20 rounded-full">
+<div class="h-full bg-white rounded-full transition-all duration-1000" style="width: 84.6%"></div>
+</div>
+<p class="text-data-mono text-[11px] mt-1 text-right">84.6% Districts Operational</p>
+</div>
+<div class="flex items-center justify-between">
+<div>
+<p class="text-label-sm text-on-primary-container/80">Active Riders</p>
+<p class="text-headline-md font-headline-md">4,821</p>
+</div>
+<span class="material-symbols-outlined text-[48px] opacity-20">motorcycle</span>
+</div>
+</div>
+</div>
+<!-- Background Pattern -->
+<div class="absolute -bottom-10 -right-10 w-40 h-40 bg-white/5 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700"></div>
+</div>
+</div>
+</main>
+<!-- FLOATING ACTION BUTTON (Only relevant here for quick adding a division wide note) -->
+<button class="fixed bottom-8 right-8 w-14 h-14 bg-primary text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50 group">
+<span class="material-symbols-outlined">add_comment</span>
+<span class="absolute right-16 bg-on-background text-white px-3 py-1.5 rounded-lg text-label-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">Add Division Note</span>
+</button>
+<script>
+        // Micro-interactions
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const row = this.closest('tr');
+                if (this.classList.contains('peer')) { // This is the status toggle
+                    const statusBadge = row.querySelector('.inline-flex');
+                    if (this.checked) {
+                        statusBadge.textContent = 'Open';
+                        statusBadge.className = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#e8f5e9] text-[#2e7d32]';
+                        row.classList.remove('bg-error-container/5');
+                    } else {
+                        statusBadge.textContent = 'Closed';
+                        statusBadge.className = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-error-container text-error';
+                        row.classList.add('bg-error-container/5');
+                    }
+                }
+            });
+        });
+    </script>
+</body></html>

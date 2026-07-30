@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HillGo Merchant - Order Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-surface-variant": "#434653",
+                    "inverse-primary": "#b1c5ff",
+                    "on-primary-fixed": "#001946",
+                    "primary-fixed-dim": "#b1c5ff",
+                    "on-secondary": "#ffffff",
+                    "on-secondary-container": "#54647a",
+                    "tertiary-fixed": "#ffdbcf",
+                    "tertiary": "#651f00",
+                    "on-primary": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-fixed": "#380d00",
+                    "on-primary-container": "#a5bdff",
+                    "surface-bright": "#f8f9fb",
+                    "secondary-fixed-dim": "#b7c8e1",
+                    "surface-variant": "#e1e2e4",
+                    "secondary-container": "#d0e1fb",
+                    "on-secondary-fixed-variant": "#38485d",
+                    "error": "#ba1a1a",
+                    "secondary": "#505f76",
+                    "outline-variant": "#c3c6d5",
+                    "surface": "#f8f9fb",
+                    "tertiary-container": "#8b2e01",
+                    "on-primary-fixed-variant": "#00419e",
+                    "surface-container-low": "#f3f4f6",
+                    "on-error": "#ffffff",
+                    "tertiary-fixed-dim": "#ffb59a",
+                    "on-tertiary-fixed-variant": "#802900",
+                    "on-tertiary-container": "#ffaa8a",
+                    "background": "#f8f9fb",
+                    "inverse-surface": "#2e3132",
+                    "surface-tint": "#2559bd",
+                    "surface-dim": "#d9dadc",
+                    "surface-container-highest": "#e1e2e4",
+                    "primary": "#00327d",
+                    "primary-fixed": "#dae2ff",
+                    "inverse-on-surface": "#f0f1f3",
+                    "surface-container-high": "#e7e8ea",
+                    "on-surface": "#191c1e",
+                    "surface-container": "#edeef0",
+                    "primary-container": "#0047ab",
+                    "error-container": "#ffdad6",
+                    "secondary-fixed": "#d3e4fe",
+                    "on-secondary-fixed": "#0b1c30",
+                    "outline": "#737784",
+                    "on-background": "#191c1e",
+                    "on-error-container": "#93000a",
+                    "on-tertiary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "base_unit": "4px",
+                    "sidebar_width": "240px",
+                    "header_height": "64px",
+                    "card_gap": "20px",
+                    "gutter": "16px",
+                    "container_padding": "24px"
+            },
+            "fontFamily": {
+                    "label-sm": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "data-mono": ["Inter"],
+                    "body-md": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "label-md": ["Inter"],
+                    "title-sm": ["Inter"],
+                    "headline-md": ["Inter"]
+            },
+            "fontSize": {
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "data-mono": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                    "title-sm": ["18px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .sidebar-active-indicator {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 70%;
+            background-color: #00327d;
+            border-radius: 0 4px 4px 0;
+        }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="bg-surface-container-low text-on-surface">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full w-sidebar_width bg-on-primary-fixed dark:bg-on-background border-r border-outline-variant dark:border-outline shadow-sm flex flex-col h-screen py-6 z-50">
+<div class="px-6 mb-10 flex items-center gap-3">
+<div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center text-white font-bold text-headline-md">
+                H
+            </div>
+<div>
+<h1 class="text-headline-md font-headline-md font-bold text-surface-bright leading-none">HillGo</h1>
+<p class="text-label-sm text-surface-variant/70 mt-1 uppercase tracking-widest">Super Admin</p>
+</div>
+</div>
+<nav class="flex-1 px-3 space-y-1 overflow-y-auto scrollbar-hide">
+<!-- Nav Items generated from JSON -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-surface-variant dark:text-outline-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-label-md font-label-md">Overview</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-surface-variant dark:text-outline-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined">location_on</span>
+<span class="text-label-md font-label-md">Region Lock</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-surface-variant dark:text-outline-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="text-label-md font-label-md">Customer Panel</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-surface-variant dark:text-outline-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined">directions_bike</span>
+<span class="text-label-md font-label-md">Rider Panel</span>
+</a>
+<!-- Active State: Merchant Panel -->
+<a class="relative flex items-center gap-3 px-4 py-3 rounded-lg bg-secondary-container text-primary border-r-[3px] border-primary font-bold transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined">store</span>
+<span class="text-label-md font-label-md">Merchant Panel</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-surface-variant dark:text-outline-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined">local_shipping</span>
+<span class="text-label-md font-label-md">Courier Panel</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-surface-variant dark:text-outline-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="text-label-md font-label-md">Finance</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-surface-variant dark:text-outline-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="text-label-md font-label-md">Content</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-surface-variant dark:text-outline-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-label-md font-label-md">Settings</span>
+</a>
+</nav>
+<div class="mt-auto px-6 pt-6 border-t border-outline-variant/10">
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="A professional corporate portrait of a middle-aged South Asian operations manager with a confident and focused expression. He is wearing a crisp white formal shirt against a soft-focus office background with warm Bangladesh-inspired interior tones. High-end lighting creates soft shadows on his face, emphasizing reliability and industrious leadership." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDY8ybdv_DP-Z0c2Emgpygx0frwh0TAIncJ7NyE-6PlAiC521TiyvkM-7ArDxPLczEOVyJIILUiIaYcGrW8NaEzuOg9B2RsK4wE5HlbTsYTccr3d4QexJVZkUSJsWqaT4xcU4K8Iy0dxguhUl67HHeizl-S8Mz_2odDFkR9Qa8SLgLIfLKc6BKwTNU3U2rMjbMJRpV1-MVTAdf7g-cD44iGsC1mh1YgV5KaEnTDOLWj1cAt1PBZd_zV"/>
+<div class="overflow-hidden">
+<p class="text-surface-bright font-bold text-label-md truncate">Farhan Ahmed</p>
+<p class="text-surface-variant/60 text-label-sm truncate">Admin #982</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- TopNavBar -->
+<header class="fixed top-0 right-0 h-header_height z-40 bg-surface-container-lowest dark:bg-surface-dim border-b border-outline-variant dark:border-outline shadow-sm flex items-center justify-between px-gutter w-[calc(100%-240px)] ml-sidebar_width">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-full max-w-md group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-lg text-body-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="Search Order ID or Store..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-variant rounded-full relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<div class="h-8 w-[1px] bg-outline-variant"></div>
+<div class="flex items-center gap-3">
+<div class="text-right">
+<p class="text-label-md font-label-md text-primary">HillGo Admin</p>
+<p class="text-label-sm text-outline">Merchant Ops</p>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-sidebar_width pt-header_height min-h-screen">
+<div class="p-container_padding space-y-6">
+<!-- Breadcrumbs & Header -->
+<div class="flex items-end justify-between">
+<div>
+<nav class="flex items-center gap-2 text-label-sm text-outline mb-1">
+<span>Merchant Panel</span>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="text-primary font-bold">Orders List</span>
+</nav>
+<h2 class="text-display-lg font-display-lg text-on-surface">Order Management</h2>
+</div>
+<div class="flex gap-3">
+<button class="px-4 py-2 bg-surface-container-lowest border border-outline-variant text-primary font-label-md rounded-lg flex items-center gap-2 hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[20px]">download</span>
+                        Export CSV
+                    </button>
+<button class="px-6 py-2 bg-primary text-white font-label-md rounded-lg flex items-center gap-2 hover:bg-primary-container transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[20px]">add</span>
+                        Manual Order
+                    </button>
+</div>
+</div>
+<!-- KPI Cards Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-card_gap">
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-primary/5 rounded-lg">
+<span class="material-symbols-outlined text-primary">shopping_bag</span>
+</div>
+<span class="text-label-sm text-success flex items-center gap-1 font-bold text-green-600">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+                            +12%
+                        </span>
+</div>
+<p class="text-label-sm text-outline uppercase tracking-wider mb-1">Orders Today</p>
+<h3 class="text-headline-md font-headline-md text-on-surface">1,284</h3>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-tertiary/5 rounded-lg">
+<span class="material-symbols-outlined text-tertiary-container">pending_actions</span>
+</div>
+<span class="text-label-sm text-on-surface-variant font-medium">Wait: 14m avg</span>
+</div>
+<p class="text-label-sm text-outline uppercase tracking-wider mb-1">Pending Pickup</p>
+<h3 class="text-headline-md font-headline-md text-on-surface">42</h3>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm hover:shadow-md transition-shadow ring-1 ring-error/20">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-error/5 rounded-lg">
+<span class="material-symbols-outlined text-error">timer_off</span>
+</div>
+<span class="text-label-sm text-error font-bold">Action Needed</span>
+</div>
+<p class="text-label-sm text-outline uppercase tracking-wider mb-1">Delayed</p>
+<h3 class="text-headline-md font-headline-md text-error">08</h3>
+</div>
+</div>
+<!-- Main Data Table Container -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden">
+<!-- Table Controls -->
+<div class="px-6 py-4 border-b border-outline-variant flex flex-wrap items-center justify-between gap-4">
+<div class="flex items-center gap-4">
+<div class="flex items-center border border-outline-variant rounded-lg overflow-hidden">
+<button class="px-4 py-2 bg-surface-container-low text-primary font-label-md border-r border-outline-variant">Active</button>
+<button class="px-4 py-2 bg-white text-outline hover:bg-surface-container-low transition-colors border-r border-outline-variant">Scheduled</button>
+<button class="px-4 py-2 bg-white text-outline hover:bg-surface-container-low transition-colors">Completed</button>
+</div>
+<div class="flex items-center gap-2 text-label-md text-outline">
+<span class="material-symbols-outlined text-[20px]">filter_list</span>
+                            Filter By:
+                            <select class="bg-transparent border-none focus:ring-0 text-on-surface font-bold cursor-pointer">
+<option>All Status</option>
+<option>Preparing</option>
+<option>Ready</option>
+<option>Delivered</option>
+</select>
+</div>
+</div>
+<div class="text-label-sm text-outline">
+                        Showing <span class="text-on-surface font-bold">1-10</span> of <span class="text-on-surface font-bold">482</span> orders
+                    </div>
+</div>
+<!-- Table Content -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-low sticky top-0">
+<tr>
+<th class="px-6 py-3 text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Order ID</th>
+<th class="px-6 py-3 text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Store</th>
+<th class="px-6 py-3 text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Customer</th>
+<th class="px-6 py-3 text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Priority</th>
+<th class="px-6 py-3 text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Status</th>
+<th class="px-6 py-3 text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Items</th>
+<th class="px-6 py-3 text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Total (৳)</th>
+<th class="px-6 py-3 text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Date</th>
+<th class="px-6 py-3"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/30">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors cursor-pointer group">
+<td class="px-6 py-4">
+<span class="text-data-mono font-data-mono text-primary font-bold">#HG-88219</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-md bg-secondary-container flex items-center justify-center text-primary-container font-bold text-xs">BP</div>
+<span class="text-body-sm font-medium">Bengal Pure Foods</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<p class="text-body-sm">Tanvir Islam</p>
+<p class="text-[11px] text-outline">Gulshan-1, Dhaka</p>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-error/10 text-error">
+                                        Express
+                                    </span>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-700">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-600 animate-pulse"></span>
+                                        Preparing
+                                    </span>
+</td>
+<td class="px-6 py-4 text-body-sm text-outline">3x Mixed Kebab...</td>
+<td class="px-6 py-4 font-bold text-on-surface">৳ 1,420.00</td>
+<td class="px-6 py-4 text-body-sm text-outline">14 Oct, 10:45 AM</td>
+<td class="px-6 py-4 text-right">
+<button class="p-2 text-outline hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors cursor-pointer group">
+<td class="px-6 py-4">
+<span class="text-data-mono font-data-mono text-primary font-bold">#HG-88218</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-md bg-tertiary-fixed flex items-center justify-center text-tertiary font-bold text-xs">MG</div>
+<span class="text-body-sm font-medium">Meena Green</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<p class="text-body-sm">Saima Rahat</p>
+<p class="text-[11px] text-outline">Banani, Dhaka</p>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-outline-variant text-on-surface-variant">
+                                        Standard
+                                    </span>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
+                                        Ready
+                                    </span>
+</td>
+<td class="px-6 py-4 text-body-sm text-outline">1x Grocery Bundle</td>
+<td class="px-6 py-4 font-bold text-on-surface">৳ 2,850.50</td>
+<td class="px-6 py-4 text-body-sm text-outline">14 Oct, 10:30 AM</td>
+<td class="px-6 py-4 text-right">
+<button class="p-2 text-outline hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors cursor-pointer group">
+<td class="px-6 py-4">
+<span class="text-data-mono font-data-mono text-primary font-bold">#HG-88215</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-md bg-secondary-fixed flex items-center justify-center text-secondary font-bold text-xs">CC</div>
+<span class="text-body-sm font-medium">Chillox Cafe</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<p class="text-body-sm">Ahmed Faisal</p>
+<p class="text-[11px] text-outline">Uttara Sec 4</p>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-error/10 text-error">
+                                        Express
+                                    </span>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">
+<span class="w-1.5 h-1.5 rounded-full bg-green-600"></span>
+                                        Delivered
+                                    </span>
+</td>
+<td class="px-6 py-4 text-body-sm text-outline">2x Double Beef...</td>
+<td class="px-6 py-4 font-bold text-on-surface">৳ 840.00</td>
+<td class="px-6 py-4 text-body-sm text-outline">14 Oct, 09:12 AM</td>
+<td class="px-6 py-4 text-right">
+<button class="p-2 text-outline hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 4 (Rejected) -->
+<tr class="hover:bg-surface-container-low/50 transition-colors cursor-pointer group opacity-80">
+<td class="px-6 py-4">
+<span class="text-data-mono font-data-mono text-outline font-bold">#HG-88210</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-md bg-error-container flex items-center justify-center text-error font-bold text-xs">DS</div>
+<span class="text-body-sm font-medium">Daily Shop</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<p class="text-body-sm">Nusrat Jahan</p>
+<p class="text-[11px] text-outline">Mirpur-2</p>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-outline-variant text-on-surface-variant">
+                                        Standard
+                                    </span>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700">
+<span class="w-1.5 h-1.5 rounded-full bg-red-600"></span>
+                                        Rejected
+                                    </span>
+</td>
+<td class="px-6 py-4 text-body-sm text-outline">5x Items...</td>
+<td class="px-6 py-4 font-bold text-on-surface">৳ 1,220.00</td>
+<td class="px-6 py-4 text-body-sm text-outline">13 Oct, 11:55 PM</td>
+<td class="px-6 py-4 text-right">
+<button class="p-2 text-outline hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="px-6 py-4 border-t border-outline-variant flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="text-label-sm text-outline">Rows per page:</span>
+<select class="bg-transparent border-none focus:ring-0 text-on-surface font-bold text-label-sm">
+<option>10</option>
+<option>20</option>
+<option>50</option>
+</select>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-1 text-outline hover:text-primary disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<div class="flex items-center gap-1">
+<button class="w-8 h-8 flex items-center justify-center rounded-md bg-primary text-white text-label-sm font-bold shadow-sm">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-md hover:bg-surface-container-low text-on-surface text-label-sm">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-md hover:bg-surface-container-low text-on-surface text-label-sm">3</button>
+<span class="text-outline px-1">...</span>
+<button class="w-8 h-8 flex items-center justify-center rounded-md hover:bg-surface-container-low text-on-surface text-label-sm">48</button>
+</div>
+<button class="p-1 text-outline hover:text-primary">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Bottom Section: Map Insight & Recent Activity -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-card_gap pb-10">
+<div class="lg:col-span-2 bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden h-80 relative">
+<div class="absolute top-4 left-4 z-10 bg-white/90 backdrop-blur p-3 rounded-lg shadow-sm border border-outline-variant">
+<h4 class="text-label-md font-bold text-primary mb-1">Live Order Heatmap</h4>
+<p class="text-label-sm text-outline">Dhaka Metropolitan Area</p>
+</div>
+<div class="w-full h-full bg-surface-variant flex items-center justify-center relative">
+<div class="absolute inset-0 grayscale opacity-40" data-alt="A detailed digital architectural map of Dhaka city showing grid-like street layouts in a clean, modern aesthetic. The map uses a minimalist palette of cool grays and soft whites with faint primary blue glowing dots scattered across active commercial zones like Gulshan and Banani to represent live delivery density. Professional cartography style." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAKG8hzxtZfqOQMpHX7F-l33q2VV7Z_vW6vTXloFabBwJC80-FixAfVkgoqW76VMqBCcYy3pjnKDSUH87Boagd5ZrsvIxZPGtNusztS5IWBZyTSj8HfjqGaVF92_dDHn4Bisy7B4nkFcHBktEWSAczmVQzDF3_9NRAyVgnfD4xybUNv3HMxxa41BYGSRh6xcS2b01AiPPiZAi1V4mDmkDTksQWGgh_TWNyHIQ-VSX0qVrlJqv6CfpFs')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-white/20 to-transparent pointer-events-none"></div>
+<!-- Simulated Pings -->
+<div class="absolute top-1/3 left-1/2 w-4 h-4 bg-primary rounded-full animate-ping"></div>
+<div class="absolute top-1/2 left-1/4 w-3 h-3 bg-primary rounded-full animate-pulse"></div>
+<div class="absolute bottom-1/4 right-1/3 w-5 h-5 bg-tertiary-container rounded-full animate-ping"></div>
+</div>
+</div>
+<div class="bg-on-primary-fixed text-surface-bright rounded-xl p-6 shadow-xl relative overflow-hidden">
+
+<div class="relative z-10 h-full flex flex-col">
+<h4 class="text-title-sm font-title-sm mb-4">Operations Summary</h4>
+<div class="space-y-4 flex-1">
+<div class="flex items-center justify-between border-b border-white/10 pb-3">
+<span class="text-label-md text-surface-variant">Active Riders</span>
+<span class="text-label-md font-bold">142</span>
+</div>
+<div class="flex items-center justify-between border-b border-white/10 pb-3">
+<span class="text-label-md text-surface-variant">Success Rate</span>
+<span class="text-label-md font-bold text-green-400">98.4%</span>
+</div>
+<div class="flex items-center justify-between border-b border-white/10 pb-3">
+<span class="text-label-md text-surface-variant">Avg Preparation</span>
+<span class="text-label-md font-bold">18 min</span>
+</div>
+</div>
+<button class="w-full mt-6 py-3 bg-surface-bright text-on-primary-fixed font-bold rounded-lg hover:bg-white transition-all shadow-lg flex items-center justify-center gap-2">
+                            View Full Report
+                            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<script>
+        // Micro-interactions and Tab Logic
+        document.querySelectorAll('nav a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                // If this wasn't the active one, we could switch but the prompt implies this is a static view
+                // For demo: simple feedback on click
+                link.classList.add('scale-[0.98]');
+                setTimeout(() => link.classList.remove('scale-[0.98]'), 100);
+            });
+        });
+
+        // Search highlight interaction
+        const searchInput = document.querySelector('input[type="text"]');
+        searchInput.addEventListener('focus', () => {
+            searchInput.parentElement.classList.add('ring-2', 'ring-primary');
+        });
+        searchInput.addEventListener('blur', () => {
+            searchInput.parentElement.classList.remove('ring-2', 'ring-primary');
+        });
+    </script>
+</body></html>
