@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HillGo Admin - Customer Parcels</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F3F4F6; /* Canvas Level 0 */
+        }
+        .sidebar-active-indicator {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 24px;
+            background-color: #00327d;
+            border-radius: 0 4px 4px 0;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 10px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-container": "#ffaa8a",
+                        "on-primary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#f8f9fb",
+                        "primary-container": "#0047ab",
+                        "on-error": "#ffffff",
+                        "primary-fixed": "#dae2ff",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed": "#0b1c30",
+                        "on-background": "#191c1e",
+                        "on-tertiary-fixed": "#380d00",
+                        "primary": "#00327d",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "tertiary": "#651f00",
+                        "inverse-surface": "#2e3132",
+                        "surface-container-high": "#e7e8ea",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-container": "#8b2e01",
+                        "on-surface-variant": "#434653",
+                        "secondary-container": "#d0e1fb",
+                        "outline": "#737784",
+                        "on-secondary-container": "#54647a",
+                        "secondary-fixed": "#d3e4fe",
+                        "outline-variant": "#c3c6d5",
+                        "tertiary-fixed-dim": "#ffb59a",
+                        "on-surface": "#191c1e",
+                        "tertiary-fixed": "#ffdbcf",
+                        "secondary": "#505f76",
+                        "error": "#ba1a1a",
+                        "primary-fixed-dim": "#b1c5ff",
+                        "surface-dim": "#d9dadc",
+                        "surface-variant": "#e1e2e4",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "surface": "#f8f9fb",
+                        "on-tertiary-fixed-variant": "#802900",
+                        "on-primary-container": "#a5bdff",
+                        "surface-container": "#edeef0",
+                        "surface-tint": "#2559bd",
+                        "background": "#f8f9fb",
+                        "surface-container-low": "#f3f4f6",
+                        "inverse-primary": "#b1c5ff",
+                        "on-primary-fixed-variant": "#00419e",
+                        "inverse-on-surface": "#f0f1f3",
+                        "surface-container-highest": "#e1e2e4",
+                        "on-primary-fixed": "#001946"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "header_height": "64px",
+                        "base_unit": "4px",
+                        "sidebar_width": "240px",
+                        "card_gap": "20px",
+                        "gutter": "16px",
+                        "container_padding": "24px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Inter"],
+                        "title-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "data-mono": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "title-sm": ["18px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                        "data-mono": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-surface-container-low text-on-background">
+<!-- Sidebar Navigation -->
+<aside class="fixed left-0 top-0 h-full w-sidebar_width bg-on-primary-fixed dark:bg-on-background border-r border-outline-variant shadow-sm z-50 flex flex-col py-6">
+<div class="px-6 mb-8 flex items-center gap-3">
+<div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-xl">local_shipping</span>
+</div>
+<div>
+<h1 class="text-headline-md font-headline-md font-bold text-surface-bright leading-none">HillGo</h1>
+<p class="text-label-sm text-outline-variant mt-1">Super Admin</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1 px-3">
+<a class="group flex items-center px-3 py-2.5 text-label-md font-label-md text-surface-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined mr-3">dashboard</span>
+                Overview
+            </a>
+<a class="group flex items-center px-3 py-2.5 text-label-md font-label-md text-surface-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined mr-3">location_on</span>
+                Region Lock
+            </a>
+<a class="group flex items-center px-3 py-2.5 text-label-md font-label-md bg-secondary-container text-primary border-r-[3px] border-primary font-bold transition-all rounded-r-none rounded-l-lg relative" href="#">
+<span class="material-symbols-outlined mr-3">group</span>
+                Customer Panel
+            </a>
+<a class="group flex items-center px-3 py-2.5 text-label-md font-label-md text-surface-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined mr-3">directions_bike</span>
+                Rider Panel
+            </a>
+<a class="group flex items-center px-3 py-2.5 text-label-md font-label-md text-surface-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined mr-3">store</span>
+                Merchant Panel
+            </a>
+<a class="group flex items-center px-3 py-2.5 text-label-md font-label-md text-surface-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined mr-3">local_shipping</span>
+                Courier Panel
+            </a>
+<a class="group flex items-center px-3 py-2.5 text-label-md font-label-md text-surface-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined mr-3">payments</span>
+                Finance
+            </a>
+<a class="group flex items-center px-3 py-2.5 text-label-md font-label-md text-surface-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined mr-3">description</span>
+                Content
+            </a>
+<a class="group flex items-center px-3 py-2.5 text-label-md font-label-md text-surface-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all rounded-lg mt-auto" href="#">
+<span class="material-symbols-outlined mr-3">settings</span>
+                Settings
+            </a>
+</nav>
+</aside>
+<!-- Header -->
+<header class="fixed top-0 right-0 h-header_height bg-surface-container-lowest border-b border-outline-variant shadow-sm z-40 flex items-center justify-between px-container_padding w-[calc(100%-240px)] ml-sidebar_width">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-full max-w-md group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg group-focus-within:text-primary transition-colors">search</span>
+<input class="w-full bg-surface-container-low border border-outline-variant rounded-full py-2 pl-10 pr-4 text-body-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="Search tracking ID or customer..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<button class="relative p-2 hover:bg-surface-container-low rounded-full transition-colors group">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-surface-container-lowest"></span>
+</button>
+<div class="flex items-center gap-3 border-l border-outline-variant pl-6">
+<div class="text-right">
+<p class="text-label-md font-label-md text-on-surface">Shakil Ahmed</p>
+<p class="text-label-sm text-outline">Operation Lead</p>
+</div>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary-container">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a young South Asian man wearing a navy blue corporate shirt, smiling warmly against a blurred modern office background with soft natural lighting and cool tones. The style is high-end corporate photography, emphasizing professionalism and approachability." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAZnSQ5IO807UW3NJkXp3qn9xuPGGkuiH1FGnGHc8MQHBS_BUU5N_97-OwJky3pRCK1aAsPc_xqN6gd1aIBMIgBaV7QTMQodGyb27WMIKNWxtrKqWEbVOtddj8Gf8KUaPCBn3yQtWqT_YILrXz3eHS94arXG-crc0gnMGRe8TAM5GDq9QcTJx2VSxjhhVgDlRMN2btqCGsZdHbXTnoQdd3qVYTZs9g3at6ZcW0BMy44pKQqylKFZnq"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="ml-sidebar_width pt-[calc(header_height+24px)] px-container_padding pb-12 min-h-screen">
+<!-- Page Title & Primary Actions -->
+<div class="flex items-end justify-between mb-8">
+<div>
+<nav class="flex items-center gap-2 text-label-sm text-outline mb-2">
+<span>Customer Panel</span>
+<span class="material-symbols-outlined text-xs">chevron_right</span>
+<span class="text-primary font-semibold">Parcels List</span>
+</nav>
+<h2 class="text-display-lg font-display-lg text-on-surface tracking-tight">Logistics &amp; Parcels</h2>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-2 px-4 py-2 border border-primary text-primary font-label-md rounded-lg hover:bg-primary/5 transition-colors">
+<span class="material-symbols-outlined text-lg">filter_list</span>
+                    Filter
+                </button>
+<button class="flex items-center gap-2 px-6 py-2 bg-primary text-white font-label-md rounded-lg shadow-sm hover:opacity-90 active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined text-lg">add</span>
+                    New Shipment
+                </button>
+</div>
+</div>
+<!-- KPI Row -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-card_gap mb-8">
+<div class="bg-surface-container-lowest border border-outline-variant p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-center justify-between mb-4">
+<div class="w-10 h-10 bg-primary-container/10 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">package_2</span>
+</div>
+<span class="text-label-sm text-green-600 bg-green-50 px-2 py-0.5 rounded-full">+12% vs last week</span>
+</div>
+<p class="text-label-sm text-outline font-medium uppercase tracking-wider">Active Shipments</p>
+<h3 class="text-headline-md font-headline-md text-on-surface mt-1">2,105</h3>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-center justify-between mb-4">
+<div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-green-600">task_alt</span>
+</div>
+<span class="text-label-sm text-green-600 bg-green-50 px-2 py-0.5 rounded-full">On Track</span>
+</div>
+<p class="text-label-sm text-outline font-medium uppercase tracking-wider">Delivered Today</p>
+<h3 class="text-headline-md font-headline-md text-on-surface mt-1">842</h3>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-center justify-between mb-4">
+<div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-blue-600">timer</span>
+</div>
+<span class="text-label-sm text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">-3m improved</span>
+</div>
+<p class="text-label-sm text-outline font-medium uppercase tracking-wider">Avg. Delivery Time</p>
+<h3 class="text-headline-md font-headline-md text-on-surface mt-1">42m</h3>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-center justify-between mb-4">
+<div class="w-10 h-10 bg-tertiary-fixed rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary">pending_actions</span>
+</div>
+<span class="text-label-sm text-tertiary bg-tertiary-fixed/50 px-2 py-0.5 rounded-full">Urgent</span>
+</div>
+<p class="text-label-sm text-outline font-medium uppercase tracking-wider">Pending Pickup</p>
+<h3 class="text-headline-md font-headline-md text-on-surface mt-1">12</h3>
+</div>
+</div>
+<!-- Parcel Table Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm overflow-hidden">
+<div class="px-6 py-4 border-b border-outline-variant flex items-center justify-between bg-surface-container-lowest">
+<h4 class="text-title-sm font-title-sm text-on-surface">Recent Parcel Shipments</h4>
+<div class="flex items-center gap-2">
+<button class="p-2 hover:bg-surface-container-low rounded-lg transition-colors">
+<span class="material-symbols-outlined text-outline">file_download</span>
+</button>
+<button class="p-2 hover:bg-surface-container-low rounded-lg transition-colors">
+<span class="material-symbols-outlined text-outline">more_vert</span>
+</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-low border-b border-outline-variant sticky top-0">
+<tr>
+<th class="px-6 py-4 text-label-md text-on-surface-variant">Tracking ID</th>
+<th class="px-6 py-4 text-label-md text-on-surface-variant">Type</th>
+<th class="px-6 py-4 text-label-md text-on-surface-variant">Route</th>
+<th class="px-6 py-4 text-label-md text-on-surface-variant text-center">Weight (kg)</th>
+<th class="px-6 py-4 text-label-md text-on-surface-variant text-center">Distance (km)</th>
+<th class="px-6 py-4 text-label-md text-on-surface-variant text-right">Fare (৳)</th>
+<th class="px-6 py-4 text-label-md text-on-surface-variant">Status</th>
+<th class="px-6 py-4 text-label-md text-on-surface-variant text-right">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/30">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors cursor-pointer group">
+<td class="px-6 py-4">
+<span class="font-data-mono text-primary font-bold">#TRK-9901</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-lg text-outline">description</span>
+<span class="text-body-sm">Document</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 text-body-sm">
+<span class="font-medium">Gulshan 1</span>
+<span class="material-symbols-outlined text-sm text-outline">trending_flat</span>
+<span class="text-outline-variant">Uttara Sector 4</span>
+</div>
+</td>
+<td class="px-6 py-4 text-center text-body-sm">0.5</td>
+<td class="px-6 py-4 text-center text-body-sm">12.4</td>
+<td class="px-6 py-4 text-right font-data-mono font-semibold">৳ 120.00</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-bold bg-primary/10 text-primary uppercase">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+                                    In Transit
+                                </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-primary hover:underline text-label-md">Track</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors cursor-pointer group">
+<td class="px-6 py-4">
+<span class="font-data-mono text-primary font-bold">#TRK-9872</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-lg text-outline">inventory_2</span>
+<span class="text-body-sm">Box</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 text-body-sm">
+<span class="font-medium">Banani DOHS</span>
+<span class="material-symbols-outlined text-sm text-outline">trending_flat</span>
+<span class="text-outline-variant">Dhanmondi 27</span>
+</div>
+</td>
+<td class="px-6 py-4 text-center text-body-sm">4.2</td>
+<td class="px-6 py-4 text-center text-body-sm">8.1</td>
+<td class="px-6 py-4 text-right font-data-mono font-semibold">৳ 350.00</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-bold bg-green-100 text-green-700 uppercase">
+                                    Delivered
+                                </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-primary hover:underline text-label-md">Receipt</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors cursor-pointer group">
+<td class="px-6 py-4">
+<span class="font-data-mono text-primary font-bold">#TRK-9855</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-lg text-tertiary">warning</span>
+<span class="text-body-sm">Fragile</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 text-body-sm">
+<span class="font-medium">Mohakhali</span>
+<span class="material-symbols-outlined text-sm text-outline">trending_flat</span>
+<span class="text-outline-variant">Mirpur 10</span>
+</div>
+</td>
+<td class="px-6 py-4 text-center text-body-sm">2.0</td>
+<td class="px-6 py-4 text-center text-body-sm">10.5</td>
+<td class="px-6 py-4 text-right font-data-mono font-semibold">৳ 280.00</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-bold bg-secondary-container text-primary uppercase">
+                                    Assigned
+                                </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-primary hover:underline text-label-md">View Rider</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors cursor-pointer group">
+<td class="px-6 py-4">
+<span class="font-data-mono text-primary font-bold">#TRK-9840</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-lg text-outline">inventory_2</span>
+<span class="text-body-sm">Box</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 text-body-sm">
+<span class="font-medium">Farmgate</span>
+<span class="material-symbols-outlined text-sm text-outline">trending_flat</span>
+<span class="text-outline-variant">Puran Dhaka</span>
+</div>
+</td>
+<td class="px-6 py-4 text-center text-body-sm">1.5</td>
+<td class="px-6 py-4 text-center text-body-sm">6.8</td>
+<td class="px-6 py-4 text-right font-data-mono font-semibold">৳ 180.00</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-bold bg-error-container text-error uppercase">
+                                    Failed
+                                </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-primary hover:underline text-label-md">Re-attempt</button>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors cursor-pointer group">
+<td class="px-6 py-4">
+<span class="font-data-mono text-primary font-bold">#TRK-9821</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-lg text-outline">description</span>
+<span class="text-body-sm">Document</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 text-body-sm">
+<span class="font-medium">Tejgaon</span>
+<span class="material-symbols-outlined text-sm text-outline">trending_flat</span>
+<span class="text-outline-variant">Badda</span>
+</div>
+</td>
+<td class="px-6 py-4 text-center text-body-sm">0.2</td>
+<td class="px-6 py-4 text-center text-body-sm">4.5</td>
+<td class="px-6 py-4 text-right font-data-mono font-semibold">৳ 80.00</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-bold bg-amber-100 text-amber-800 uppercase">
+                                    Picked Up
+                                </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-primary hover:underline text-label-md">Track</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="px-6 py-4 border-t border-outline-variant flex items-center justify-between bg-surface-container-lowest">
+<p class="text-body-sm text-outline">Showing <span class="font-semibold text-on-surface">1-5</span> of 2,105 parcels</p>
+<div class="flex items-center gap-2">
+<button class="w-8 h-8 flex items-center justify-center rounded-lg border border-outline-variant hover:bg-surface-container-low transition-colors disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined text-lg">chevron_left</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg bg-primary text-white font-label-md">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container-low transition-colors text-label-md">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container-low transition-colors text-label-md">3</button>
+<span class="text-outline px-1">...</span>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container-low transition-colors text-label-md">421</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg border border-outline-variant hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-lg">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Secondary Row: Active Map & Efficiency -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-card_gap mt-8">
+<div class="lg:col-span-2 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm overflow-hidden min-h-[400px] flex flex-col">
+<div class="px-6 py-4 border-b border-outline-variant flex items-center justify-between">
+<h4 class="text-title-sm font-title-sm text-on-surface">Real-time Density Map</h4>
+<span class="flex items-center gap-2 text-label-sm text-primary">
+<span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+                        Live Coverage
+                    </span>
+</div>
+<div class="flex-1 relative bg-surface-container">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="A stylized minimalist digital map of Dhaka city, Bangladesh, showing high-density logistical hubs with glowing heat-map overlays in cobalt blue and vibrant amber. The visual style is modern, technical, and clean, featuring dark line-work for streets against a light gray background, with floating tracking markers representing active delivery riders." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD5-kRuexP7liF2K0Ucm-2vAFc3t2g4jOzeMJnH6LvkKfjzt34gaaqkulUMD4aOYWoiic9A7FktG_JA_ipJ_izkwOxXQ03saxvx_h8kwVTPCH44mWUiYp8eDhw8mD20r0bjE7HHTt6WMRGWgsN1E6BvKIQKWEzzsk5OzKSI9srf5Qmg7gfZnl7JF4Q0kMZ51r9OGEoglKlRCAJX4jkS8_epyTzvXmf2HwKcG7pkrtsMnFSd6R9Ti937')"></div>
+<div class="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur-md p-4 rounded-lg border border-outline-variant shadow-lg flex justify-between items-center">
+<div class="flex gap-6">
+<div>
+<p class="text-[10px] text-outline uppercase font-bold tracking-widest">Gulshan Peak</p>
+<p class="text-label-md font-bold text-primary">84 Orders/hr</p>
+</div>
+<div>
+<p class="text-[10px] text-outline uppercase font-bold tracking-widest">Dhanmondi Hub</p>
+<p class="text-label-md font-bold text-on-surface">52 Orders/hr</p>
+</div>
+</div>
+<button class="text-label-sm text-primary font-bold hover:underline">Expand Map View</button>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm p-6 flex flex-col">
+<h4 class="text-title-sm font-title-sm text-on-surface mb-6">Delivery Breakdown</h4>
+<div class="flex-1 flex flex-col justify-center space-y-6">
+<div class="space-y-2">
+<div class="flex justify-between items-end">
+<span class="text-label-md text-on-surface-variant">Intra-city (Dhaka)</span>
+<span class="text-label-md font-bold">78%</span>
+</div>
+<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 78%"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between items-end">
+<span class="text-label-md text-on-surface-variant">Inter-district</span>
+<span class="text-label-md font-bold">15%</span>
+</div>
+<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-on-tertiary-fixed-variant rounded-full" style="width: 15%"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between items-end">
+<span class="text-label-md text-on-surface-variant">Express Delivery</span>
+<span class="text-label-md font-bold">7%</span>
+</div>
+<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-secondary rounded-full" style="width: 7%"></div>
+</div>
+</div>
+<div class="mt-8 pt-6 border-t border-outline-variant text-center">
+<p class="text-body-sm text-outline mb-4">Improve overall logistics efficiency by optimizing district hubs.</p>
+<button class="w-full py-2.5 rounded-lg border border-primary text-primary font-label-md hover:bg-primary/5 transition-all">View Full Analytics</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Micro-interaction Scripts -->
+<script>
+        document.querySelectorAll('tbody tr').forEach(row => {
+            row.addEventListener('mouseenter', () => {
+                row.style.transform = 'translateX(4px)';
+            });
+            row.addEventListener('mouseleave', () => {
+                row.style.transform = 'translateX(0)';
+            });
+        });
+
+        // Search Bar Focus Effect
+        const searchInput = document.querySelector('input[type="text"]');
+        const searchIcon = searchInput.previousElementSibling;
+        searchInput.addEventListener('focus', () => {
+            searchIcon.classList.add('scale-110');
+        });
+        searchInput.addEventListener('blur', () => {
+            searchIcon.classList.remove('scale-110');
+        });
+    </script>
+</body></html>

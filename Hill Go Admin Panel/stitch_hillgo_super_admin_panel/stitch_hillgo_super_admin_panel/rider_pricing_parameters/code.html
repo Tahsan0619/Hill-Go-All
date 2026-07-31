@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HillGo Super Admin - Rider Pricing Parameters</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-nav-indicator {
+            position: absolute;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background-color: #00327d;
+        }
+        /* Hide scrollbar for clean UI */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed": "#0b1c30",
+                        "surface-container-low": "#f3f4f6",
+                        "on-primary": "#ffffff",
+                        "secondary": "#505f76",
+                        "tertiary": "#651f00",
+                        "secondary-container": "#d0e1fb",
+                        "surface": "#f8f9fb",
+                        "primary-container": "#0047ab",
+                        "on-secondary-container": "#54647a",
+                        "on-primary-fixed-variant": "#00419e",
+                        "secondary-fixed": "#d3e4fe",
+                        "inverse-primary": "#b1c5ff",
+                        "tertiary-container": "#8b2e01",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "surface-variant": "#e1e2e4",
+                        "error": "#ba1a1a",
+                        "outline-variant": "#c3c6d5",
+                        "background": "#f8f9fb",
+                        "surface-tint": "#2559bd",
+                        "surface-container-high": "#e7e8ea",
+                        "surface-container": "#edeef0",
+                        "on-tertiary-fixed-variant": "#802900",
+                        "inverse-on-surface": "#f0f1f3",
+                        "surface-bright": "#f8f9fb",
+                        "tertiary-fixed": "#ffdbcf",
+                        "on-surface-variant": "#434653",
+                        "surface-container-highest": "#e1e2e4",
+                        "primary-fixed-dim": "#b1c5ff",
+                        "on-secondary": "#ffffff",
+                        "inverse-surface": "#2e3132",
+                        "primary": "#00327d",
+                        "tertiary-fixed-dim": "#ffb59a",
+                        "surface-dim": "#d9dadc",
+                        "primary-fixed": "#dae2ff",
+                        "on-background": "#191c1e",
+                        "on-surface": "#191c1e",
+                        "on-error-container": "#93000a",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed": "#001946",
+                        "outline": "#737784",
+                        "on-tertiary-fixed": "#380d00",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-container": "#ffaa8a",
+                        "on-error": "#ffffff",
+                        "on-primary-container": "#a5bdff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "sidebar_width": "240px",
+                        "base_unit": "4px",
+                        "card_gap": "20px",
+                        "header_height": "64px",
+                        "gutter": "16px",
+                        "container_padding": "24px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "data-mono": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "title-sm": ["Inter"],
+                        "display-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "data-mono": ["13px", { "lineHeight": "18px", "fontWeight": "500" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "title-sm": ["18px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "display-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- Side Navigation Bar (Anchor: SideNavBar) -->
+<aside class="fixed left-0 top-0 h-full w-sidebar_width bg-on-primary-fixed dark:bg-on-background border-r border-outline-variant dark:border-outline shadow-sm flex flex-col py-6 z-50">
+<div class="px-6 mb-8">
+<h1 class="text-headline-md font-headline-md font-bold text-surface-bright tracking-tight">HillGo</h1>
+<p class="text-label-sm font-label-sm text-outline-variant opacity-70">Super Admin</p>
+</div>
+<nav class="flex-1 overflow-y-auto no-scrollbar space-y-1">
+<!-- Nav Items mapped from JSON -->
+<a class="flex items-center px-6 py-3 text-surface-variant dark:text-outline-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined mr-3">dashboard</span>
+<span class="text-label-md font-label-md">Overview</span>
+</a>
+<a class="flex items-center px-6 py-3 text-surface-variant dark:text-outline-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined mr-3">location_on</span>
+<span class="text-label-md font-label-md">Region Lock</span>
+</a>
+<a class="flex items-center px-6 py-3 text-surface-variant dark:text-outline-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined mr-3">group</span>
+<span class="text-label-md font-label-md">Customer Panel</span>
+</a>
+<!-- ACTIVE: Rider Panel -->
+<div class="relative bg-secondary-container text-primary border-r-[3px] border-primary font-bold">
+<a class="flex items-center px-6 py-3 transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined mr-3" style="font-variation-settings: 'FILL' 1;">directions_bike</span>
+<span class="text-label-md font-label-md">Rider Panel</span>
+</a>
+</div>
+<!-- Sub-menu for Rider Panel (expanded) -->
+<div class="bg-on-primary-fixed/50 py-1">
+<a class="flex items-center pl-14 pr-6 py-2 text-surface-bright bg-surface-container-highest/10 text-label-sm font-label-sm border-l-2 border-primary-fixed" href="#">
+                    Pricing Parameters
+                </a>
+<a class="flex items-center pl-14 pr-6 py-2 text-surface-variant hover:text-surface-bright text-label-sm font-label-sm" href="#">
+                    Registration Requests
+                </a>
+<a class="flex items-center pl-14 pr-6 py-2 text-surface-variant hover:text-surface-bright text-label-sm font-label-sm" href="#">
+                    Rider Performance
+                </a>
+</div>
+<a class="flex items-center px-6 py-3 text-surface-variant dark:text-outline-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined mr-3">store</span>
+<span class="text-label-md font-label-md">Merchant Panel</span>
+</a>
+<a class="flex items-center px-6 py-3 text-surface-variant dark:text-outline-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined mr-3">local_shipping</span>
+<span class="text-label-md font-label-md">Courier Panel</span>
+</a>
+<a class="flex items-center px-6 py-3 text-surface-variant dark:text-outline-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined mr-3">payments</span>
+<span class="text-label-md font-label-md">Finance</span>
+</a>
+<a class="flex items-center px-6 py-3 text-surface-variant dark:text-outline-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined mr-3">description</span>
+<span class="text-label-md font-label-md">Content</span>
+</a>
+<a class="flex items-center px-6 py-3 text-surface-variant dark:text-outline-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all cursor-pointer" href="#">
+<span class="material-symbols-outlined mr-3">settings</span>
+<span class="text-label-md font-label-md">Settings</span>
+</a>
+</nav>
+<div class="px-6 mt-auto pt-6 border-t border-outline-variant/20">
+<div class="flex items-center space-x-3">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-white font-bold">SA</div>
+<div>
+<p class="text-label-md font-label-md text-surface-bright">Admin User</p>
+<p class="text-[10px] text-outline-variant">Sign Out</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Top Navigation Bar (Anchor: TopNavBar) -->
+<header class="fixed top-0 right-0 h-header_height w-[calc(100%-240px)] bg-surface-container-lowest dark:bg-surface-dim border-b border-outline-variant dark:border-outline shadow-sm flex items-center justify-between px-gutter z-40">
+<div class="flex items-center space-x-4">
+<div class="flex items-center px-3 py-1.5 bg-surface-container rounded-lg border border-outline-variant focus-within:ring-2 focus-within:ring-primary transition-all">
+<span class="material-symbols-outlined text-on-surface-variant mr-2">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-sm w-64 placeholder:text-outline" placeholder="Search parameters..." type="text"/>
+</div>
+<nav class="hidden md:flex space-x-6 ml-4">
+<span class="text-label-md font-label-md text-primary font-bold border-b-2 border-primary pb-5 mt-5">Rider Pricing</span>
+<span class="text-label-md font-label-md text-on-surface-variant hover:text-primary transition-colors cursor-pointer mt-5">Dynamic Zones</span>
+</nav>
+</div>
+<div class="flex items-center space-x-4">
+<button class="p-2 hover:bg-surface-container-low dark:hover:bg-surface-variant rounded-full text-on-surface-variant transition-all relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-surface-container-lowest"></span>
+</button>
+<div class="h-8 w-[1px] bg-outline-variant"></div>
+<div class="flex items-center space-x-3">
+<img class="w-8 h-8 rounded-full border border-outline-variant object-cover" data-alt="A professional headshot of a corporate administrator in a bright, modern office setting. The lighting is crisp and neutral, reflecting a clean light-mode aesthetic. The subject is wearing a cobalt blue shirt, matching the brand identity, with a look of focused reliability." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3fSe9P2R8vJ8Z0dJM6DYCwzGmtyx8-ISATfxHssj1YIJmKS3QviPCRRzPQQ-bkp4vGwjyDXobAmPLYDbY8JrAENW3YcOoRaq6-kFxFDyGcXqZ1L5VBjM9X6aPCIN_RqLgKcrwAEq3WRJLwjrnsAImE-bj8iJCdYq00PW-Oyp8Oo60c3FTjCD0l9tnZwBJ5WVBd_UIO7Fqctz55dg23N0AVwMGz11eR-QwuDTMGRZ3X_IuuZCYtMAk"/>
+<span class="text-label-md font-label-md text-on-surface">HillGo Admin</span>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-sidebar_width mt-header_height p-container_padding bg-[#F3F4F6] min-h-screen">
+<!-- Header Section -->
+<div class="flex justify-between items-end mb-8">
+<div>
+<h2 class="text-display-lg font-display-lg text-primary">Rider Pricing Parameters</h2>
+<p class="text-body-md text-secondary mt-1">Configure real-time earnings and service multipliers for the nationwide fleet.</p>
+</div>
+<div class="flex space-x-3">
+<button class="px-5 py-2.5 rounded-lg border border-primary text-primary font-label-md text-label-md hover:bg-primary/5 transition-all">
+                    Reset Defaults
+                </button>
+<button class="px-6 py-2.5 rounded-lg bg-primary text-white font-label-md text-label-md shadow-md hover:bg-primary-container transition-all flex items-center">
+<span class="material-symbols-outlined text-sm mr-2">save</span>
+                    Publish Changes
+                </button>
+</div>
+</div>
+<!-- Bento Grid Layout for Parameters -->
+<div class="grid grid-cols-12 gap-6">
+<!-- Global Config & Surge (Left Column) -->
+<div class="col-span-12 lg:col-span-4 space-y-6">
+<!-- Global Settings Card -->
+<div class="bg-white p-6 rounded-xl border border-outline-variant shadow-sm relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4 opacity-10">
+<span class="material-symbols-outlined text-6xl">settings_input_component</span>
+</div>
+<h3 class="text-title-sm font-title-sm text-on-surface mb-6 flex items-center">
+<span class="material-symbols-outlined mr-2 text-primary">public</span>
+                        Global Settings
+                    </h3>
+<div class="space-y-6">
+<div>
+<div class="flex justify-between items-center mb-2">
+<label class="text-label-md font-label-md text-secondary">Surge Multiplier</label>
+<span class="text-headline-md font-headline-md text-primary">1.8x</span>
+</div>
+<input class="w-full h-2 bg-surface-container-high rounded-lg appearance-none cursor-pointer accent-primary" max="3" min="1" step="0.1" type="range" value="1.8"/>
+<div class="flex justify-between mt-1">
+<span class="text-[10px] text-outline">1.0x (Normal)</span>
+<span class="text-[10px] text-outline">3.0x (Max)</span>
+</div>
+</div>
+<div class="p-4 bg-surface-container rounded-lg border border-outline-variant/30">
+<label class="text-label-sm font-label-sm text-secondary block mb-1">Platform Commission</label>
+<div class="flex items-center">
+<input class="bg-transparent border-none text-headline-md font-headline-md p-0 w-16 focus:ring-0 text-primary" type="number" value="15"/>
+<span class="text-headline-md font-headline-md text-primary">%</span>
+</div>
+<p class="text-[11px] text-outline mt-2">Deducted from the total rider earnings per trip.</p>
+</div>
+</div>
+</div>
+<!-- Vehicle Multipliers -->
+<div class="bg-white p-6 rounded-xl border border-outline-variant shadow-sm">
+<h3 class="text-title-sm font-title-sm text-on-surface mb-6">Vehicle Multipliers</h3>
+<div class="space-y-4">
+<div class="flex items-center justify-between p-3 border border-outline-variant/40 rounded-lg hover:border-primary/40 transition-colors">
+<div class="flex items-center">
+<span class="material-symbols-outlined text-secondary mr-3">directions_bike</span>
+<span class="text-label-md font-label-md">Bike</span>
+</div>
+<div class="flex items-center bg-surface-container-low px-3 py-1 rounded">
+<span class="text-data-mono font-data-mono text-primary">0.7x</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-3 border border-primary/40 bg-primary/5 rounded-lg">
+<div class="flex items-center">
+<span class="material-symbols-outlined text-primary mr-3">directions_car</span>
+<span class="text-label-md font-label-md">Car (Standard)</span>
+</div>
+<div class="flex items-center bg-white px-3 py-1 rounded border border-primary/20">
+<span class="text-data-mono font-data-mono text-primary font-bold">1.0x</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-3 border border-outline-variant/40 rounded-lg hover:border-primary/40 transition-colors">
+<div class="flex items-center">
+<span class="material-symbols-outlined text-secondary mr-3">airport_shuttle</span>
+<span class="text-label-md font-label-md">Car XL</span>
+</div>
+<div class="flex items-center bg-surface-container-low px-3 py-1 rounded">
+<span class="text-data-mono font-data-mono text-primary">1.5x</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Ride Parameters & Logistics (Right Column) -->
+<div class="col-span-12 lg:col-span-8 space-y-6">
+<!-- Ride Parameters Table-like Grid -->
+<div class="bg-white rounded-xl border border-outline-variant shadow-sm overflow-hidden">
+<div class="p-6 border-b border-outline-variant/40 flex justify-between items-center">
+<h3 class="text-title-sm font-title-sm text-on-surface">Ride Parameters</h3>
+<span class="px-3 py-1 bg-secondary-container text-primary text-[10px] font-bold rounded-full uppercase tracking-wider">Base Fleet</span>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 divide-x divide-y md:divide-y-0 divide-outline-variant/40">
+<div class="p-8 text-center hover:bg-surface-container-lowest transition-colors">
+<p class="text-label-sm font-label-sm text-secondary mb-2">Base Fare</p>
+<p class="text-headline-md font-headline-md text-on-surface">৳30</p>
+<p class="text-[10px] text-outline mt-1">+ Flag down</p>
+</div>
+<div class="p-8 text-center hover:bg-surface-container-lowest transition-colors">
+<p class="text-label-sm font-label-sm text-secondary mb-2">Per KM Rate</p>
+<p class="text-headline-md font-headline-md text-on-surface">৳15</p>
+<p class="text-[10px] text-outline mt-1">Calculated via GPS</p>
+</div>
+<div class="p-8 text-center hover:bg-surface-container-lowest transition-colors">
+<p class="text-label-sm font-label-sm text-secondary mb-2">Per Min Rate</p>
+<p class="text-headline-md font-headline-md text-on-surface">৳1</p>
+<p class="text-[10px] text-outline mt-1">Waiting &amp; Traffic</p>
+</div>
+<div class="p-8 text-center hover:bg-surface-container-lowest transition-colors">
+<p class="text-label-sm font-label-sm text-secondary mb-2">Min Fare</p>
+<p class="text-headline-md font-headline-md text-primary">৳50</p>
+<p class="text-[10px] text-outline mt-1">Floor threshold</p>
+</div>
+</div>
+</div>
+<!-- Food & Parcel Logistics Bento -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Food Delivery -->
+<div class="bg-white p-6 rounded-xl border border-outline-variant shadow-sm group">
+<div class="flex items-center justify-between mb-6">
+<div class="flex items-center">
+<div class="w-10 h-10 rounded-lg bg-tertiary-container/10 flex items-center justify-center text-tertiary mr-3">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">restaurant</span>
+</div>
+<h3 class="text-title-sm font-title-sm">Food Earnings</h3>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors cursor-pointer">edit</span>
+</div>
+<div class="space-y-4">
+<div class="flex justify-between items-center py-2 border-b border-outline-variant/20">
+<span class="text-body-sm text-secondary">Flat Rate</span>
+<span class="text-label-md font-label-md text-on-surface">৳30.00</span>
+</div>
+<div class="flex justify-between items-center py-2 border-b border-outline-variant/20">
+<span class="text-body-sm text-secondary">Distance Bonus</span>
+<span class="text-label-md font-label-md text-on-surface">৳5 / KM after 2KM</span>
+</div>
+<div class="mt-4 p-3 bg-tertiary-container/5 rounded-lg border border-tertiary/10">
+<p class="text-[11px] text-tertiary font-medium">Applied to all HillGo Food partners across active regions.</p>
+</div>
+</div>
+</div>
+<!-- Parcel Delivery -->
+<div class="bg-white p-6 rounded-xl border border-outline-variant shadow-sm group">
+<div class="flex items-center justify-between mb-6">
+<div class="flex items-center">
+<div class="w-10 h-10 rounded-lg bg-primary-container/10 flex items-center justify-center text-primary mr-3">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">package_2</span>
+</div>
+<h3 class="text-title-sm font-title-sm">Parcel Earnings</h3>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors cursor-pointer">edit</span>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between items-center">
+<span class="text-body-sm text-secondary">Base Pickup</span>
+<span class="text-label-md font-label-md text-on-surface">৳40</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-body-sm text-secondary">Distance (Per KM)</span>
+<span class="text-label-md font-label-md text-on-surface">৳12</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-body-sm text-secondary">Weight (Per KG)</span>
+<span class="text-label-md font-label-md text-on-surface">৳8</span>
+</div>
+<div class="mt-4 pt-4 border-t border-outline-variant/20 flex justify-between items-center">
+<span class="text-label-sm font-label-sm text-secondary">Est. Avg Payout</span>
+<span class="text-title-sm font-title-sm text-primary">৳85 - 120</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Activity / Audit Log -->
+<div class="bg-white p-6 rounded-xl border border-outline-variant shadow-sm">
+<h3 class="text-label-md font-label-md text-on-surface-variant mb-4 uppercase tracking-wider">Parameter Audit History</h3>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="text-[11px] text-outline border-b border-outline-variant/40">
+<th class="pb-3 font-semibold uppercase">Action</th>
+<th class="pb-3 font-semibold uppercase">Previous Value</th>
+<th class="pb-3 font-semibold uppercase">New Value</th>
+<th class="pb-3 font-semibold uppercase text-right">Date &amp; Time</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/20">
+<tr class="group hover:bg-surface-container-low transition-colors">
+<td class="py-4">
+<div class="flex items-center">
+<span class="w-2 h-2 rounded-full bg-primary mr-2"></span>
+<span class="text-label-md font-label-md">Surge Multiplier</span>
+</div>
+</td>
+<td class="py-4 text-data-mono font-data-mono text-outline">1.5x</td>
+<td class="py-4 text-data-mono font-data-mono text-primary font-bold">1.8x</td>
+<td class="py-4 text-body-sm text-secondary text-right">Oct 24, 09:12 AM</td>
+</tr>
+<tr class="group hover:bg-surface-container-low transition-colors">
+<td class="py-4">
+<div class="flex items-center">
+<span class="w-2 h-2 rounded-full bg-tertiary mr-2"></span>
+<span class="text-label-md font-label-md">Food Flat Rate</span>
+</div>
+</td>
+<td class="py-4 text-data-mono font-data-mono text-outline">৳25.00</td>
+<td class="py-4 text-data-mono font-data-mono text-primary font-bold">৳30.00</td>
+<td class="py-4 text-body-sm text-secondary text-right">Oct 22, 02:45 PM</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Visual Polish: Background Gradient and Micro-interactions -->
+<div class="fixed bottom-8 right-8 z-50">
+<button class="w-14 h-14 bg-primary text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all group">
+<span class="material-symbols-outlined text-3xl group-hover:rotate-45 transition-transform">help</span>
+</button>
+</div>
+<script>
+        // Simple micro-interaction for range input feedback
+        const rangeInput = document.querySelector('input[type="range"]');
+        const surgeDisplay = document.querySelector('.text-headline-md.text-primary');
+
+        if (rangeInput && surgeDisplay) {
+            rangeInput.addEventListener('input', (e) => {
+                surgeDisplay.textContent = e.target.value + 'x';
+            });
+        }
+
+        // Toggle hover effect simulation for interactive cards
+        document.querySelectorAll('.hover\\:scale-110').forEach(el => {
+            el.addEventListener('mouseenter', () => console.log('Interactive element hover active'));
+        });
+    </script>
+</body></html>

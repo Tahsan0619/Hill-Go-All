@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Food Delivery - HillGo</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo">HillGo</a>
+      <nav class="nav">
+        <div class="nav-links">
+          <a href="services.html" class="active">Services</a>
+          <a href="merchant.html">Partners</a>
+          <a href="about.html">About</a>
+        </div>
+        <div class="nav-actions">
+          <a href="contact.html" class="btn btn-outline btn-sm">Log In</a>
+          <a href="merchant.html" class="btn btn-primary btn-sm">Get Started</a>
+        </div>
+      </nav>
+      <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+  <nav class="mobile-nav">
+    <a href="services.html">Services</a><a href="ride.html">Ride</a><a href="food.html">Food</a>
+    <a href="parcel.html">Parcel</a><a href="merchant.html">Partners</a><a href="about.html">About</a>
+    <a href="faq.html">Help Center</a><a href="contact.html">Contact</a>
+    <a href="merchant.html" class="btn btn-primary">Get Started</a>
+  </nav>
+
+  <section class="hero" style="background:linear-gradient(rgba(15,39,68,0.7),rgba(15,39,68,0.7)),url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1400&q=80') center/cover;padding-bottom:80px;">
+    <div class="container" style="padding-top:calc(var(--header-h) + 40px);max-width:700px;">
+      <span class="badge badge-orange">Fastest Delivery in Town</span>
+      <h1 style="color:var(--white);margin:16px 0;">Your Favorite Food, <span style="color:var(--blue-light);">Delivered Fast</span></h1>
+      <p style="color:rgba(255,255,255,0.85);margin-bottom:32px;">Order from the highest-rated restaurants with real-time tracking and zero delivery fees on your first order.</p>
+      <form class="availability-form" style="background:var(--white);padding:8px;border-radius:12px;display:flex;gap:8px;">
+        <input type="text" placeholder="Enter your city or district" required style="border:none;flex:1;">
+        <button type="submit" class="btn btn-orange">Find Food</button>
+      </form>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:32px;">
+        <div><h2>Popular Categories</h2><p style="color:var(--gray-500);">Explore cuisines near you</p></div>
+        <a href="#" style="color:var(--blue);font-weight:600;">View All →</a>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div style="grid-row:span 2;border-radius:var(--radius-lg);overflow:hidden;position:relative;min-height:300px;">
+          <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&q=80" alt="Burgers" style="width:100%;height:100%;object-fit:cover;">
+          <div style="position:absolute;bottom:20px;left:20px;color:var(--white);">
+            <h3 style="color:var(--white);">Juicy Burgers</h3>
+            <p style="font-size:0.9rem;opacity:0.9;">42 Restaurants Nearby</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div style="border-radius:var(--radius);overflow:hidden;position:relative;aspect-ratio:1;">
+            <img src="https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=400&q=80" alt="Sushi" style="width:100%;height:100%;object-fit:cover;">
+            <div style="position:absolute;bottom:12px;left:12px;color:var(--white);font-weight:600;">Sushi Art</div>
+          </div>
+          <div style="border-radius:var(--radius);overflow:hidden;position:relative;aspect-ratio:1;">
+            <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400&q=80" alt="Pizza" style="width:100%;height:100%;object-fit:cover;">
+            <div style="position:absolute;bottom:12px;left:12px;color:var(--white);font-weight:600;">Italian Pizza</div>
+          </div>
+          <div style="background:var(--blue-pale);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;aspect-ratio:1;">
+            <span style="font-size:2rem;">🥐</span><strong>Bakery</strong>
+          </div>
+          <div style="background:var(--navy);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;aspect-ratio:1;color:var(--white);">
+            <span style="font-size:2rem;">🍴</span><strong>See More</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background:var(--gray-50);">
+    <div class="container">
+      <h2 class="section-title">The HillGo Advantage</h2>
+      <p class="section-subtitle">Why millions choose HillGo for food delivery</p>
+      <div class="features-grid">
+        <div class="feature-card"><div class="feature-icon">⚡</div><h3>Lightning Fast</h3><p>30-minute delivery goal with optimized rider routing.</p></div>
+        <div class="feature-card"><div class="feature-icon">📍</div><h3>Real-time Tracking</h3><p>Watch your order from kitchen to doorstep live on the map.</p></div>
+        <div class="feature-card"><div class="feature-icon">🏷️</div><h3>Exclusive Deals</h3><p>Partner restaurant discounts and zero-fee promotions.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="split-section">
+    <div class="container split-grid">
+      <div class="split-image"><img src="https://images.unsplash.com/photo-1574484284002-952d92456975?w=800&q=80" alt="Chef"></div>
+      <div class="split-content" style="background:var(--navy);color:var(--white);padding:48px;border-radius:var(--radius-lg);">
+        <h2 style="color:var(--white);">Are You a Restaurant Owner?</h2>
+        <p style="color:rgba(255,255,255,0.75);margin:16px 0 24px;">Grow your business with HillGo's delivery network, low commissions, and powerful merchant dashboard.</p>
+        <ul style="margin-bottom:24px;">
+          <li style="color:rgba(255,255,255,0.85);padding:6px 0;">✓ Reach 250k+ monthly users</li>
+          <li style="color:rgba(255,255,255,0.85);padding:6px 0;">✓ Low commission rates</li>
+          <li style="color:rgba(255,255,255,0.85);padding:6px 0;">✓ Real-time analytics dashboard</li>
+        </ul>
+        <a href="merchant.html" class="btn btn-orange">Partner With Us</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-banner">
+    <div class="container">
+      <h2>Hungry? Order Now!</h2>
+      <p>Download the HillGo app for the best food delivery experience.</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <a href="#" class="btn" style="background:#000;color:#fff;">App Store</a>
+        <a href="#" class="btn" style="background:#000;color:#fff;">Google Play</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand"><span class="logo">HillGo</span><p>Your favorite food, delivered fast.</p><div class="footer-social"><a href="#">f</a><a href="#">𝕏</a><a href="#">in</a></div></div>
+        <div class="footer-col"><h4>Company</h4><a href="about.html">About Us</a><a href="contact.html">Careers</a></div>
+        <div class="footer-col"><h4>Resources</h4><a href="merchant.html">Restaurant Support</a><a href="faq.html">Help Center</a></div>
+        <div class="footer-col"><h4>Legal</h4><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></div>
+      </div>
+      <div class="footer-bottom"><span>© 2026 HillGo Inc. All rights reserved.</span><span>English (US)</span></div>
+    </div>
+  </footer>
+  <script src="js/main.js"></script>
+</body>
+</html>

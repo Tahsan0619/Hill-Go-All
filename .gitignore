@@ -1,0 +1,61 @@
+# OS / IDE
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+*.iml
+
+# Flutter / Dart
+**/build/
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/.packages
+**/doc/api/
+**/ios/Pods/
+**/ios/.symlinks/
+**/macos/Flutter/ephemeral/
+**/linux/flutter/ephemeral/
+**/windows/flutter/ephemeral/
+**/android/.gradle/
+**/android/local.properties
+**/android/**/GeneratedPluginRegistrant.java
+**/android/**/GeneratedPluginRegistrant.kt
+**/coverage/
+
+# Keep Dist Apks tracked
+# Dist Apks/*.apk are intentionally committed AND attached to GitHub Releases
+
+# Secrets
+**/.env
+**/.env.backup
+**/.env.local
+**/.env.production
+**/credentials.json
+**/google-services.json
+**/GoogleService-Info.plist
+**/key.properties
+**/*.jks
+**/*.keystore
+!**/.env.example
+!**/.env.production.example
+
+# Backend / Node deps & generated
+**/vendor/
+**/node_modules/
+**/storage/logs/
+**/storage/framework/cache/
+**/storage/framework/sessions/
+**/storage/framework/views/
+**/storage/pail/
+
+# Local DB dumps / backups (do not publish)
+hillgo_backup_before_fixes.sql
+**/bootstrap/cache/*.php
+
+# Logs / temp
+*.log
+*.tmp
+.temp/
+tmp/

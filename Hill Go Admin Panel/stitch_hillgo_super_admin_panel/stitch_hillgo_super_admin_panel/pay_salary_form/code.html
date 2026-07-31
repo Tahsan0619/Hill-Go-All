@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HillGo Admin - Pay Salary</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F3F4F6;
+        }
+        .sidebar-active-indicator {
+            position: absolute;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background-color: #00327d;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed": "#0b1c30",
+                        "surface-container-low": "#f3f4f6",
+                        "on-primary": "#ffffff",
+                        "secondary": "#505f76",
+                        "tertiary": "#651f00",
+                        "secondary-container": "#d0e1fb",
+                        "surface": "#f8f9fb",
+                        "primary-container": "#0047ab",
+                        "on-secondary-container": "#54647a",
+                        "on-primary-fixed-variant": "#00419e",
+                        "secondary-fixed": "#d3e4fe",
+                        "inverse-primary": "#b1c5ff",
+                        "tertiary-container": "#8b2e01",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "surface-variant": "#e1e2e4",
+                        "error": "#ba1a1a",
+                        "outline-variant": "#c3c6d5",
+                        "background": "#f8f9fb",
+                        "surface-tint": "#2559bd",
+                        "surface-container-high": "#e7e8ea",
+                        "surface-container": "#edeef0",
+                        "on-tertiary-fixed-variant": "#802900",
+                        "inverse-on-surface": "#f0f1f3",
+                        "surface-bright": "#f8f9fb",
+                        "tertiary-fixed": "#ffdbcf",
+                        "on-surface-variant": "#434653",
+                        "surface-container-highest": "#e1e2e4",
+                        "primary-fixed-dim": "#b1c5ff",
+                        "on-secondary": "#ffffff",
+                        "inverse-surface": "#2e3132",
+                        "primary": "#00327d",
+                        "tertiary-fixed-dim": "#ffb59a",
+                        "surface-dim": "#d9dadc",
+                        "primary-fixed": "#dae2ff",
+                        "on-background": "#191c1e",
+                        "on-surface": "#191c1e",
+                        "on-error-container": "#93000a",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed": "#001946",
+                        "outline": "#737784",
+                        "on-tertiary-fixed": "#380d00",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-container": "#ffaa8a",
+                        "on-error": "#ffffff",
+                        "on-primary-container": "#a5bdff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "sidebar_width": "240px",
+                        "base_unit": "4px",
+                        "card_gap": "20px",
+                        "header_height": "64px",
+                        "gutter": "16px",
+                        "container_padding": "24px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "data-mono": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "title-sm": ["Inter"],
+                        "display-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "data-mono": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "title-sm": ["18px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-surface-container-low text-on-surface">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full w-sidebar_width bg-on-primary-fixed dark:bg-on-background border-r border-outline-variant dark:border-outline shadow-sm flex flex-col py-6 z-50">
+<div class="px-6 mb-8 flex items-center gap-3">
+<div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-headline-md">H</div>
+<div>
+<h1 class="text-surface-bright font-headline-md text-headline-md font-bold leading-tight">HillGo</h1>
+<p class="text-outline-variant text-label-sm font-label-sm uppercase tracking-wider">Super Admin</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1 overflow-y-auto px-2">
+<a class="group flex items-center gap-3 px-4 py-3 text-surface-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all rounded-lg text-label-md font-label-md" href="#">
+<span class="material-symbols-outlined text-title-sm">dashboard</span>
+                Overview
+            </a>
+<a class="group flex items-center gap-3 px-4 py-3 text-surface-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all rounded-lg text-label-md font-label-md" href="#">
+<span class="material-symbols-outlined text-title-sm">location_on</span>
+                Region Lock
+            </a>
+<a class="group flex items-center gap-3 px-4 py-3 text-surface-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all rounded-lg text-label-md font-label-md" href="#">
+<span class="material-symbols-outlined text-title-sm">group</span>
+                Customer Panel
+            </a>
+<!-- Rider Panel Expanded -->
+<div class="space-y-1">
+<button class="w-full flex items-center justify-between px-4 py-3 bg-secondary-container text-primary border-r-[3px] border-primary font-bold rounded-l-lg transition-all text-label-md font-label-md">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-title-sm">directions_bike</span>
+                        Rider Panel
+                    </div>
+<span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+<div class="pl-12 space-y-1">
+<a class="block py-2 text-surface-variant hover:text-surface-bright text-label-md font-label-md" href="#">Active Riders</a>
+<a class="block py-2 text-surface-bright font-bold text-label-md font-label-md" href="#">Earnings &amp; Salary Pay</a>
+<a class="block py-2 text-surface-variant hover:text-surface-bright text-label-md font-label-md" href="#">Rider Performance</a>
+</div>
+</div>
+<a class="group flex items-center gap-3 px-4 py-3 text-surface-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all rounded-lg text-label-md font-label-md" href="#">
+<span class="material-symbols-outlined text-title-sm">store</span>
+                Merchant Panel
+            </a>
+<a class="group flex items-center gap-3 px-4 py-3 text-surface-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all rounded-lg text-label-md font-label-md" href="#">
+<span class="material-symbols-outlined text-title-sm">local_shipping</span>
+                Courier Panel
+            </a>
+<a class="group flex items-center gap-3 px-4 py-3 text-surface-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all rounded-lg text-label-md font-label-md" href="#">
+<span class="material-symbols-outlined text-title-sm">payments</span>
+                Finance
+            </a>
+<a class="group flex items-center gap-3 px-4 py-3 text-surface-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all rounded-lg text-label-md font-label-md" href="#">
+<span class="material-symbols-outlined text-title-sm">description</span>
+                Content
+            </a>
+<a class="group flex items-center gap-3 px-4 py-3 text-surface-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all rounded-lg text-label-md font-label-md" href="#">
+<span class="material-symbols-outlined text-title-sm">settings</span>
+                Settings
+            </a>
+</nav>
+</aside>
+<!-- TopNavBar -->
+<header class="fixed top-0 right-0 h-header_height z-40 bg-surface-container-lowest dark:bg-surface-dim border-b border-outline-variant dark:border-outline shadow-sm flex items-center justify-between px-gutter w-[calc(100%-240px)] ml-sidebar_width">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-full text-body-sm focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Search riders, transactions..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<button class="p-2 hover:bg-surface-container-low dark:hover:bg-surface-variant rounded-full text-on-surface-variant relative transition-all">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<div class="flex items-center gap-3 border-l border-outline-variant pl-6">
+<div class="text-right">
+<p class="text-label-md font-label-md text-on-surface">Tanvir Ahmed</p>
+<p class="text-label-sm font-label-sm text-on-surface-variant">Super Admin</p>
+</div>
+<img class="w-10 h-10 rounded-full border-2 border-primary-fixed-dim" data-alt="A professional studio portrait of a corporate administrator in his 30s with a clean-shaven face and confident expression. He is wearing a minimalist dark navy blazer over a crisp white shirt. The background is a soft, out-of-focus modern office setting with warm amber lighting, maintaining a clean and systematic corporate aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBaa0Y1N8Xr7D97JiwIonPTqAVORLoiWpZIPOza-En5qkaQJH6IlXZWmq8vnO7G3QSf3Ihunj_QEeVUDKo_DnJmS3AosDfaoPUkGqJyD3vGqfMREJuIEy4zUod0nTNDCgyJ9qZfo8Jp1UW5--JfS5-Tcq1bnL4FDkW7o9emeR5CU0DqgqI8UJi7VQ0nxwRjVGhdL8uNkm4zRuOdfQ7GIxhLkJAgPp2wfYVmzzltKYt_pEAcr8MYK0nh"/>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="ml-sidebar_width pt-24 p-container_padding min-h-screen">
+<div class="max-w-4xl mx-auto">
+<!-- Page Header -->
+<div class="mb-8 flex items-center justify-between">
+<div>
+<nav class="flex text-label-sm font-label-sm text-on-surface-variant mb-2">
+<span>Rider Panel</span>
+<span class="mx-2">/</span>
+<span class="text-primary font-bold">Pay Salary</span>
+</nav>
+<h2 class="text-display-lg font-display-lg text-on-surface">Process Rider Payment</h2>
+<p class="text-body-md font-body-md text-on-surface-variant">Review earnings and initiate salary transfer for Bangladesh delivery partners.</p>
+</div>
+<div class="bg-primary-container text-white px-4 py-2 rounded-lg flex items-center gap-2">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<div class="text-left">
+<p class="text-[10px] uppercase font-bold opacity-80 leading-none">Global Wallet</p>
+<p class="text-label-md font-label-md">৳ 4,520,000</p>
+</div>
+</div>
+</div>
+<!-- Main Form Card -->
+<div class="bg-white rounded-xl shadow-sm border border-outline-variant overflow-hidden">
+<div class="p-8">
+<form class="space-y-8" id="salaryForm">
+<!-- Section 1: Rider & Period -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="text-label-md font-label-md text-on-surface">Select Rider</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">person_search</span>
+<input class="w-full pl-10 pr-4 py-3 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary text-body-md" type="text" value="Ariful Islam (ID: RID-20491)"/>
+</div>
+<p class="text-[11px] text-on-surface-variant italic">Showing matches for "Ariful..."</p>
+</div>
+<div class="space-y-2">
+<label class="text-label-md font-label-md text-on-surface">Payment Period</label>
+<div class="grid grid-cols-2 gap-2">
+<input class="w-full px-3 py-3 border border-outline-variant rounded-lg text-body-sm focus:ring-2 focus:ring-primary" type="date" value="2023-10-01"/>
+<input class="w-full px-3 py-3 border border-outline-variant rounded-lg text-body-sm focus:ring-2 focus:ring-primary" type="date" value="2023-10-15"/>
+</div>
+</div>
+</div>
+<hr class="border-outline-variant"/>
+<!-- Section 2: Earnings Calculation -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="space-y-2">
+<label class="text-label-md font-label-md text-on-surface">Gross Earnings</label>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-on-surface-variant">৳</span>
+<input class="w-full pl-8 pr-4 py-3 bg-surface-container-low border border-outline-variant rounded-lg text-body-md font-bold text-primary" id="gross" readonly="" type="number" value="12500"/>
+</div>
+<p class="text-[11px] text-on-surface-variant">Auto-filled from trip history</p>
+</div>
+<div class="space-y-2">
+<label class="text-label-md font-label-md text-on-surface">Tips</label>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-on-surface-variant">৳</span>
+<input class="w-full pl-8 pr-4 py-3 border border-outline-variant rounded-lg text-body-md focus:ring-2 focus:ring-primary" id="tips" type="number" value="1250"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-label-md font-label-md text-on-surface">Surge Bonuses</label>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-on-surface-variant">৳</span>
+<input class="w-full pl-8 pr-4 py-3 border border-outline-variant rounded-lg text-body-md focus:ring-2 focus:ring-primary" id="surge" type="number" value="500"/>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="text-label-md font-label-md text-error">Deductions (Penalty/Loans)</label>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-error">৳</span>
+<input class="w-full pl-8 pr-4 py-3 border border-error/30 bg-error/5 rounded-lg text-body-md text-error focus:ring-2 focus:ring-error" id="deductions" type="number" value="200"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-label-md font-label-md text-on-surface">Net Payable Amount</label>
+<div class="relative">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 text-title-sm font-bold text-primary">৳</span>
+<input class="w-full pl-10 pr-4 py-4 bg-primary-fixed border-2 border-primary rounded-lg text-title-sm font-bold text-primary" id="netPay" readonly="" type="text" value="14,050"/>
+</div>
+</div>
+</div>
+<hr class="border-outline-variant"/>
+<!-- Section 3: Payment Details -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="text-label-md font-label-md text-on-surface">Payment Method</label>
+<div class="grid grid-cols-3 gap-3">
+<label class="cursor-pointer">
+<input checked="" class="hidden peer" name="method" type="radio" value="bkash"/>
+<div class="flex flex-col items-center justify-center p-3 border border-outline-variant rounded-lg peer-checked:border-primary peer-checked:bg-primary-fixed text-on-surface-variant peer-checked:text-primary transition-all">
+<span class="font-bold">bKash</span>
+<span class="text-[10px]">Mobile</span>
+</div>
+</label>
+<label class="cursor-pointer">
+<input class="hidden peer" name="method" type="radio" value="nagad"/>
+<div class="flex flex-col items-center justify-center p-3 border border-outline-variant rounded-lg peer-checked:border-primary peer-checked:bg-primary-fixed text-on-surface-variant peer-checked:text-primary transition-all">
+<span class="font-bold">Nagad</span>
+<span class="text-[10px]">Mobile</span>
+</div>
+</label>
+<label class="cursor-pointer">
+<input class="hidden peer" name="method" type="radio" value="bank"/>
+<div class="flex flex-col items-center justify-center p-3 border border-outline-variant rounded-lg peer-checked:border-primary peer-checked:bg-primary-fixed text-on-surface-variant peer-checked:text-primary transition-all">
+<span class="font-bold">Bank</span>
+<span class="text-[10px]">Transfer</span>
+</div>
+</label>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-label-md font-label-md text-on-surface">Transaction Reference</label>
+<input class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary text-body-md" placeholder="e.g. TXN923847234" type="text"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-label-md font-label-md text-on-surface">Notes for Rider (Optional)</label>
+<textarea class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary text-body-md" placeholder="Explain deductions or add encouragement..." rows="3"></textarea>
+</div>
+<!-- Footer Actions -->
+<div class="flex items-center justify-between pt-6">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">info</span>
+<span class="text-label-sm font-label-sm">Funds will be released immediately after marking as paid.</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="px-6 py-3 text-primary font-bold hover:bg-surface-container-low transition-colors rounded-lg" type="button">Cancel</button>
+<button class="bg-primary text-white px-8 py-3 rounded-lg font-bold shadow-lg hover:bg-primary-container active:scale-95 transition-all flex items-center gap-2" type="submit">
+<span class="material-symbols-outlined">verified</span>
+                                    Mark as Paid
+                                </button>
+</div>
+</div>
+</form>
+</div>
+<!-- Bottom Decoration -->
+<div class="h-1.5 w-full bg-primary"></div>
+</div>
+<!-- Recent Payments Mini-List -->
+<div class="mt-12">
+<h3 class="text-title-sm font-title-sm mb-4">Recently Processed Payments</h3>
+<div class="bg-white border border-outline-variant rounded-xl overflow-hidden">
+<table class="w-full text-left">
+<thead class="bg-surface-container-low">
+<tr>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant">Rider</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant">Amount</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant">Method</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant">Date</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary-fixed text-primary flex items-center justify-center font-bold text-xs">MI</div>
+<div>
+<p class="text-label-md font-label-md">Mainul Islam</p>
+<p class="text-[11px] text-on-surface-variant">Dhaka Hub</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 font-bold text-primary text-body-sm">৳ 12,450</td>
+<td class="px-6 py-4 text-body-sm">bKash</td>
+<td class="px-6 py-4 text-body-sm text-on-surface-variant">Oct 12, 2023</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-green-100 text-green-700 text-[10px] font-bold rounded-full uppercase">Success</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary-fixed text-primary flex items-center justify-center font-bold text-xs">SK</div>
+<div>
+<p class="text-label-md font-label-md">Sumaiya Khan</p>
+<p class="text-[11px] text-on-surface-variant">Chittagong Hub</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 font-bold text-primary text-body-sm">৳ 8,900</td>
+<td class="px-6 py-4 text-body-sm">Nagad</td>
+<td class="px-6 py-4 text-body-sm text-on-surface-variant">Oct 11, 2023</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-green-100 text-green-700 text-[10px] font-bold rounded-full uppercase">Success</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+<script>
+        // Salary Auto-calculation logic
+        const grossInput = document.getElementById('gross');
+        const tipsInput = document.getElementById('tips');
+        const surgeInput = document.getElementById('surge');
+        const deductionsInput = document.getElementById('deductions');
+        const netPayInput = document.getElementById('netPay');
+
+        function calculateNet() {
+            const gross = parseFloat(grossInput.value) || 0;
+            const tips = parseFloat(tipsInput.value) || 0;
+            const surge = parseFloat(surgeInput.value) || 0;
+            const deductions = parseFloat(deductionsInput.value) || 0;
+
+            const net = (gross + tips + surge) - deductions;
+            netPayInput.value = net.toLocaleString('en-IN');
+        }
+
+        [tipsInput, surgeInput, deductionsInput].forEach(input => {
+            input.addEventListener('input', calculateNet);
+        });
+
+        // Form submission animation
+        document.getElementById('salaryForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btn = this.querySelector('button[type="submit"]');
+            const originalContent = btn.innerHTML;
+            
+            btn.disabled = true;
+            btn.innerHTML = `<span class="material-symbols-outlined animate-spin">sync</span> Processing...`;
+            
+            setTimeout(() => {
+                btn.classList.replace('bg-primary', 'bg-green-600');
+                btn.innerHTML = `<span class="material-symbols-outlined">check_circle</span> Success!`;
+                
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.classList.replace('bg-green-600', 'bg-primary');
+                    btn.innerHTML = originalContent;
+                    alert('Payment processed successfully and recorded in the ledger.');
+                }, 1500);
+            }, 2000);
+        });
+    </script>
+</body></html>

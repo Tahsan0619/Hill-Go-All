@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HillGo Super Admin - KYC Queue</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-fixed": "#0b1c30",
+                    "surface-container-low": "#f3f4f6",
+                    "on-primary": "#ffffff",
+                    "secondary": "#505f76",
+                    "tertiary": "#651f00",
+                    "secondary-container": "#d0e1fb",
+                    "surface": "#f8f9fb",
+                    "primary-container": "#0047ab",
+                    "on-secondary-container": "#54647a",
+                    "on-primary-fixed-variant": "#00419e",
+                    "secondary-fixed": "#d3e4fe",
+                    "inverse-primary": "#b1c5ff",
+                    "tertiary-container": "#8b2e01",
+                    "secondary-fixed-dim": "#b7c8e1",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary-fixed-variant": "#38485d",
+                    "surface-variant": "#e1e2e4",
+                    "error": "#ba1a1a",
+                    "outline-variant": "#c3c6d5",
+                    "background": "#f8f9fb",
+                    "surface-tint": "#2559bd",
+                    "surface-container-high": "#e7e8ea",
+                    "surface-container": "#edeef0",
+                    "on-tertiary-fixed-variant": "#802900",
+                    "inverse-on-surface": "#f0f1f3",
+                    "surface-bright": "#f8f9fb",
+                    "tertiary-fixed": "#ffdbcf",
+                    "on-surface-variant": "#434653",
+                    "surface-container-highest": "#e1e2e4",
+                    "primary-fixed-dim": "#b1c5ff",
+                    "on-secondary": "#ffffff",
+                    "inverse-surface": "#2e3132",
+                    "primary": "#00327d",
+                    "tertiary-fixed-dim": "#ffb59a",
+                    "surface-dim": "#d9dadc",
+                    "primary-fixed": "#dae2ff",
+                    "on-background": "#191c1e",
+                    "on-surface": "#191c1e",
+                    "on-error-container": "#93000a",
+                    "error-container": "#ffdad6",
+                    "on-primary-fixed": "#001946",
+                    "outline": "#737784",
+                    "on-tertiary-fixed": "#380d00",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-container": "#ffaa8a",
+                    "on-error": "#ffffff",
+                    "on-primary-container": "#a5bdff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "sidebar_width": "240px",
+                    "base_unit": "4px",
+                    "card_gap": "20px",
+                    "header_height": "64px",
+                    "gutter": "16px",
+                    "container_padding": "24px"
+            },
+            "fontFamily": {
+                    "label-sm": ["Inter"],
+                    "body-md": ["Inter"],
+                    "data-mono": ["Inter"],
+                    "label-md": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "title-sm": ["Inter"],
+                    "display-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "data-mono": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "title-sm": ["18px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af;
+        }
+    </style>
+</head>
+<body class="bg-background font-body-md text-on-background antialiased overflow-hidden">
+<!-- Sidebar Navigation -->
+<aside class="fixed left-0 top-0 h-full w-sidebar_width bg-on-primary-fixed dark:bg-on-background flex flex-col py-6 border-r border-outline-variant dark:border-outline shadow-sm z-50">
+<div class="px-6 mb-8">
+<h1 class="text-headline-md font-headline-md font-bold text-surface-bright tracking-tight">HillGo</h1>
+<p class="text-label-sm font-label-sm text-surface-variant/60 uppercase tracking-widest mt-1">Super Admin</p>
+</div>
+<nav class="flex-1 px-3 space-y-1 overflow-y-auto">
+<a class="flex items-center px-3 py-3 space-x-3 text-surface-variant dark:text-outline-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+<span class="text-label-md font-label-md">Overview</span>
+</a>
+<a class="flex items-center px-3 py-3 space-x-3 text-surface-variant dark:text-outline-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined text-[20px]">location_on</span>
+<span class="text-label-md font-label-md">Region Lock</span>
+</a>
+<a class="flex items-center px-3 py-3 space-x-3 text-surface-variant dark:text-outline-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined text-[20px]">group</span>
+<span class="text-label-md font-label-md">Customer Panel</span>
+</a>
+<!-- Rider Panel Section (Expanded) -->
+<div class="space-y-1">
+<button class="w-full flex items-center justify-between px-3 py-3 space-x-3 bg-secondary-container text-primary border-r-[3px] border-primary font-bold rounded-l-lg transition-all">
+<div class="flex items-center space-x-3">
+<span class="material-symbols-outlined text-[20px]">directions_bike</span>
+<span class="text-label-md font-label-md">Rider Panel</span>
+</div>
+<span class="material-symbols-outlined text-[18px]">expand_more</span>
+</button>
+<div class="ml-9 space-y-1 pt-1">
+<a class="block px-3 py-2 text-label-sm font-label-sm text-primary font-bold border-l-2 border-primary" href="#">KYC Queue</a>
+<a class="block px-3 py-2 text-label-sm font-label-sm text-surface-variant/70 hover:text-surface-bright transition-colors" href="#">Active Riders</a>
+<a class="block px-3 py-2 text-label-sm font-label-sm text-surface-variant/70 hover:text-surface-bright transition-colors" href="#">Performance</a>
+</div>
+</div>
+<a class="flex items-center px-3 py-3 space-x-3 text-surface-variant dark:text-outline-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined text-[20px]">store</span>
+<span class="text-label-md font-label-md">Merchant Panel</span>
+</a>
+<a class="flex items-center px-3 py-3 space-x-3 text-surface-variant dark:text-outline-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined text-[20px]">local_shipping</span>
+<span class="text-label-md font-label-md">Courier Panel</span>
+</a>
+<a class="flex items-center px-3 py-3 space-x-3 text-surface-variant dark:text-outline-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined text-[20px]">payments</span>
+<span class="text-label-md font-label-md">Finance</span>
+</a>
+<a class="flex items-center px-3 py-3 space-x-3 text-surface-variant dark:text-outline-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined text-[20px]">description</span>
+<span class="text-label-md font-label-md">Content</span>
+</a>
+<a class="flex items-center px-3 py-3 space-x-3 text-surface-variant dark:text-outline-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="text-label-md font-label-md">Settings</span>
+</a>
+</nav>
+<div class="mt-auto px-4">
+<div class="bg-surface-container-highest/10 rounded-xl p-4 flex items-center space-x-3">
+<div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+<img class="w-full h-full rounded-full object-cover" data-alt="A professional corporate headshot of a female operations manager with a confident smile, wearing a professional blazer. She is set against a blurred office background with cool tones and soft lighting, emphasizing a modern corporate aesthetic of reliability and precision." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZrU_9DnJdQoJvL9I_cap2QImiXXYwwpsCv-1OHwBTR8JSomz5dlvxIN3kxA0IZohHE4H9zL2Wv2URAZGQMR28INGZPiCY3Bls4NdQJMFfZGSEYvnZn_k9SmO5pOfYTzMgjB7IbfGLLmiVHZdISrbXo_PQJj1kMxNyPRQsV6rU2yGIPyGe8aQFUthAOaFNY3a6Gxp8QVxNaZJgW2WZHljh1hhi0EW4MY1CUoQJbXYWivjJ82cUq77b"/>
+</div>
+<div>
+<p class="text-label-md font-label-md text-surface-bright">Admin User</p>
+<p class="text-[10px] text-surface-variant/50 uppercase font-bold">HillGo HQ</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Shell -->
+<main class="ml-sidebar_width w-[calc(100%-240px)] flex flex-col h-screen overflow-hidden">
+<!-- Top Navigation Bar -->
+<header class="h-header_height flex items-center justify-between px-gutter bg-surface-container-lowest dark:bg-surface-dim border-b border-outline-variant dark:border-outline shadow-sm z-40 shrink-0">
+<div class="flex items-center space-x-4 flex-1">
+<div class="flex items-center space-x-2 text-on-surface-variant">
+<span class="text-label-md font-label-md">Riders</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="text-primary font-bold text-label-md font-label-md">KYC Queue</span>
+</div>
+<div class="relative max-w-md w-full ml-8">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
+<input class="w-full bg-surface-container-low border border-outline-variant rounded-full py-1.5 pl-10 pr-4 text-body-sm font-body-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" placeholder="Search by Rider Name or ID..." type="text"/>
+</div>
+</div>
+<div class="flex items-center space-x-3">
+<button class="p-2 hover:bg-surface-container-low dark:hover:bg-surface-variant rounded-full text-on-surface-variant transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-surface-container-lowest"></span>
+</button>
+<div class="h-8 w-[1px] bg-outline-variant mx-2"></div>
+<button class="flex items-center space-x-2 px-2 py-1 rounded-full hover:bg-surface-container-low transition-colors">
+<div class="w-8 h-8 rounded-full bg-primary-container text-white flex items-center justify-center font-bold text-xs">AS</div>
+<span class="material-symbols-outlined text-on-surface-variant">arrow_drop_down</span>
+</button>
+</div>
+</header>
+<!-- Canvas -->
+<div class="flex-1 overflow-y-auto bg-background p-container_padding space-y-6">
+<!-- Page Header & Metrics Bento -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+<!-- Main Header Title -->
+<div class="md:col-span-2 flex flex-col justify-center">
+<h2 class="text-display-lg font-display-lg text-primary tracking-tight">KYC Verification Queue</h2>
+<p class="text-body-md font-body-md text-on-surface-variant mt-2">Manage and review pending documentation for new rider registrations across Bangladesh.</p>
+</div>
+<!-- KPI Card: Pending Review -->
+<div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant shadow-sm flex items-center justify-between group hover:border-primary transition-colors cursor-default">
+<div>
+<p class="text-label-sm font-label-sm text-on-surface-variant/70 uppercase">Pending Review</p>
+<h3 class="text-display-lg font-display-lg text-primary mt-1">1,284</h3>
+<div class="flex items-center mt-2 text-error font-bold text-label-sm">
+<span class="material-symbols-outlined text-xs mr-1">trending_up</span>
+<span>+12% from yesterday</span>
+</div>
+</div>
+<div class="w-12 h-12 bg-primary-container/10 rounded-full flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">pending_actions</span>
+</div>
+</div>
+<!-- KPI Card: Approved Today -->
+<div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant shadow-sm flex items-center justify-between group hover:border-primary transition-colors cursor-default">
+<div>
+<p class="text-label-sm font-label-sm text-on-surface-variant/70 uppercase">Verified Today</p>
+<h3 class="text-display-lg font-display-lg text-secondary mt-1">456</h3>
+<div class="flex items-center mt-2 text-primary font-bold text-label-sm">
+<span class="material-symbols-outlined text-xs mr-1">check_circle</span>
+<span>Efficiency: 94%</span>
+</div>
+</div>
+<div class="w-12 h-12 bg-secondary-container/20 rounded-full flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+</div>
+</div>
+</div>
+<!-- Main Data Table Container -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden">
+<!-- Table Controls -->
+<div class="px-6 py-4 border-b border-outline-variant flex items-center justify-between bg-surface-container-low/30">
+<div class="flex items-center space-x-3">
+<button class="flex items-center space-x-2 px-3 py-2 bg-surface-container-lowest border border-outline-variant rounded-lg text-label-md font-label-md text-on-surface-variant hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[18px]">filter_alt</span>
+<span>Filter</span>
+</button>
+<div class="flex items-center bg-surface-container-low rounded-lg p-1">
+<button class="px-3 py-1 bg-surface-container-lowest shadow-sm rounded-md text-label-sm font-label-sm text-primary font-bold">All</button>
+<button class="px-3 py-1 text-label-sm font-label-sm text-on-surface-variant hover:text-primary transition-colors">Priority</button>
+<button class="px-3 py-1 text-label-sm font-label-sm text-on-surface-variant hover:text-primary transition-colors">Flagged</button>
+</div>
+</div>
+<div class="flex items-center space-x-3">
+<p class="text-label-sm font-label-sm text-on-surface-variant">Showing 1-10 of 1,284</p>
+<div class="flex space-x-1">
+<button class="p-1 hover:bg-surface-container-low rounded"><span class="material-symbols-outlined">chevron_left</span></button>
+<button class="p-1 hover:bg-surface-container-low rounded"><span class="material-symbols-outlined">chevron_right</span></button>
+</div>
+</div>
+</div>
+<!-- Table Content -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-low/50 sticky top-0">
+<tr>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant uppercase tracking-wider border-b border-outline-variant">Rider Name</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant uppercase tracking-wider border-b border-outline-variant">Document Type</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant uppercase tracking-wider border-b border-outline-variant">Status</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant uppercase tracking-wider border-b border-outline-variant">Submitted Date</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-surface-variant uppercase tracking-wider border-b border-outline-variant text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low/20 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center space-x-3">
+<div class="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A close-up portrait of a Bangladeshi delivery rider, wearing a professional green uniform with a helmet, smiling warmly. The lighting is natural and bright, captured outdoors in Dhaka with a soft bokeh background of a city street. The style is clear, authentic, and high-utility corporate." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2LJp4A2h_VMCoXXXfX0lJWMlRmwc-JRhxQnx5heZxUZo_6fRb1pSThZgODGz094_QBttOEptUXaaQkSe-epiQ309vO9wIXIWuh2Y_16pdAEK9P1LILg2iz8vEjP1TVMdy1xaBA__Emi39xJEuAAkNlPkPQfwOouMngOeE8e3ML22TzxNXotbPh2Xg0Odeg1wqKwhYJBq_hDPnGR3KrjTmxuoDzSy4M1N-CwyZ0rr1YmYzP_9OT2XK"/>
+</div>
+<div>
+<p class="text-label-md font-label-md text-on-surface font-bold">Tanvir Ahmed</p>
+<p class="text-[11px] text-on-surface-variant font-data-mono">ID: HG-RD-9921</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-primary text-[18px]">badge</span>
+<span class="text-body-sm font-body-sm text-on-surface">Driver's License</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary-container/10 text-primary-container">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container mr-1.5 animate-pulse"></span>
+                                        Pending
+                                    </span>
+</td>
+<td class="px-6 py-4 text-body-sm font-body-sm text-on-surface-variant">
+                                    Oct 24, 2023 <br/>
+<span class="text-[11px] font-medium opacity-60">10:45 AM</span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end space-x-2">
+<button class="px-3 py-1.5 bg-primary text-white text-label-sm font-label-sm rounded-lg hover:shadow-md active:scale-95 transition-all">Approve</button>
+<button class="p-1.5 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors" title="More Actions">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low/20 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center space-x-3">
+<div class="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A focused studio portrait of a young professional man from South Asia with short dark hair, wearing a casual polo shirt. The background is a clean, neutral gray gradient. The lighting is soft and even, highlighting a trustworthy and systematic appearance consistent with a modern corporate management interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVnFBuXB7NoYIrDHWr8uRCg-PxZIxL4UBVu_ESjGfmM7NkTD7ZKR7rNjbcz71oG-LlKfbLdD4Fk39tPQASXR9CjvQiFMpS1WdVGq6YH9zvK5oZurMb99u7rXBcJCd1bd-5agGKLGBPGJ89nBvd6DJ07uyRMA_ht_IzZLVq34hrx9SbJLQZDRfPGfrdXTLLvFTwuHhTgsIvwzuGOwrplSB1-lZ7igw8QkjKPYko2oaXwOyDsw7TxDTe"/>
+</div>
+<div>
+<p class="text-label-md font-label-md text-on-surface font-bold">Rakibul Islam</p>
+<p class="text-[11px] text-on-surface-variant font-data-mono">ID: HG-RD-4521</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-primary text-[18px]">account_box</span>
+<span class="text-body-sm font-body-sm text-on-surface">NID (Front &amp; Back)</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-error/10 text-error">
+<span class="w-1.5 h-1.5 rounded-full bg-error mr-1.5"></span>
+                                        Action Required
+                                    </span>
+</td>
+<td class="px-6 py-4 text-body-sm font-body-sm text-on-surface-variant">
+                                    Oct 24, 2023 <br/>
+<span class="text-[11px] font-medium opacity-60">09:12 AM</span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end space-x-2">
+<button class="px-3 py-1.5 border border-primary text-primary text-label-sm font-label-sm rounded-lg hover:bg-primary/5 transition-all">Request Reupload</button>
+<button class="p-1.5 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low/20 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center space-x-3">
+<div class="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A portrait of a senior courier professional with a friendly expression, standing in front of a modern warehouse facility. He is wearing a high-visibility vest over a dark shirt. The setting is industrious and organized, with soft morning light casting long, gentle shadows, emphasizing a systematic and reliable logistics atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkcyMLvq11VEOtVCMEz3YtHppiWwLA1YkUOtgplkAWOr6ZqSjM2xIQhgAiKUIJKSVjRs5TTyDXUG_iKNy3GzdYUThzd_RHYuP7F7zI5tDrxAWl-EAWgUZz52gVylJO_t6-upKxAgaPzT4SmphaygGsePGtB92-9hHtvuZCJyp07Od26rUhKTnABoMKwNuHi9TFXB63rKsPDZJU3xgc9tSUSQa8PJapsnDenxPb7iCRqMldiQSl8GuX"/>
+</div>
+<div>
+<p class="text-label-md font-label-md text-on-surface font-bold">Sumon Miah</p>
+<p class="text-[11px] text-on-surface-variant font-data-mono">ID: HG-RD-1102</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-primary text-[18px]">menu_book</span>
+<span class="text-body-sm font-body-sm text-on-surface">Blue Book</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-secondary-fixed-dim/30 text-on-secondary-fixed-variant">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary-fixed-dim mr-1.5"></span>
+                                        Uploaded
+                                    </span>
+</td>
+<td class="px-6 py-4 text-body-sm font-body-sm text-on-surface-variant">
+                                    Oct 23, 2023 <br/>
+<span class="text-[11px] font-medium opacity-60">05:40 PM</span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end space-x-2">
+<button class="px-3 py-1.5 bg-primary text-white text-label-sm font-label-sm rounded-lg hover:shadow-md transition-all">Approve</button>
+<button class="p-1.5 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-low/20 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center space-x-3">
+<div class="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A portrait of a young female courier rider in Bangladesh, wearing a branded HillGo polo shirt and a light windbreaker. She is holding a tablet, looking professional and ready for work. The background shows a clean, organized dispatch center with industrial shelving and soft, cool-toned lighting, reinforcing a systematic and modern corporate identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGxrUl1N6H0kFP8-UlwejVDAvhY5Kl2Aigo1jnZupbf8iGoErsBRF4zTMDFBTN-6Cb4S8NZk3RX5TwHMRmaQUv8StVlouYI3e8QFm2GL4kL5Agx61tB3NlO8nTegx1NWNbTu6gjVkF9VqVMHZlA35YiQ08meAgF-2Pela04OyGHB4cQF4-3Y4Wl3KCITHjOIwIUMj2AYRpePuzavmSxQ0tiPeAPcwIm3uP-rUeCBELke2MCGA2mc28"/>
+</div>
+<div>
+<p class="text-label-md font-label-md text-on-surface font-bold">Farzana Akter</p>
+<p class="text-[11px] text-on-surface-variant font-data-mono">ID: HG-RD-8834</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-primary text-[18px]">photo_camera</span>
+<span class="text-body-sm font-body-sm text-on-surface">Profile Photo</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary-container/10 text-primary-container">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container mr-1.5 animate-pulse"></span>
+                                        Pending
+                                    </span>
+</td>
+<td class="px-6 py-4 text-body-sm font-body-sm text-on-surface-variant">
+                                    Oct 23, 2023 <br/>
+<span class="text-[11px] font-medium opacity-60">03:15 PM</span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end space-x-2">
+<button class="px-3 py-1.5 bg-primary text-white text-label-sm font-label-sm rounded-lg hover:shadow-md transition-all">Approve</button>
+<button class="p-1.5 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 5 (Verified) -->
+<tr class="hover:bg-surface-container-low/20 transition-colors group opacity-60">
+<td class="px-6 py-4">
+<div class="flex items-center space-x-3">
+<div class="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden grayscale">
+<img class="w-full h-full object-cover" data-alt="A corporate ID style portrait of a Bangladeshi delivery professional with a serious and focused expression. He wears a professional uniform. The lighting is flat and professional, set against a white studio background. The overall style is Industrious, systematic, and reflects a high-density, reliable logistical workflow." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAE2fObR1JjOHtyXHEtpnsJmbzxyXOi-lQSZlXUVPAj7J19YgF6FIiBIgSTKx7aNRCX930DczEJUUnoHTSM00LGwzsU3pbSSC2_wcsDrUfKSONR4mgNdU6efwZMai0ptAxkT1JHGWUzatBDkBbMuASL3YDcu96lkQe_LQHjQGazRtNRy7LKTED_BJ5xr0bs9L3gPfwZh7JXtQfcncSN2WIAF9secllzjquvHS8yZ476bcrtj0zye69C"/>
+</div>
+<div>
+<p class="text-label-md font-label-md text-on-surface font-bold">Abdur Rahim</p>
+<p class="text-[11px] text-on-surface-variant font-data-mono">ID: HG-RD-2023</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-secondary text-[18px]">verified</span>
+<span class="text-body-sm font-body-sm text-on-surface">NID Verified</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-secondary-container text-on-secondary-container">
+<span class="w-1.5 h-1.5 rounded-full bg-on-secondary-container mr-1.5"></span>
+                                        Verified
+                                    </span>
+</td>
+<td class="px-6 py-4 text-body-sm font-body-sm text-on-surface-variant">
+                                    Oct 22, 2023 <br/>
+<span class="text-[11px] font-medium opacity-60">11:00 AM</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="px-3 py-1.5 text-on-surface-variant text-label-sm font-label-sm rounded-lg border border-outline-variant hover:bg-surface-container-low transition-all">View Details</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Footer / Batch Actions -->
+<div class="px-6 py-4 bg-surface-container-low/20 border-t border-outline-variant flex items-center justify-between">
+<div class="flex items-center space-x-4">
+<span class="text-body-sm font-body-sm text-on-surface-variant">Batch Actions:</span>
+<button class="text-label-sm font-label-sm text-primary hover:underline font-bold">Approve Selected (0)</button>
+<button class="text-label-sm font-label-sm text-error hover:underline font-bold">Reject Selected (0)</button>
+</div>
+<button class="px-4 py-2 bg-on-primary-fixed text-surface-bright rounded-lg text-label-md font-label-md shadow-sm hover:shadow-md transition-all flex items-center space-x-2">
+<span class="material-symbols-outlined text-[18px]">download</span>
+<span>Export CSV</span>
+</button>
+</div>
+</div>
+<!-- Detail Sidebar Placeholder (Empty State) -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<div class="lg:col-span-2 p-8 border-2 border-dashed border-outline-variant rounded-xl flex flex-col items-center justify-center text-center bg-surface-container-low/10">
+<div class="w-16 h-16 bg-surface-container-high rounded-full flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-outline text-[32px]">visibility</span>
+</div>
+<h4 class="text-title-sm font-title-sm text-on-surface-variant">Select a Rider to View Documents</h4>
+<p class="text-body-sm font-body-sm text-on-surface-variant/60 mt-1 max-w-sm">Click on any row in the queue to inspect high-resolution document scans and verify rider identity.</p>
+</div>
+<div class="bg-primary-container text-on-primary p-6 rounded-xl shadow-lg relative overflow-hidden group">
+<!-- Atmospheric Background decoration -->
+<div class="absolute -right-8 -bottom-8 w-32 h-32 bg-white/10 rounded-full blur-3xl transition-transform group-hover:scale-150 duration-700"></div>
+<div class="relative z-10">
+<h4 class="text-title-sm font-title-sm">Quick Review Guide</h4>
+<ul class="mt-4 space-y-3 text-body-sm opacity-90">
+<li class="flex items-start space-x-2">
+<span class="material-symbols-outlined text-[18px] mt-0.5">info</span>
+<span>Check NID expiry dates carefully.</span>
+</li>
+<li class="flex items-start space-x-2">
+<span class="material-symbols-outlined text-[18px] mt-0.5">info</span>
+<span>Verify photo matches DL/NID.</span>
+</li>
+<li class="flex items-start space-x-2">
+<span class="material-symbols-outlined text-[18px] mt-0.5">info</span>
+<span>Reject blurry or cropped images.</span>
+</li>
+</ul>
+<button class="mt-6 w-full py-2 bg-white text-primary font-bold rounded-lg text-label-md hover:bg-opacity-90 transition-all">Download Protocol PDF</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Overlay / Micro-interaction JS -->
+<script>
+        // Simple row selection micro-interaction
+        document.querySelectorAll('tbody tr').forEach(row => {
+            row.addEventListener('click', function() {
+                // Toggle active state visualization
+                document.querySelectorAll('tbody tr').forEach(r => r.classList.remove('bg-primary/5'));
+                this.classList.add('bg-primary/5');
+            });
+        });
+
+        // Search bar focus effect
+        const searchInput = document.querySelector('input[type="text"]');
+        searchInput.addEventListener('focus', () => {
+            searchInput.parentElement.classList.add('ring-2', 'ring-primary/20');
+        });
+        searchInput.addEventListener('blur', () => {
+            searchInput.parentElement.classList.remove('ring-2', 'ring-primary/20');
+        });
+    </script>
+</body></html>

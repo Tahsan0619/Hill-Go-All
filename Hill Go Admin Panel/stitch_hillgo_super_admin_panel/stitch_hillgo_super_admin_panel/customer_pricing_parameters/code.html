@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HillGo Admin - Customer Pricing Parameters</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface": "#f8f9fb",
+                    "secondary-container": "#d0e1fb",
+                    "inverse-on-surface": "#f0f1f3",
+                    "surface-container-high": "#e7e8ea",
+                    "surface-container": "#edeef0",
+                    "inverse-primary": "#b1c5ff",
+                    "primary-container": "#0047ab",
+                    "on-primary-fixed-variant": "#00419e",
+                    "outline": "#737784",
+                    "on-secondary-container": "#54647a",
+                    "secondary-fixed": "#d3e4fe",
+                    "on-secondary-fixed": "#0b1c30",
+                    "secondary-fixed-dim": "#b7c8e1",
+                    "on-primary-container": "#a5bdff",
+                    "surface-container-lowest": "#ffffff",
+                    "primary-fixed": "#dae2ff",
+                    "background": "#f8f9fb",
+                    "on-surface-variant": "#434653",
+                    "on-error-container": "#93000a",
+                    "on-tertiary-fixed": "#380d00",
+                    "primary-fixed-dim": "#b1c5ff",
+                    "error": "#ba1a1a",
+                    "on-tertiary-container": "#ffaa8a",
+                    "surface-container-highest": "#e1e2e4",
+                    "on-error": "#ffffff",
+                    "on-tertiary-fixed-variant": "#802900",
+                    "on-secondary-fixed-variant": "#38485d",
+                    "tertiary": "#651f00",
+                    "surface-container-low": "#f3f4f6",
+                    "tertiary-fixed-dim": "#ffb59a",
+                    "secondary": "#505f76",
+                    "on-primary-fixed": "#001946",
+                    "surface-variant": "#e1e2e4",
+                    "error-container": "#ffdad6",
+                    "tertiary-container": "#8b2e01",
+                    "surface-dim": "#d9dadc",
+                    "on-primary": "#ffffff",
+                    "tertiary-fixed": "#ffdbcf",
+                    "inverse-surface": "#2e3132",
+                    "surface-tint": "#2559bd",
+                    "on-background": "#191c1e",
+                    "outline-variant": "#c3c6d5",
+                    "on-surface": "#191c1e",
+                    "surface-bright": "#f8f9fb",
+                    "on-secondary": "#ffffff",
+                    "primary": "#00327d",
+                    "on-tertiary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "base_unit": "4px",
+                    "header_height": "64px",
+                    "sidebar_width": "240px",
+                    "gutter": "16px",
+                    "container_padding": "24px",
+                    "card_gap": "20px"
+            },
+            "fontFamily": {
+                    "title-sm": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "body-md": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "data-mono": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "label-md": ["Inter"]
+            },
+            "fontSize": {
+                    "title-sm": ["18px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "data-mono": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        input:focus {
+            outline: none;
+            border-color: #00327d !important;
+            box-shadow: 0 0 0 2px rgba(0, 50, 125, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md overflow-hidden">
+<!-- Sidebar -->
+<aside class="fixed left-0 top-0 h-full w-sidebar_width bg-on-primary-fixed dark:bg-on-background border-r border-outline-variant dark:border-outline shadow-sm flex flex-col py-6 z-50">
+<div class="px-6 mb-8">
+<h1 class="text-headline-md font-headline-md font-bold text-surface-bright">HillGo</h1>
+<p class="text-label-sm font-label-sm text-surface-variant uppercase tracking-widest mt-1">Super Admin</p>
+</div>
+<nav class="flex-1 overflow-y-auto px-3 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-surface-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-label-md font-label-md">Overview</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-surface-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined">location_on</span>
+<span class="text-label-md font-label-md">Region Lock</span>
+</a>
+<!-- Active State: Customer Panel -->
+<a class="flex items-center gap-3 px-3 py-2 bg-secondary-container text-primary border-r-[3px] border-primary font-bold transition-all rounded-l-lg group" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="text-label-md font-label-md">Customer Panel</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-surface-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined">directions_bike</span>
+<span class="text-label-md font-label-md">Rider Panel</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-surface-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined">store</span>
+<span class="text-label-md font-label-md">Merchant Panel</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-surface-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined">local_shipping</span>
+<span class="text-label-md font-label-md">Courier Panel</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-surface-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="text-label-md font-label-md">Finance</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-surface-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="text-label-md font-label-md">Content</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-surface-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-label-md font-label-md">Settings</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-sidebar_width w-[calc(100%-240px)] min-h-screen flex flex-col">
+<!-- Header -->
+<header class="fixed top-0 right-0 h-header_height w-[calc(100%-240px)] bg-surface-container-lowest dark:bg-surface-dim border-b border-outline-variant dark:border-outline shadow-sm flex items-center justify-between px-gutter z-40">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="text-label-md font-label-md">Customer Panel</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="text-primary font-bold text-label-md font-label-md">Pricing Parameters</span>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative group">
+<input class="w-64 bg-surface-container-low border border-outline-variant rounded-full py-1.5 pl-10 pr-4 text-body-sm focus:ring-2 focus:ring-primary transition-all" placeholder="Search parameters..." type="text"/>
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-full transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-white"></span>
+</button>
+<button class="flex items-center gap-3 p-1 pl-3 hover:bg-surface-container-low rounded-full transition-colors border border-outline-variant/30">
+<span class="text-label-md font-label-md">Admin</span>
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-white font-bold text-xs overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional studio portrait of a corporate executive for a technology firm, clean lighting, minimalist background, friendly professional expression, high definition digital photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFM-blU4423bHdKAA7xbdm3o4yPh2u8KWyTYPgSU-oTf3tybmR_rmWoc_Hvk4F5Kdum3PNEcdwmjhgqBn7xW9b-mzNHDV9CjKBNAI3nDoK6PBNBEQqSLfJh9did_oaeHqgaZt8lCYkZQkcZigWUJ1IhIUzY5QrONZajCIKn6llz9NKOV_kSHwi0dwztfomvh83tlblsRHnQu1zJVyrW_hxpoo2FUu13eas-CMs264H66Vmab2Zk1GQ"/>
+</div>
+</button>
+</div>
+</div>
+</header>
+<!-- Canvas -->
+<div class="mt-header_height p-container_padding flex-1 overflow-y-auto space-y-6">
+<!-- Page Title & Actions -->
+<div class="flex justify-between items-end mb-4">
+<div>
+<h2 class="text-display-lg font-display-lg text-primary">Global Pricing Parameters</h2>
+<p class="text-on-surface-variant mt-1">Configure service fees and rate thresholds for the entire customer base.</p>
+</div>
+<div class="flex gap-3">
+<button class="px-6 py-2.5 text-primary border border-primary font-label-md text-label-md rounded-lg hover:bg-primary/5 transition-colors">Discard changes</button>
+<button class="px-8 py-2.5 bg-primary text-white font-label-md text-label-md rounded-lg shadow-md hover:bg-primary-container transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]">save</span>
+                        Save Changes
+                    </button>
+</div>
+</div>
+<!-- Bento Grid Layout for Parameter Cards -->
+<div class="grid grid-cols-12 gap-6">
+<!-- Ride Parameters -->
+<div class="col-span-12 lg:col-span-8 bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm">
+<div class="flex items-center justify-between mb-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">directions_car</span>
+</div>
+<h3 class="text-title-sm font-title-sm">Ride Parameters</h3>
+</div>
+<span class="text-label-sm font-label-sm px-2 py-1 bg-green-100 text-green-700 rounded uppercase tracking-wide">Live Updates</span>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+<div class="space-y-2">
+<label class="text-label-sm font-label-sm text-on-surface-variant">Base Fare</label>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-outline">৳</span>
+<input class="w-full pl-8 pr-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg font-data-mono" type="number" value="30"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-label-sm font-label-sm text-on-surface-variant">Per KM</label>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-outline">৳</span>
+<input class="w-full pl-8 pr-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg font-data-mono" type="number" value="15"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-label-sm font-label-sm text-on-surface-variant">Per Minute</label>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-outline">৳</span>
+<input class="w-full pl-8 pr-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg font-data-mono" type="number" value="1"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-label-sm font-label-sm text-on-surface-variant">Min Fare</label>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-outline">৳</span>
+<input class="w-full pl-8 pr-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg font-data-mono" type="number" value="50"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Marketplace -->
+<div class="col-span-12 lg:col-span-4 bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-10 h-10 rounded-lg bg-tertiary/10 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined">shopping_bag</span>
+</div>
+<h3 class="text-title-sm font-title-sm">Marketplace</h3>
+</div>
+<div class="space-y-4">
+<div class="space-y-2">
+<label class="text-label-sm font-label-sm text-on-surface-variant">Delivery Fee (Flat Rate)</label>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-outline">৳</span>
+<input class="w-full pl-8 pr-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg font-data-mono" type="number" value="40"/>
+</div>
+</div>
+<div class="pt-2 flex items-center justify-between text-body-sm text-on-surface-variant italic">
+<span>Service uptime: 99.9%</span>
+<span class="material-symbols-outlined text-[18px]">verified</span>
+</div>
+</div>
+</div>
+<!-- Delivery Parameters -->
+<div class="col-span-12 md:col-span-6 lg:col-span-4 bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-3 mb-6">
+<div class="w-10 h-10 rounded-lg bg-secondary/10 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">fastfood</span>
+</div>
+<h3 class="text-title-sm font-title-sm">Food Delivery</h3>
+</div>
+<div class="space-y-4">
+<div class="space-y-2">
+<label class="text-label-sm font-label-sm text-on-surface-variant">Service Fee</label>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-outline">৳</span>
+<input class="w-full pl-8 pr-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg font-data-mono" type="number" value="30"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-label-sm font-label-sm text-on-surface-variant">Free Delivery Threshold</label>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-outline">৳</span>
+<input class="w-full pl-8 pr-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg font-data-mono" type="number" value="300"/>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-6 pt-4 border-t border-outline-variant/30">
+<div class="flex items-center justify-between">
+<span class="text-label-sm font-label-sm">Promotional Subsidy</span>
+<div class="w-12 h-6 bg-secondary-container rounded-full relative cursor-pointer">
+<div class="absolute right-1 top-1 w-4 h-4 bg-primary rounded-full transition-all"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Travel & Stay -->
+<div class="col-span-12 md:col-span-6 lg:col-span-8 bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-10 h-10 rounded-lg bg-on-tertiary-container/10 flex items-center justify-center text-tertiary-container">
+<span class="material-symbols-outlined">hotel</span>
+</div>
+<h3 class="text-title-sm font-title-sm">Travel &amp; Stay</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="space-y-2">
+<label class="text-label-sm font-label-sm text-on-surface-variant">Hotel Service Fee</label>
+<div class="relative">
+<span class="absolute right-3 top-1/2 -translate-y-1/2 text-outline">%</span>
+<input class="w-full pl-3 pr-8 py-2 bg-surface-container-low border border-outline-variant rounded-lg font-data-mono" type="number" value="5"/>
+</div>
+<p class="text-[10px] text-outline">Applied to final booking amount</p>
+</div>
+<div class="space-y-2">
+<label class="text-label-sm font-label-sm text-on-surface-variant">Rental Driver Fee</label>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-outline">৳</span>
+<input class="w-full pl-8 pr-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg font-data-mono" type="number" value="1500"/>
+</div>
+<p class="text-[10px] text-outline">Per 24-hour cycle</p>
+</div>
+<div class="space-y-2">
+<label class="text-label-sm font-label-sm text-on-surface-variant">Rental Insurance</label>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-outline">৳</span>
+<input class="w-full pl-8 pr-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg font-data-mono" type="number" value="300"/>
+</div>
+<p class="text-[10px] text-outline">Mandatory baseline coverage</p>
+</div>
+</div>
+</div>
+<!-- Parcel Parameters -->
+<div class="col-span-12 bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm overflow-hidden relative">
+<!-- Glassmorphism decorative element -->
+<div class="absolute -right-20 -top-20 w-64 h-64 bg-primary/5 rounded-full blur-3xl"></div>
+<div class="relative z-10">
+<div class="flex items-center gap-3 mb-8">
+<div class="w-10 h-10 rounded-lg bg-on-secondary-fixed-variant/10 flex items-center justify-center text-on-secondary-fixed-variant">
+<span class="material-symbols-outlined">package_2</span>
+</div>
+<h3 class="text-title-sm font-title-sm">Parcel &amp; Logistics</h3>
+</div>
+<div class="flex flex-col md:flex-row items-center gap-10">
+<div class="flex-1 w-full space-y-6">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="space-y-2">
+<div class="flex justify-between items-center">
+<label class="text-label-sm font-label-sm text-on-surface-variant">Base (Up to 1kg)</label>
+<span class="text-[10px] bg-secondary-fixed text-on-secondary-fixed px-1.5 rounded">Core</span>
+</div>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-outline">৳</span>
+<input class="w-full pl-8 pr-3 py-3 bg-surface-container border border-outline-variant rounded-xl font-data-mono text-title-sm" type="number" value="50"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-label-sm font-label-sm text-on-surface-variant">Per KM Rate</label>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-outline">৳</span>
+<input class="w-full pl-8 pr-3 py-3 bg-surface-container border border-outline-variant rounded-xl font-data-mono text-title-sm" type="number" value="12"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-label-sm font-label-sm text-on-surface-variant">Per Additional KG</label>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-outline">৳</span>
+<input class="w-full pl-8 pr-3 py-3 bg-surface-container border border-outline-variant rounded-xl font-data-mono text-title-sm" type="number" value="8"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Small Summary Info -->
+<div class="w-full md:w-64 p-4 bg-surface-container-low rounded-xl border border-outline-variant/50">
+<h4 class="text-label-md font-label-md text-primary mb-3">Average Delivery Cost</h4>
+<div class="flex items-baseline gap-1">
+<span class="text-headline-md font-headline-md">৳115</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant">avg / 5km</span>
+</div>
+<div class="mt-4 flex items-center gap-2 text-label-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-green-600">trending_up</span>
+<span>+12% vs last month</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Helper Section -->
+<div class="flex items-start gap-4 p-4 bg-blue-50 border border-blue-100 rounded-lg text-blue-800">
+<span class="material-symbols-outlined mt-0.5">info</span>
+<div>
+<h4 class="text-label-md font-label-md">Audit Trail Enabled</h4>
+<p class="text-body-sm opacity-90">All changes made to pricing parameters are logged. Updates will take effect for customers immediately upon saving, affecting all new orders and bookings from the moment of execution.</p>
+</div>
+</div>
+</div>
+</main>
+<script>
+        // Micro-interaction for inputs
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('change', () => {
+                input.classList.add('border-primary-container');
+                setTimeout(() => {
+                    input.classList.remove('border-primary-container');
+                }, 1000);
+            });
+        });
+
+        // Hover animation for cards
+        document.querySelectorAll('.col-span-12, .col-span-4, .col-span-6, .col-span-8').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-2px)';
+                card.style.transition = 'all 0.3s ease';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0px)';
+            });
+        });
+    </script>
+</body></html>

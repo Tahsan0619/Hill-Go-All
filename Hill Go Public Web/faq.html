@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FAQ - HillGo Help Center</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo">HillGo</a>
+      <nav class="nav">
+        <div class="nav-links">
+          <a href="services.html">Services</a>
+          <a href="merchant.html">Partners</a>
+          <a href="about.html">About</a>
+        </div>
+        <div class="nav-actions">
+          <a href="contact.html" class="btn btn-outline btn-sm">Log In</a>
+          <a href="merchant.html" class="btn btn-primary btn-sm">Get Started</a>
+        </div>
+      </nav>
+      <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+  <nav class="mobile-nav">
+    <a href="services.html">Services</a><a href="ride.html">Ride</a><a href="food.html">Food</a>
+    <a href="parcel.html">Parcel</a><a href="merchant.html">Partners</a><a href="about.html">About</a>
+    <a href="faq.html">Help Center</a><a href="contact.html">Contact</a>
+    <a href="merchant.html" class="btn btn-primary">Get Started</a>
+  </nav>
+
+  <section class="page-hero light">
+    <div class="container">
+      <h1>How can we help you?</h1>
+      <div class="faq-search">
+        <span class="faq-search-icon">🔍</span>
+        <input type="text" id="faqSearch" placeholder="Search for answers (e.g., 'delivery times', 'payment methods')">
+      </div>
+    </div>
+  </section>
+
+  <div class="container faq-page-layout">
+    <aside class="faq-sidebar">
+      <h4>Categories</h4>
+      <button class="faq-cat-btn active" data-category="all">📋 All</button>
+      <button class="faq-cat-btn" data-category="general">ℹ️ General</button>
+      <button class="faq-cat-btn" data-category="delivery">🚚 Delivery</button>
+      <button class="faq-cat-btn" data-category="payment">💳 Payment</button>
+      <button class="faq-cat-btn" data-category="partnering">🤝 Partnering</button>
+    </aside>
+
+    <div>
+      <div class="faq-group" data-category="general">
+        <h3 style="margin-bottom:16px;">General Questions</h3>
+        <div class="faq-list">
+          <div class="faq-item">
+            <button class="faq-question">What exactly is HillGo? <span class="faq-icon">+</span></button>
+            <div class="faq-answer"><div class="faq-answer-inner">HillGo is an all-in-one platform for urban mobility and logistics. We offer ride-hailing, food delivery, and parcel courier services through a single app and merchant portal.</div></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question">How do I create an account? <span class="faq-icon">+</span></button>
+            <div class="faq-answer"><div class="faq-answer-inner">Download the HillGo app from the App Store or Google Play, enter your phone number, verify with OTP, and complete your profile. For merchants, register at our merchant portal.</div></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question">What areas do you currently serve? <span class="faq-icon">+</span></button>
+            <div class="faq-answer"><div class="faq-answer-inner">HillGo operates across 64 districts with home delivery in every district. Ride and food services are available in all major metropolitan areas.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-group" data-category="delivery" style="margin-top:40px;">
+        <h3 style="margin-bottom:16px;">Delivery Information</h3>
+        <div class="faq-list">
+          <div class="faq-item">
+            <button class="faq-question">How can I track my shipment in real-time? <span class="faq-icon">+</span></button>
+            <div class="faq-answer"><div class="faq-answer-inner">Open the HillGo app, go to More > Tracking, and enter your consignment ID. You can also use the Track Order section on our homepage.</div></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question">What are the delivery timeframes? <span class="faq-icon">+</span></button>
+            <div class="faq-answer"><div class="faq-answer-inner">Same city: 24 hours. Inter-city: 48-72 hours. Express same-day delivery is available in metropolitan areas with entry before 12:00 PM.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-group" data-category="payment" style="margin-top:40px;">
+        <h3 style="margin-bottom:16px;">Payment</h3>
+        <div class="faq-list">
+          <div class="faq-item">
+            <button class="faq-question">Which payment methods are accepted? <span class="faq-icon">+</span></button>
+            <div class="faq-answer"><div class="faq-answer-inner">We accept cash, credit/debit cards, mobile banking, and HillGo Pay. Merchants can receive COD settlements via bank transfer or mobile wallet.</div></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question">What is the COD charge? <span class="faq-icon">+</span></button>
+            <div class="faq-answer"><div class="faq-answer-inner">COD charge is 0.5% within metropolitan city and 1% for deliveries outside the metro area.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-group" data-category="partnering" style="margin-top:40px;">
+        <h3 style="margin-bottom:16px;">Partnering</h3>
+        <div class="faq-list">
+          <div class="faq-item">
+            <button class="faq-question">What are the requirements for partners? <span class="faq-icon">+</span></button>
+            <div class="faq-answer"><div class="faq-answer-inner">Merchants need a registered business, valid ID, and bank or mobile wallet account. Drivers need a valid license, vehicle registration, and background check clearance.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="section" style="padding-top:0;">
+    <div class="container">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+        <div class="info-card">
+          <h4>🎧 Need direct assistance?</h4>
+          <p>Our support team is available 24/7 to help with any questions.</p>
+          <a href="contact.html" style="margin-top:12px;display:inline-block;">Chat with an Expert →</a>
+        </div>
+        <div class="info-card" style="background:var(--navy);color:var(--white);">
+          <h4 style="color:var(--white);">🔗 Enterprise Solutions</h4>
+          <p style="color:rgba(255,255,255,0.75);">Custom API documentation and partner volume agreements for large businesses.</p>
+          <a href="contact.html" class="btn btn-white btn-sm" style="margin-top:12px;">View Documentation</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand"><span class="logo">HillGo</span><p>Advancing urban logistics through precision and professional transparency.</p><div class="footer-social"><a href="#">f</a><a href="#">𝕏</a><a href="#">in</a></div></div>
+        <div class="footer-col"><h4>Services</h4><a href="parcel.html">Same-Day Delivery</a><a href="merchant.html">Corporate Partnering</a><a href="parcel.html">Smart Tracking</a></div>
+        <div class="footer-col"><h4>Company</h4><a href="about.html">About Us</a><a href="contact.html">Careers</a></div>
+        <div class="footer-col"><h4>Legal</h4><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms of Service</a></div>
+      </div>
+      <div class="footer-bottom"><span>© 2026 HillGo Inc. All rights reserved.</span><span>English (US)</span></div>
+    </div>
+  </footer>
+  <script src="js/main.js"></script>
+</body>
+</html>

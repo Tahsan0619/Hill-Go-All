@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parcel & Courier - HillGo</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo">HillGo</a>
+      <nav class="nav">
+        <div class="nav-links">
+          <a href="services.html" class="active">Services</a>
+          <a href="merchant.html">Partners</a>
+          <a href="about.html">About</a>
+        </div>
+        <div class="nav-actions">
+          <a href="contact.html" class="btn btn-outline btn-sm">Log In</a>
+          <a href="merchant.html" class="btn btn-primary btn-sm">Get Started</a>
+        </div>
+      </nav>
+      <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+  <nav class="mobile-nav">
+    <a href="services.html">Services</a><a href="ride.html">Ride</a><a href="food.html">Food</a>
+    <a href="parcel.html">Parcel</a><a href="merchant.html">Partners</a><a href="about.html">About</a>
+    <a href="faq.html">Help Center</a><a href="contact.html">Contact</a>
+    <a href="merchant.html" class="btn btn-primary">Get Started</a>
+  </nav>
+
+  <section class="hero" style="padding-bottom:60px;background:linear-gradient(rgba(15,39,68,0.55),rgba(15,39,68,0.55)),url('https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1400&q=80') center/cover;">
+    <div class="container hero-grid">
+      <div class="hero-content">
+        <span class="badge badge-orange">⚡ Next-Day Delivery Enabled</span>
+        <h1 style="color:var(--white);">Logistics <span style="color:var(--blue-light);">Simplified.</span></h1>
+        <p style="color:rgba(255,255,255,0.85);">From local drops to nationwide shipping, HillGo's intelligent network handles your parcel requirements with precision and transparency.</p>
+        <div class="hero-btns">
+          <a href="#quote" class="btn btn-primary btn-lg" style="background:var(--navy);">Ship a Parcel →</a>
+          <a href="merchant.html" class="btn btn-outline-white btn-lg">Business Solutions</a>
+        </div>
+      </div>
+      <div class="hero-visual" id="quote">
+        <div class="quote-card">
+          <h3>Get a Quick Quote</h3>
+          <form id="quoteForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="origin">Origin Zip</label>
+                <input type="text" id="origin" placeholder="10001" value="10001">
+              </div>
+              <div class="form-group">
+                <label for="destination">Destination Zip</label>
+                <input type="text" id="destination" placeholder="90210" value="90210">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Weight (kg): <strong id="weightValue">25</strong> kg</label>
+              <input type="range" id="weight" min="1" max="50" value="25" style="width:100%;margin-top:8px;">
+            </div>
+            <div class="quote-result" id="quoteResult">Estimated Total: <strong>$18.50</strong></div>
+            <button type="submit" class="btn btn-orange" style="width:100%;">Calculate Shipping</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">Precision Logistics Infrastructure</h2>
+      <p class="section-subtitle">Enterprise-grade tools for businesses of every size</p>
+      <div class="why-grid">
+        <div class="why-card large" style="background:var(--blue-pale);">
+          <h3>Instant Transparent Estimates</h3>
+          <p>Real-time pricing with no hidden fees. Know your cost before you ship.</p>
+        </div>
+        <div class="why-card navy">
+          <h3>Industrial Security</h3>
+          <p>GPS geo-fencing, real-time tamper alerts, and photo proof of delivery on every shipment.</p>
+        </div>
+        <div class="why-card" style="background:var(--white);border:1px solid var(--gray-200);">
+          <h3>Business Bulk</h3>
+          <p>Volume discounts and dedicated account managers for high-volume shippers.</p>
+        </div>
+        <div class="why-card" style="background:var(--white);border:1px solid var(--gray-200);">
+          <h3>Global Routing</h3>
+          <p>Optimized routes across 64 districts with intelligent hub distribution.</p>
+        </div>
+        <div class="why-card" style="background:var(--white);border:1px solid var(--gray-200);">
+          <h3>24/7 Ops Center</h3>
+          <p>Round-the-clock monitoring and support for mission-critical deliveries.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background:var(--blue-pale);">
+    <div class="container">
+      <h2 class="section-title">Precision Process</h2>
+      <p class="section-subtitle">Three simple steps from pickup to delivery</p>
+      <div class="process-steps">
+        <div>
+          <div class="process-step-num">1</div>
+          <h3>Digital Onboarding</h3>
+          <p>Register your business and set up your store in minutes through our merchant portal.</p>
+        </div>
+        <div>
+          <div class="process-step-num">2</div>
+          <h3>Smart Pick-up</h3>
+          <p>Schedule pickups or drop off at any HillGo hub. Our system optimizes collection routes.</p>
+        </div>
+        <div>
+          <div class="process-step-num active">3</div>
+          <h3>Secure Last-Mile</h3>
+          <p>Verified riders deliver with photo proof, live tracking, and instant COD settlement.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-banner">
+    <div class="container split-grid" style="text-align:left;">
+      <div>
+        <h2>Ready to optimize your parcel flow?</h2>
+        <p>Join 4,000+ businesses already using HillGo for reliable parcel delivery.</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:24px;">
+          <a href="merchant.html" class="btn btn-orange">Join as Partner</a>
+          <a href="contact.html" class="btn btn-outline-white">Schedule a Demo</a>
+        </div>
+      </div>
+      <div style="background:rgba(255,255,255,0.1);border-radius:var(--radius);padding:24px;">
+        <p style="color:rgba(255,255,255,0.7);font-size:0.9rem;">System Status</p>
+        <p style="color:#4ade80;font-weight:700;font-size:1.25rem;">● Optimal</p>
+        <p style="color:rgba(255,255,255,0.7);margin-top:16px;font-size:0.9rem;">On-Time Delivery Rate</p>
+        <p style="color:var(--white);font-weight:700;font-size:1.5rem;">99.98%</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand"><span class="logo">HillGo</span><p>Precision logistics for the modern world.</p><div class="footer-social"><a href="#">f</a><a href="#">𝕏</a><a href="#">in</a></div></div>
+        <div class="footer-col"><h4>Company</h4><a href="about.html">About Us</a><a href="merchant.html">Partners</a><a href="faq.html">Resources</a></div>
+        <div class="footer-col"><h4>Support</h4><a href="contact.html">Contact</a><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms of Service</a></div>
+        <div class="footer-col"><h4>Services</h4><a href="parcel.html">Parcel</a><a href="ride.html">Ride</a><a href="food.html">Food</a></div>
+      </div>
+      <div class="footer-bottom"><span>© 2026 HillGo Inc. All rights reserved.</span><span>English (US)</span></div>
+    </div>
+  </footer>
+  <script src="js/main.js"></script>
+</body>
+</html>

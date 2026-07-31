@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HillGo Admin | Courier KYC Queue</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "inverse-primary": "#b1c5ff",
+                        "on-surface": "#191c1e",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed-dim": "#ffb59a",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#f3f4f6",
+                        "on-error-container": "#93000a",
+                        "tertiary": "#651f00",
+                        "surface-bright": "#f8f9fb",
+                        "primary-fixed-dim": "#b1c5ff",
+                        "outline": "#737784",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "tertiary-container": "#8b2e01",
+                        "on-primary-fixed-variant": "#00419e",
+                        "on-primary": "#ffffff",
+                        "secondary": "#505f76",
+                        "on-tertiary-container": "#ffaa8a",
+                        "on-primary-fixed": "#001946",
+                        "surface": "#f8f9fb",
+                        "surface-container": "#edeef0",
+                        "on-secondary-fixed": "#0b1c30",
+                        "on-secondary-container": "#54647a",
+                        "inverse-surface": "#2e3132",
+                        "surface-container-high": "#e7e8ea",
+                        "primary-container": "#0047ab",
+                        "on-background": "#191c1e",
+                        "outline-variant": "#c3c6d5",
+                        "on-tertiary-fixed-variant": "#802900",
+                        "on-primary-container": "#a5bdff",
+                        "on-tertiary-fixed": "#380d00",
+                        "secondary-fixed": "#d3e4fe",
+                        "secondary-container": "#d0e1fb",
+                        "surface-container-highest": "#e1e2e4",
+                        "primary": "#00327d",
+                        "tertiary-fixed": "#ffdbcf",
+                        "surface-tint": "#2559bd",
+                        "on-surface-variant": "#434653",
+                        "inverse-on-surface": "#f0f1f3",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "surface-variant": "#e1e2e4",
+                        "surface-dim": "#d9dadc",
+                        "on-tertiary": "#ffffff",
+                        "background": "#f8f9fb",
+                        "primary-fixed": "#dae2ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "sidebar_width": "240px",
+                        "header_height": "64px",
+                        "gutter": "16px",
+                        "base_unit": "4px",
+                        "container_padding": "24px",
+                        "card_gap": "20px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "data-mono": ["Inter"],
+                        "title-sm": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "data-mono": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+                        "title-sm": ["18px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F3F4F6;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .sidebar-active-indicator {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: #00327d;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+        }
+        /* Custom scrollbar for table */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="text-on-background">
+<!-- Side Navigation Shell -->
+<aside class="fixed left-0 top-0 h-full w-sidebar_width bg-on-primary-fixed dark:bg-on-background flex flex-col py-6 border-r border-outline-variant dark:border-outline shadow-sm z-50">
+<div class="px-6 mb-10">
+<h1 class="text-headline-md font-headline-md font-bold text-surface-bright leading-tight tracking-tight">HillGo</h1>
+<p class="text-label-sm font-label-sm text-outline-variant opacity-70">Super Admin</p>
+</div>
+<nav class="flex-1 space-y-1">
+<!-- Navigation Items Mapping from JSON -->
+<a class="group relative flex items-center px-6 py-3 text-surface-variant dark:text-outline-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-colors cursor-pointer active:opacity-80 transition-all" href="#">
+<span class="material-symbols-outlined mr-3">dashboard</span>
+<span class="text-label-md font-label-md">Overview</span>
+</a>
+<a class="group relative flex items-center px-6 py-3 text-surface-variant dark:text-outline-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-colors cursor-pointer active:opacity-80 transition-all" href="#">
+<span class="material-symbols-outlined mr-3">location_on</span>
+<span class="text-label-md font-label-md">Region Lock</span>
+</a>
+<a class="group relative flex items-center px-6 py-3 text-surface-variant dark:text-outline-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-colors cursor-pointer active:opacity-80 transition-all" href="#">
+<span class="material-symbols-outlined mr-3">group</span>
+<span class="text-label-md font-label-md">Customer Panel</span>
+</a>
+<a class="group relative flex items-center px-6 py-3 text-surface-variant dark:text-outline-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-colors cursor-pointer active:opacity-80 transition-all" href="#">
+<span class="material-symbols-outlined mr-3">directions_bike</span>
+<span class="text-label-md font-label-md">Rider Panel</span>
+</a>
+<a class="group relative flex items-center px-6 py-3 text-surface-variant dark:text-outline-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-colors cursor-pointer active:opacity-80 transition-all" href="#">
+<span class="material-symbols-outlined mr-3">store</span>
+<span class="text-label-md font-label-md">Merchant Panel</span>
+</a>
+<!-- ACTIVE: Courier Panel -->
+<a class="group relative flex items-center px-6 py-3 bg-secondary-container text-primary border-r-[3px] border-primary font-bold transition-colors cursor-pointer active:opacity-80 transition-all" href="#">
+<span class="sidebar-active-indicator"></span>
+<span class="material-symbols-outlined mr-3" style="font-variation-settings: 'FILL' 1;">local_shipping</span>
+<span class="text-label-md font-label-md">Courier Panel</span>
+</a>
+<a class="group relative flex items-center px-6 py-3 text-surface-variant dark:text-outline-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-colors cursor-pointer active:opacity-80 transition-all" href="#">
+<span class="material-symbols-outlined mr-3">payments</span>
+<span class="text-label-md font-label-md">Finance</span>
+</a>
+<a class="group relative flex items-center px-6 py-3 text-surface-variant dark:text-outline-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-colors cursor-pointer active:opacity-80 transition-all" href="#">
+<span class="material-symbols-outlined mr-3">description</span>
+<span class="text-label-md font-label-md">Content</span>
+</a>
+<a class="group relative flex items-center px-6 py-3 text-surface-variant dark:text-outline-variant hover:text-surface-bright hover:bg-surface-container-highest/10 transition-colors cursor-pointer active:opacity-80 transition-all" href="#">
+<span class="material-symbols-outlined mr-3">settings</span>
+<span class="text-label-md font-label-md">Settings</span>
+</a>
+</nav>
+<div class="px-6 pt-6 mt-auto border-t border-outline-variant/20">
+<div class="flex items-center space-x-3">
+<img class="w-10 h-10 rounded-full border-2 border-primary-container" data-alt="A professional headshot of a high-level operations administrator, mid-40s, looking confident and composed. The setting is a clean, modern corporate office with soft, diffused daylight and subtle cool gray tones in the background. High-fidelity photography style with a shallow depth of field." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAOkMFTM-Fb-l-ARLPupgmy376YbDrqbynR3qIXhindiv6Ez-FynIa1Ikk0rzWzWChVWz9yiTn6-3Ha0xguMx1RZR08Sjpz-Dnx4GpnjJgjI46qdIEGHvA_v-eQ345RiJMLos6IJHFIiwg13v1JMjV6aMVlFIssJxvDNe07sBJ5RmyCAXR52MCsu_wJxnfi_ZLaQAqe6KYxgmMDZKSRsToFpaFmLNaP_80GNxTfx5416ueom7GkVjhK"/>
+<div class="overflow-hidden">
+<p class="text-label-md font-label-md text-surface-bright truncate">Ariful Islam</p>
+<p class="text-label-sm font-label-sm text-outline-variant truncate">Ops Director</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Top Navigation Shell -->
+<header class="fixed top-0 right-0 h-header_height w-[calc(100%-240px)] ml-sidebar_width bg-surface-container-lowest dark:bg-surface-dim flex items-center justify-between px-gutter border-b border-outline-variant dark:border-outline shadow-sm z-40">
+<div class="flex items-center space-x-4 flex-1">
+<div class="relative w-full max-w-md group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full bg-surface-container-low border-none rounded-lg pl-10 pr-4 py-2 text-body-sm font-body-sm focus:ring-2 focus:ring-primary focus-within:ring-2 transition-all" placeholder="Search courier agents, NID or documents..." type="text"/>
+</div>
+</div>
+<div class="flex items-center space-x-4">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-full transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-surface-container-lowest"></span>
+</button>
+<div class="h-8 w-[1px] bg-outline-variant mx-2"></div>
+<div class="flex items-center space-x-2">
+<span class="text-label-md font-label-md text-primary">HillGo Admin</span>
+<span class="material-symbols-outlined text-outline">expand_more</span>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-sidebar_width pt-header_height min-h-screen bg-[#F3F4F6] p-container_padding">
+<!-- Header & Stats Section -->
+<div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<nav aria-label="Breadcrumb" class="flex mb-2">
+<ol class="inline-flex items-center space-x-1 text-label-sm font-label-sm text-outline">
+<li>Courier Panel</li>
+<li class="flex items-center">
+<span class="material-symbols-outlined text-sm mx-1">chevron_right</span>
+<span class="text-primary font-semibold">KYC Verification Queue</span>
+</li>
+</ol>
+</nav>
+<h2 class="text-display-lg font-display-lg text-on-surface">Verification Queue</h2>
+<p class="text-body-md font-body-md text-on-surface-variant">Manage and audit 124 pending document submissions from courier agents.</p>
+</div>
+<div class="flex space-x-3">
+<button class="flex items-center px-4 py-2 bg-surface-container-lowest border border-outline-variant rounded-lg text-label-md font-label-md text-on-surface hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined mr-2">filter_list</span>
+                    Filters
+                </button>
+<button class="flex items-center px-4 py-2 bg-primary text-white rounded-lg text-label-md font-label-md hover:bg-primary/90 shadow-sm transition-all">
+<span class="material-symbols-outlined mr-2">download</span>
+                    Export CSV
+                </button>
+</div>
+</div>
+<!-- KPI Cards Grid -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-card_gap mb-8">
+<div class="bg-white p-5 rounded-xl border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
+<p class="text-label-sm font-label-sm text-outline uppercase tracking-wider mb-1">Total Pending</p>
+<div class="flex items-baseline space-x-2">
+<span class="text-headline-md font-headline-md text-on-surface">124</span>
+<span class="text-label-sm font-label-sm text-error bg-error-container/20 px-2 py-0.5 rounded-full">+12%</span>
+</div>
+<div class="mt-4 h-1.5 w-full bg-surface-container-low rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[65%] rounded-full"></div>
+</div>
+</div>
+<div class="bg-white p-5 rounded-xl border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
+<p class="text-label-sm font-label-sm text-outline uppercase tracking-wider mb-1">SLA At Risk</p>
+<div class="flex items-baseline space-x-2">
+<span class="text-headline-md font-headline-md text-error">18</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant">Across 12 agents</span>
+</div>
+<div class="mt-4 flex -space-x-2">
+<div class="w-6 h-6 rounded-full border-2 border-white bg-error/10 flex items-center justify-center"><span class="text-[10px] text-error font-bold">24h</span></div>
+<div class="w-6 h-6 rounded-full border-2 border-white bg-error/10 flex items-center justify-center"><span class="text-[10px] text-error font-bold">48h</span></div>
+</div>
+</div>
+<div class="bg-white p-5 rounded-xl border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
+<p class="text-label-sm font-label-sm text-outline uppercase tracking-wider mb-1">Avg. Review Time</p>
+<div class="flex items-baseline space-x-2">
+<span class="text-headline-md font-headline-md text-on-surface">4.2h</span>
+<span class="text-label-sm font-label-sm text-primary bg-primary-fixed/30 px-2 py-0.5 rounded-full">-0.8h</span>
+</div>
+<p class="mt-3 text-label-sm font-label-sm text-on-surface-variant">Last 7 days performance</p>
+</div>
+<div class="bg-white p-5 rounded-xl border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
+<p class="text-label-sm font-label-sm text-outline uppercase tracking-wider mb-1">Action Required</p>
+<div class="flex items-baseline space-x-2">
+<span class="text-headline-md font-headline-md text-tertiary">32</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant">Waiting for re-upload</span>
+</div>
+<p class="mt-3 text-label-sm font-label-sm text-on-surface-variant">Clarification sent to agents</p>
+</div>
+</div>
+<!-- Main Data Table Container -->
+<div class="bg-white rounded-xl border border-outline-variant shadow-sm overflow-hidden mb-8">
+<div class="px-6 py-4 border-b border-outline-variant flex items-center justify-between">
+<h3 class="text-title-sm font-title-sm text-on-surface">Verification Requests</h3>
+<div class="flex space-x-2">
+<span class="px-3 py-1 bg-surface-container text-label-sm font-label-sm rounded-full text-on-surface-variant">All (245)</span>
+<span class="px-3 py-1 bg-primary text-label-sm font-label-sm rounded-full text-white">Pending (124)</span>
+<span class="px-3 py-1 bg-surface-container text-label-sm font-label-sm rounded-full text-on-surface-variant">Verified (89)</span>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-low sticky top-0">
+<tr>
+<th class="px-6 py-3 text-label-md font-label-md text-on-surface-variant">Agent</th>
+<th class="px-6 py-3 text-label-md font-label-md text-on-surface-variant">Document Type</th>
+<th class="px-6 py-3 text-label-md font-label-md text-on-surface-variant">Status</th>
+<th class="px-6 py-3 text-label-md font-label-md text-on-surface-variant">Submitted Date</th>
+<th class="px-6 py-3 text-label-md font-label-md text-on-surface-variant text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/30">
+<!-- Table Row 1 -->
+<tr class="hover:bg-surface-bright transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center space-x-3">
+<div class="w-9 h-9 rounded-full bg-primary-fixed text-primary flex items-center justify-center font-bold text-label-md">MK</div>
+<div>
+<p class="text-body-md font-semibold text-on-surface">Md. Kamal Hossain</p>
+<p class="text-label-sm font-label-sm text-outline">ID: CG-99420</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center">
+<span class="material-symbols-outlined text-primary text-lg mr-2">badge</span>
+<span class="text-body-sm font-medium">Driving License</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary-container/10 text-primary uppercase">
+<span class="w-1.5 h-1.5 rounded-full bg-primary mr-1.5 animate-pulse"></span>
+                                    Pending
+                                </span>
+</td>
+<td class="px-6 py-4 text-body-sm text-on-surface-variant font-data-mono">
+                                Oct 24, 2023 · 14:32
+                            </td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end space-x-2">
+<button class="p-2 text-primary hover:bg-primary/5 rounded-lg transition-colors" title="View Document">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-variant rounded-lg transition-colors" title="Quick Approve">
+<span class="material-symbols-outlined">check_circle</span>
+</button>
+<button class="p-2 text-error hover:bg-error/5 rounded-lg transition-colors">
+<span class="material-symbols-outlined">cancel</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Table Row 2 -->
+<tr class="hover:bg-surface-bright transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center space-x-3">
+<img class="w-9 h-9 rounded-full object-cover" data-alt="A portrait of a Bangladeshi delivery agent in his 30s, wearing a modern dark blue courier uniform with a subtle company logo. Professional studio lighting against a clean, minimal white background. Cinematic clarity and detail." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjr2HUmfRXCvSE1fcmWun4Bymv5pwh8Jg6hPyCzoloFZlyEhtwV4HLYaobeHNO8gmw1bTXHKjlMJhiUVPCMwSpv7dCBPENxgaLYJ7u7KQ9ZxC7NJAD5C3x22z2-hJKfAkUn-gc8i2MldJGnGmpybMjwUgsKkIJ2rWss1bZHMuRgANORjoiVPO5pZYG-yuQyziF--KN0UyjNJ9XXJ1m05jC6obLXsuW3n4pNFul0qd9uWHPm0h__J9k"/>
+<div>
+<p class="text-body-md font-semibold text-on-surface">Shakib Al Hasan</p>
+<p class="text-label-sm font-label-sm text-outline">ID: CG-88124</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center">
+<span class="material-symbols-outlined text-primary text-lg mr-2">directions_car</span>
+<span class="text-body-sm font-medium">Vehicle Registration</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-tertiary-container/10 text-tertiary-container uppercase">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary mr-1.5"></span>
+                                    Action Required
+                                </span>
+</td>
+<td class="px-6 py-4 text-body-sm text-on-surface-variant font-data-mono">
+                                Oct 23, 2023 · 09:15
+                            </td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end space-x-2">
+<button class="p-2 text-primary hover:bg-primary/5 rounded-lg transition-colors">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-variant rounded-lg transition-colors">
+<span class="material-symbols-outlined">mail</span>
+</button>
+<button class="p-2 text-error hover:bg-error/5 rounded-lg transition-colors">
+<span class="material-symbols-outlined">cancel</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Table Row 3 -->
+<tr class="hover:bg-surface-bright transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center space-x-3">
+<div class="w-9 h-9 rounded-full bg-secondary-fixed text-secondary flex items-center justify-center font-bold text-label-md">RN</div>
+<div>
+<p class="text-body-md font-semibold text-on-surface">Runa Nahar</p>
+<p class="text-label-sm font-label-sm text-outline">ID: CG-77211</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center">
+<span class="material-symbols-outlined text-primary text-lg mr-2">fingerprint</span>
+<span class="text-body-sm font-medium">National ID (NID)</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary-container/10 text-primary uppercase">
+<span class="w-1.5 h-1.5 rounded-full bg-primary mr-1.5 animate-pulse"></span>
+                                    Pending
+                                </span>
+</td>
+<td class="px-6 py-4 text-body-sm text-on-surface-variant font-data-mono">
+                                Oct 24, 2023 · 16:45
+                            </td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end space-x-2">
+<button class="p-2 text-primary hover:bg-primary/5 rounded-lg transition-colors">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-variant rounded-lg transition-colors">
+<span class="material-symbols-outlined">check_circle</span>
+</button>
+<button class="p-2 text-error hover:bg-error/5 rounded-lg transition-colors">
+<span class="material-symbols-outlined">cancel</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Table Row 4 -->
+<tr class="hover:bg-surface-bright transition-colors group bg-error/5">
+<td class="px-6 py-4">
+<div class="flex items-center space-x-3">
+<div class="w-9 h-9 rounded-full bg-error-container text-on-error-container flex items-center justify-center font-bold text-label-md">FA</div>
+<div>
+<p class="text-body-md font-semibold text-on-surface">Farhan Ahmed</p>
+<p class="text-label-sm font-label-sm text-outline">ID: CG-44322</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center">
+<span class="material-symbols-outlined text-primary text-lg mr-2">badge</span>
+<span class="text-body-sm font-medium">Driving License</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-error/10 text-error uppercase">
+<span class="material-symbols-outlined text-[12px] mr-1">warning</span>
+                                    SLA Breach
+                                </span>
+</td>
+<td class="px-6 py-4 text-body-sm text-on-surface-variant font-data-mono">
+                                Oct 21, 2023 · 11:20
+                            </td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end space-x-2">
+<button class="p-2 text-primary hover:bg-primary/5 rounded-lg transition-colors">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+<button class="px-3 py-1 bg-primary text-white text-xs font-bold rounded hover:bg-primary/90">
+                                        URGENT
+                                    </button>
+</div>
+</td>
+</tr>
+<!-- Table Row 5 -->
+<tr class="hover:bg-surface-bright transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center space-x-3">
+<div class="w-9 h-9 rounded-full bg-tertiary-fixed text-tertiary flex items-center justify-center font-bold text-label-md">IA</div>
+<div>
+<p class="text-body-md font-semibold text-on-surface">Imran Azad</p>
+<p class="text-label-sm font-label-sm text-outline">ID: CG-33109</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center">
+<span class="material-symbols-outlined text-primary text-lg mr-2">fingerprint</span>
+<span class="text-body-sm font-medium">National ID (NID)</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary-container/10 text-primary uppercase">
+<span class="w-1.5 h-1.5 rounded-full bg-primary mr-1.5 animate-pulse"></span>
+                                    Pending
+                                </span>
+</td>
+<td class="px-6 py-4 text-body-sm text-on-surface-variant font-data-mono">
+                                Oct 24, 2023 · 17:59
+                            </td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end space-x-2">
+<button class="p-2 text-primary hover:bg-primary/5 rounded-lg transition-colors">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-variant rounded-lg transition-colors">
+<span class="material-symbols-outlined">check_circle</span>
+</button>
+<button class="p-2 text-error hover:bg-error/5 rounded-lg transition-colors">
+<span class="material-symbols-outlined">cancel</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="px-6 py-4 bg-surface-container-low border-t border-outline-variant flex items-center justify-between">
+<p class="text-label-sm font-label-sm text-on-surface-variant">Showing 1-10 of 124 requests</p>
+<div class="flex space-x-1">
+<button class="w-8 h-8 flex items-center justify-center rounded-lg border border-outline-variant bg-white text-on-surface-variant hover:bg-surface-container transition-colors"><span class="material-symbols-outlined text-lg">chevron_left</span></button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg border border-primary bg-primary text-white font-bold text-xs">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg border border-outline-variant bg-white text-on-surface-variant hover:bg-surface-container transition-colors font-bold text-xs">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg border border-outline-variant bg-white text-on-surface-variant hover:bg-surface-container transition-colors font-bold text-xs">3</button>
+<span class="px-2 self-center text-outline">...</span>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg border border-outline-variant bg-white text-on-surface-variant hover:bg-surface-container transition-colors font-bold text-xs">13</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg border border-outline-variant bg-white text-on-surface-variant hover:bg-surface-container transition-colors"><span class="material-symbols-outlined text-lg">chevron_right</span></button>
+</div>
+</div>
+</div>
+<!-- Details Preview Panel (Asymmetric/Bento element) -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-card_gap">
+<div class="lg:col-span-2 bg-white p-6 rounded-xl border border-outline-variant shadow-sm">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-title-sm font-title-sm text-on-surface">Queue Trends</h3>
+<select class="bg-surface-container-low border-none rounded-lg text-label-sm font-label-sm focus:ring-primary">
+<option>Last 30 Days</option>
+<option>Last 7 Days</option>
+</select>
+</div>
+<div class="h-64 flex items-end justify-between space-x-2 px-2">
+<!-- Simple Bar Chart Mockup -->
+<div class="flex-1 flex flex-col items-center">
+<div class="w-full bg-primary-fixed rounded-t h-[40%] group relative">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-on-surface text-surface text-[10px] px-2 py-1 rounded hidden group-hover:block whitespace-nowrap">45 Submissions</div>
+</div>
+<span class="text-[10px] text-outline mt-2 uppercase">Mon</span>
+</div>
+<div class="flex-1 flex flex-col items-center">
+<div class="w-full bg-primary-fixed rounded-t h-[55%] group relative"></div>
+<span class="text-[10px] text-outline mt-2 uppercase">Tue</span>
+</div>
+<div class="flex-1 flex flex-col items-center">
+<div class="w-full bg-primary rounded-t h-[85%] group relative">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-on-surface text-surface text-[10px] px-2 py-1 rounded hidden group-hover:block whitespace-nowrap">98 Submissions</div>
+</div>
+<span class="text-[10px] text-outline mt-2 uppercase">Wed</span>
+</div>
+<div class="flex-1 flex flex-col items-center">
+<div class="w-full bg-primary-fixed rounded-t h-[35%] group relative"></div>
+<span class="text-[10px] text-outline mt-2 uppercase">Thu</span>
+</div>
+<div class="flex-1 flex flex-col items-center">
+<div class="w-full bg-primary-fixed rounded-t h-[42%] group relative"></div>
+<span class="text-[10px] text-outline mt-2 uppercase">Fri</span>
+</div>
+<div class="flex-1 flex flex-col items-center">
+<div class="w-full bg-primary-fixed rounded-t h-[20%] group relative"></div>
+<span class="text-[10px] text-outline mt-2 uppercase">Sat</span>
+</div>
+<div class="flex-1 flex flex-col items-center">
+<div class="w-full bg-primary-fixed rounded-t h-[15%] group relative"></div>
+<span class="text-[10px] text-outline mt-2 uppercase">Sun</span>
+</div>
+</div>
+</div>
+<div class="bg-primary p-6 rounded-xl shadow-lg text-white flex flex-col justify-between overflow-hidden relative">
+<!-- Abstract Design Background -->
+<div class="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
+<div class="relative z-10">
+<h3 class="text-title-sm font-title-sm mb-2">Policy Updates</h3>
+<p class="text-body-sm font-body-sm opacity-80 mb-6">New BRTA documentation guidelines for 2024 are now active. All vehicle registrations must include the QR-coded smart card copy.</p>
+<ul class="space-y-3">
+<li class="flex items-start">
+<span class="material-symbols-outlined text-sm mr-2 mt-1">info</span>
+<span class="text-label-sm font-label-sm">QR Code validation mandatory</span>
+</li>
+<li class="flex items-start">
+<span class="material-symbols-outlined text-sm mr-2 mt-1">history</span>
+<span class="text-label-sm font-label-sm">Legacy paper NIDs deprecated</span>
+</li>
+</ul>
+</div>
+<button class="relative z-10 mt-8 w-full py-2 bg-white text-primary rounded-lg text-label-md font-label-md font-bold hover:bg-primary-fixed transition-colors">
+                    Review New Policy
+                </button>
+</div>
+</div>
+</main>
+<!-- Floating Verification Modal (Shadow/Glass) - Mockup state -->
+<div class="hidden fixed inset-0 z-[100] flex items-center justify-center p-6" id="verificationModal">
+<div class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+<div class="relative bg-white w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+<div class="px-6 py-4 border-b border-outline-variant flex items-center justify-between">
+<div>
+<h2 class="text-title-sm font-bold text-on-surface">Document Verification</h2>
+<p class="text-label-sm text-outline">Md. Kamal Hossain · Driving License · ID: CG-99420</p>
+</div>
+<button class="p-2 hover:bg-surface-container rounded-full" onclick="document.getElementById('verificationModal').classList.add('hidden')">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto p-6 flex flex-col md:flex-row gap-8">
+<div class="flex-1">
+<p class="text-label-md font-bold mb-3">Submitted Document</p>
+<div class="aspect-[4/3] rounded-xl overflow-hidden border border-outline-variant bg-surface-container-low group relative cursor-zoom-in">
+<img class="w-full h-full object-contain" data-alt="A high-quality scan of a modern Bangladeshi driving license. The card shows clear professional typography, a secure holographic emblem, and a portrait photo of a man in his 30s. The document is placed flat on a neutral light gray surface with professional lighting capturing all intricate security details." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBKRVdUqzYVcQ6SMy_OqSlbDd-wjE8k8U1NqDPAEmFs60-ZYocwJs4M2N52zZL7BLQjU6WDDwis1qEVh_cttsUpaNaKWZDoSPtGQz-HG8651AVRe6rI6x-ePuLE65p7QyH5r3h6VbYy6DpAwSvC8OoCf_LDy3j4iF4_aERjk_9v8K_0GUEZBe1LcFmYoSllBNdY0Tf8jHV5vNlz_4ss7a6AYKYqWWhyogBRp4-gmwurTJUUeYj8TXW"/>
+<div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100">
+<span class="px-4 py-2 bg-white/90 text-on-surface rounded-full shadow-lg font-bold text-xs flex items-center">
+<span class="material-symbols-outlined text-sm mr-2">zoom_in</span> Click to Enlarge
+                             </span>
+</div>
+</div>
+<div class="mt-4 flex space-x-2">
+<button class="flex-1 py-2 bg-surface-container-low text-on-surface-variant rounded-lg text-label-sm flex items-center justify-center hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-sm mr-2">rotate_right</span> Rotate
+                        </button>
+<button class="flex-1 py-2 bg-surface-container-low text-on-surface-variant rounded-lg text-label-sm flex items-center justify-center hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-sm mr-2">download</span> Download
+                        </button>
+</div>
+</div>
+<div class="w-full md:w-80 space-y-6">
+<div>
+<p class="text-label-md font-bold mb-3">Verification Checklist</p>
+<div class="space-y-3">
+<label class="flex items-center p-3 rounded-lg border border-outline-variant bg-surface-bright cursor-pointer">
+<input class="rounded border-outline text-primary focus:ring-primary h-4 w-4 mr-3" type="checkbox"/>
+<span class="text-body-sm">Name matches profile</span>
+</label>
+<label class="flex items-center p-3 rounded-lg border border-outline-variant bg-surface-bright cursor-pointer">
+<input class="rounded border-outline text-primary focus:ring-primary h-4 w-4 mr-3" type="checkbox"/>
+<span class="text-body-sm">License is not expired</span>
+</label>
+<label class="flex items-center p-3 rounded-lg border border-outline-variant bg-surface-bright cursor-pointer">
+<input class="rounded border-outline text-primary focus:ring-primary h-4 w-4 mr-3" type="checkbox"/>
+<span class="text-body-sm">Photo is clear &amp; visible</span>
+</label>
+</div>
+</div>
+<div>
+<p class="text-label-md font-bold mb-2">Rejection Reason <span class="text-outline text-xs font-normal">(Required if rejecting)</span></p>
+<select class="w-full bg-surface-container-low border border-outline-variant rounded-lg text-body-sm focus:ring-primary">
+<option disabled="" selected="">Select a reason...</option>
+<option>Image quality too low</option>
+<option>Information mismatch</option>
+<option>Expired document</option>
+<option>Document is blurred/unreadable</option>
+<option>Other (Custom note)</option>
+</select>
+</div>
+<div class="pt-4 space-y-3">
+<button class="w-full py-3 bg-primary text-white rounded-xl font-bold hover:bg-primary/90 transition-all shadow-md active:scale-[0.98]">
+                            Approve Document
+                        </button>
+<button class="w-full py-3 bg-surface-container-lowest border border-error text-error rounded-xl font-bold hover:bg-error/5 transition-all">
+                            Reject Document
+                        </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+        // Simple micro-interactions
+        document.querySelectorAll('tbody tr').forEach(row => {
+            row.addEventListener('click', (e) => {
+                // If not clicking an action button specifically
+                if (!e.target.closest('button')) {
+                    const modal = document.getElementById('verificationModal');
+                    modal.classList.remove('hidden');
+                }
+            });
+        });
+
+        // Search Bar Focus Effect
+        const searchInput = document.querySelector('input[type="text"]');
+        searchInput.addEventListener('focus', () => {
+            searchInput.parentElement.classList.add('ring-2', 'ring-primary/20');
+        });
+        searchInput.addEventListener('blur', () => {
+            searchInput.parentElement.classList.remove('ring-2', 'ring-primary/20');
+        });
+    </script>
+</body></html>

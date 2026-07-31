@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HillGo Admin | Merchant Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface-variant": "#434653",
+                        "inverse-primary": "#b1c5ff",
+                        "on-primary-fixed": "#001946",
+                        "primary-fixed-dim": "#b1c5ff",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-container": "#54647a",
+                        "tertiary-fixed": "#ffdbcf",
+                        "tertiary": "#651f00",
+                        "on-primary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed": "#380d00",
+                        "on-primary-container": "#a5bdff",
+                        "surface-bright": "#f8f9fb",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "surface-variant": "#e1e2e4",
+                        "secondary-container": "#d0e1fb",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "error": "#ba1a1a",
+                        "secondary": "#505f76",
+                        "outline-variant": "#c3c6d5",
+                        "surface": "#f8f9fb",
+                        "tertiary-container": "#8b2e01",
+                        "on-primary-fixed-variant": "#00419e",
+                        "surface-container-low": "#f3f4f6",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb59a",
+                        "on-tertiary-fixed-variant": "#802900",
+                        "on-tertiary-container": "#ffaa8a",
+                        "background": "#f8f9fb",
+                        "inverse-surface": "#2e3132",
+                        "surface-tint": "#2559bd",
+                        "surface-dim": "#d9dadc",
+                        "surface-container-highest": "#e1e2e4",
+                        "primary": "#00327d",
+                        "primary-fixed": "#dae2ff",
+                        "inverse-on-surface": "#f0f1f3",
+                        "surface-container-high": "#e7e8ea",
+                        "on-surface": "#191c1e",
+                        "surface-container": "#edeef0",
+                        "primary-container": "#0047ab",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed": "#d3e4fe",
+                        "on-secondary-fixed": "#0b1c30",
+                        "outline": "#737784",
+                        "on-background": "#191c1e",
+                        "on-error-container": "#93000a",
+                        "on-tertiary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base_unit": "4px",
+                        "sidebar_width": "240px",
+                        "header_height": "64px",
+                        "card_gap": "20px",
+                        "gutter": "16px",
+                        "container_padding": "24px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "data-mono": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "label-md": ["Inter"],
+                        "title-sm": ["Inter"],
+                        "headline-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                        "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "data-mono": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "title-sm": ["18px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #F3F4F6; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Custom Toggle Switch */
+        .toggle-checkbox:checked { right: 0; border-color: #00327d; }
+        .toggle-checkbox:checked + .toggle-label { background-color: #00327d; }
+    </style>
+</head>
+<body class="text-on-surface">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full w-[240px] bg-on-primary-fixed dark:bg-on-background flex flex-col py-6 border-r border-outline-variant dark:border-outline shadow-sm z-50">
+<div class="px-6 mb-8 flex items-center gap-3">
+<div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-headline-md">chrome_maximize</span>
+</div>
+<div>
+<h1 class="text-headline-md font-headline-md font-bold text-surface-bright leading-none">HillGo</h1>
+<p class="text-label-sm font-label-sm text-outline-variant opacity-70">Super Admin</p>
+</div>
+</div>
+<nav class="flex-1 px-3 space-y-1 overflow-y-auto hide-scrollbar">
+<div class="flex items-center px-3 py-3 rounded-lg text-surface-variant dark:text-outline-variant hover:bg-surface-container-highest/10 transition-colors cursor-pointer group">
+<span class="material-symbols-outlined mr-3">dashboard</span>
+<span class="text-label-md font-label-md">Overview</span>
+</div>
+<div class="flex items-center px-3 py-3 rounded-lg text-surface-variant dark:text-outline-variant hover:bg-surface-container-highest/10 transition-colors cursor-pointer group">
+<span class="material-symbols-outlined mr-3">location_on</span>
+<span class="text-label-md font-label-md">Region Lock</span>
+</div>
+<div class="flex items-center px-3 py-3 rounded-lg text-surface-variant dark:text-outline-variant hover:bg-surface-container-highest/10 transition-colors cursor-pointer group">
+<span class="material-symbols-outlined mr-3">group</span>
+<span class="text-label-md font-label-md">Customer Panel</span>
+</div>
+<div class="flex items-center px-3 py-3 rounded-lg text-surface-variant dark:text-outline-variant hover:bg-surface-container-highest/10 transition-colors cursor-pointer group">
+<span class="material-symbols-outlined mr-3">directions_bike</span>
+<span class="text-label-md font-label-md">Rider Panel</span>
+</div>
+<!-- Active State: Merchant Panel -->
+<div class="flex items-center px-3 py-3 bg-secondary-container text-primary border-r-[3px] border-primary font-bold cursor-pointer transition-all">
+<span class="material-symbols-outlined mr-3">store</span>
+<span class="text-label-md font-label-md">Merchant Panel</span>
+</div>
+<div class="flex items-center px-3 py-3 rounded-lg text-surface-variant dark:text-outline-variant hover:bg-surface-container-highest/10 transition-colors cursor-pointer group">
+<span class="material-symbols-outlined mr-3">local_shipping</span>
+<span class="text-label-md font-label-md">Courier Panel</span>
+</div>
+<div class="flex items-center px-3 py-3 rounded-lg text-surface-variant dark:text-outline-variant hover:bg-surface-container-highest/10 transition-colors cursor-pointer group">
+<span class="material-symbols-outlined mr-3">payments</span>
+<span class="text-label-md font-label-md">Finance</span>
+</div>
+<div class="flex items-center px-3 py-3 rounded-lg text-surface-variant dark:text-outline-variant hover:bg-surface-container-highest/10 transition-colors cursor-pointer group">
+<span class="material-symbols-outlined mr-3">description</span>
+<span class="text-label-md font-label-md">Content</span>
+</div>
+<div class="flex items-center px-3 py-3 rounded-lg text-surface-variant dark:text-outline-variant hover:bg-surface-container-highest/10 transition-colors cursor-pointer group">
+<span class="material-symbols-outlined mr-3">settings</span>
+<span class="text-label-md font-label-md">Settings</span>
+</div>
+</nav>
+<div class="px-6 py-4 mt-auto border-t border-outline-variant/20 flex items-center gap-3">
+<img class="w-10 h-10 rounded-full border border-outline-variant object-cover" data-alt="A professional headshot of a corporate administrator, middle-aged male, dressed in a formal blue shirt, set against a blurred office background with warm wooden accents. The lighting is soft and professional, emphasizing reliability and authority in a modern corporate setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKlbAh3CfN0M9pHRT4R1gPMOOy9-3utIG_JTlYTkQKxrA6UVHPTY6MRaFHewa22fT_MDDlUgsBhFsEz5IFPjnLje2zoJa_h_3zzfqixnBbZGCKoDb_FYEJ3mHzFsB-0owOFlHbhZ2vvKZj0DBgVci3xilUz29ea8Hdhv2vZCQ3E9lU9_RcjhLkcYfMs8-cX0BvqGO7uP93Q4UbAS9p5nI_8VfyIk5ZxA0G2YHC-SrF2yfYvGy3Nb9W"/>
+<div class="overflow-hidden">
+<p class="text-label-md font-label-md text-surface-bright truncate">Ariful Islam</p>
+<p class="text-[10px] text-outline-variant uppercase tracking-wider">System Lead</p>
+</div>
+</div>
+</aside>
+<!-- TopNavBar -->
+<header class="fixed top-0 right-0 h-16 w-[calc(100%-240px)] bg-surface-container-lowest dark:bg-surface-dim border-b border-outline-variant dark:border-outline shadow-sm z-40 flex items-center justify-between px-6">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full bg-surface-container-low border border-outline-variant rounded-full py-2 pl-10 pr-4 text-body-sm focus:outline-none focus:ring-2 focus:ring-primary transition-all" placeholder="Search merchants, IDs, or locations..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 hover:bg-surface-container-low dark:hover:bg-surface-variant rounded-full transition-colors relative">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<div class="h-8 w-[1px] bg-outline-variant mx-2"></div>
+<div class="flex items-center gap-3 px-2 py-1 rounded-full hover:bg-surface-container-low transition-colors cursor-pointer">
+<span class="text-label-md font-label-md text-primary">HillGo Admin</span>
+<span class="material-symbols-outlined text-on-surface-variant">expand_more</span>
+</div>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="ml-[240px] mt-16 p-6 min-h-[calc(100vh-64px)]">
+<!-- Page Header & Action -->
+<div class="flex justify-between items-end mb-8">
+<div>
+<nav class="flex text-label-sm text-on-secondary-container mb-2">
+<span class="hover:text-primary cursor-pointer">Dashboard</span>
+<span class="mx-2 text-outline">/</span>
+<span class="text-primary font-semibold">Merchants</span>
+</nav>
+<h2 class="text-display-lg font-display-lg text-primary">Merchant Registry</h2>
+</div>
+<button class="bg-primary text-on-primary font-label-md text-label-md px-6 py-2.5 rounded-lg flex items-center gap-2 hover:opacity-90 shadow-sm transition-all active:scale-95">
+<span class="material-symbols-outlined">add_business</span>
+                Add New Merchant
+            </button>
+</div>
+<!-- KPI Row: Bento Style -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm flex items-center gap-4 group hover:border-primary transition-colors">
+<div class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[32px]">storefront</span>
+</div>
+<div>
+<p class="text-label-sm font-label-sm text-on-secondary-container uppercase tracking-wider">Total Merchants</p>
+<div class="flex items-baseline gap-2">
+<h3 class="text-headline-md font-headline-md text-on-background">1,482</h3>
+<span class="text-label-sm font-label-sm text-green-600 flex items-center">+12%</span>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm flex items-center gap-4 group hover:border-primary transition-colors">
+<div class="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center text-green-700">
+<span class="material-symbols-outlined text-[32px]">door_open</span>
+</div>
+<div>
+<p class="text-label-sm font-label-sm text-on-secondary-container uppercase tracking-wider">Open Now</p>
+<div class="flex items-baseline gap-2">
+<h3 class="text-headline-md font-headline-md text-on-background">943</h3>
+<span class="text-label-sm font-label-sm text-outline">Active Ops</span>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm flex items-center gap-4 group hover:border-primary transition-colors">
+<div class="w-14 h-14 bg-tertiary-fixed rounded-full flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[32px]">verified_user</span>
+</div>
+<div>
+<p class="text-label-sm font-label-sm text-on-secondary-container uppercase tracking-wider">Pending Verification</p>
+<div class="flex items-baseline gap-2">
+<h3 class="text-headline-md font-headline-md text-on-background">27</h3>
+<span class="px-2 py-0.5 bg-tertiary/10 text-tertiary text-[10px] rounded-full font-bold">URGENT</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Filters & Table Area -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm overflow-hidden">
+<!-- Filter Bar -->
+<div class="px-6 py-4 border-b border-outline-variant flex flex-wrap items-center justify-between gap-4">
+<div class="flex items-center gap-4">
+<div class="flex flex-col gap-1">
+<label class="text-[10px] font-bold text-on-secondary-container uppercase">Category</label>
+<select class="bg-surface-container-low border border-outline-variant rounded-lg px-3 py-1.5 text-body-sm focus:ring-primary">
+<option>All Categories</option>
+<option>Restaurant</option>
+<option>Grocery</option>
+<option>Pharmacy</option>
+<option>Electronics</option>
+</select>
+</div>
+<div class="flex flex-col gap-1">
+<label class="text-[10px] font-bold text-on-secondary-container uppercase">District</label>
+<select class="bg-surface-container-low border border-outline-variant rounded-lg px-3 py-1.5 text-body-sm focus:ring-primary">
+<option>All Districts</option>
+<option>Dhaka</option>
+<option>Chattogram</option>
+<option>Sylhet</option>
+<option>Rajshahi</option>
+</select>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors text-label-md font-label-md">
+<span class="material-symbols-outlined text-sm">filter_list</span>
+                        More Filters
+                    </button>
+<button class="flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors text-label-md font-label-md">
+<span class="material-symbols-outlined text-sm">download</span>
+                        Export CSV
+                    </button>
+</div>
+</div>
+<!-- Table Container -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low">
+<th class="px-6 py-4 text-label-md font-label-md text-on-secondary-container border-b border-outline-variant">Store Name</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-secondary-container border-b border-outline-variant">Owner</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-secondary-container border-b border-outline-variant">Category</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-secondary-container border-b border-outline-variant">City/District</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-secondary-container border-b border-outline-variant text-center">Open</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-secondary-container border-b border-outline-variant text-center">Accepting Orders</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-secondary-container border-b border-outline-variant">Status</th>
+<th class="px-6 py-4 text-label-md font-label-md text-on-secondary-container border-b border-outline-variant text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/30">
+<!-- Merchant Row 1 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-variant flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Close-up shot of a modern, stylish burger restaurant logo with high-contrast colors and clean lines. The image should feel like a high-end food delivery app brand, emphasizing quality and cleanliness in a professional kitchen setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8mT4AQPzJollGaWM-yhnAD_EzpV7oxe6bucK4LNXvRgL3LR87O_7Mg0dtqmYhx1P8LCDuOweYPZVEMARue9kgfjrf2Chucd1lTYKgUWGQK0JTtK6tEKOgBiI9530aZED-fWeRQ2SVuAQOVwElxyqywp-p9bkJaP61kXlrNBuo6kQqsBI2NIzVIw2O_yJeXYDHtjmvpt8MnR_ZbmLEA2K4xyjbKzRsi_ikdMUQc9-p4e0hhBGT_gA_"/>
+</div>
+<div>
+<div class="text-body-md font-semibold text-primary">Sultan's Dine</div>
+<div class="text-[11px] text-outline">ID: HG-MRT-92103</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="text-body-sm font-medium">Tanvir Ahmed</div>
+<div class="text-[11px] text-outline">+880 1712-XXXXXX</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-secondary-container text-on-secondary-fixed-variant text-[11px] font-bold rounded-md">RESTAURANT</span>
+</td>
+<td class="px-6 py-4 text-body-sm">Dhanmondi, Dhaka</td>
+<td class="px-6 py-4">
+<div class="flex justify-center">
+<div class="relative inline-block w-10 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer" id="toggle1" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-outline-variant cursor-pointer" for="toggle1"></label>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex justify-center">
+<div class="relative inline-block w-10 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer" id="order1" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-outline-variant cursor-pointer" for="order1"></label>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-green-100 text-green-800">
+<span class="w-1.5 h-1.5 rounded-full bg-green-600"></span>
+                                    ACTIVE
+                                </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-1 hover:bg-primary-container/20 rounded-md text-on-secondary-container">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Merchant Row 2 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-variant flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A brightly lit supermarket grocery section with fresh produce neatly stacked. The visual style is crisp and commercial, with a focus on vibrant colors of vegetables and high-quality organizational systems typical of a premium grocery chain." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAq2klFexBqtnwD3KIWo5TrGUzaL3FY51bkvxH46_RasWVmDVajpKM3NdFjlnZffh9QIiyhF1_-06A3qemtdw1oZPo0A8M8Z7OIrCyASwx8oG5OUktsjInDgU_xrLSdw-e0ORZFkScOZkCdNDWAV2MaFqZAQhU-xrErTgf18eJwnDgOMa0fn85jqM97r9uscTmKJ5z15BEWC0nDAm6qmv03s7lILkqTIZCsbQ8OKHyhyGf167nOQ1Db"/>
+</div>
+<div>
+<div class="text-body-md font-semibold text-primary">Unimart</div>
+<div class="text-[11px] text-outline">ID: HG-MRT-11024</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="text-body-sm font-medium">Farhan Khan</div>
+<div class="text-[11px] text-outline">+880 1823-XXXXXX</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-tertiary-fixed text-on-tertiary-fixed-variant text-[11px] font-bold rounded-md uppercase">Grocery</span>
+</td>
+<td class="px-6 py-4 text-body-sm">Gulshan, Dhaka</td>
+<td class="px-6 py-4">
+<div class="flex justify-center">
+<div class="relative inline-block w-10 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer" id="toggle2" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-outline-variant cursor-pointer" for="toggle2"></label>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex justify-center">
+<div class="relative inline-block w-10 align-middle select-none transition duration-200 ease-in">
+<input class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer" id="order2" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-outline-variant cursor-pointer" for="order2"></label>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-green-100 text-green-800">
+<span class="w-1.5 h-1.5 rounded-full bg-green-600"></span>
+                                    ACTIVE
+                                </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-1 hover:bg-primary-container/20 rounded-md text-on-secondary-container">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Merchant Row 3 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-variant flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A clean and professional pharmacy counter with shelves full of medicine boxes. The lighting is bright and clinical, emphasizing safety, organization, and a professional healthcare environment in a modern city." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAkDH2i1B6oRGXluyPXfkynU76Io7_Xi7kBzAtZ_MNu4Va2uds_dwWzDw4D97OXzJG0pH_z_4pUVG5pamGWu33kVoCjReZMzspCyYNMdfi1-LS8vdHxW9rQ-cSCU3wOCaLKXrfgbC-yZOmTS72kSgUg-6IcVoElxWsT95GutdvhBMzW7pZzbAWKhMG8klIl_ehoxuTxIc_aIF96Qshq2TqzoLmTQMpKp1slKNTtLviA71LUAsYOmqao"/>
+</div>
+<div>
+<div class="text-body-md font-semibold text-primary">Lazz Pharma</div>
+<div class="text-[11px] text-outline">ID: HG-MRT-44921</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="text-body-sm font-medium">Sadia Afrin</div>
+<div class="text-[11px] text-outline">+880 1911-XXXXXX</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-primary-fixed text-on-primary-fixed-variant text-[11px] font-bold rounded-md uppercase">Pharmacy</span>
+</td>
+<td class="px-6 py-4 text-body-sm">Nasirabad, Chattogram</td>
+<td class="px-6 py-4">
+<div class="flex justify-center">
+<div class="relative inline-block w-10 align-middle select-none transition duration-200 ease-in">
+<input class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer" id="toggle3" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-outline-variant cursor-pointer" for="toggle3"></label>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex justify-center">
+<div class="relative inline-block w-10 align-middle select-none transition duration-200 ease-in">
+<input class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer" id="order3" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-outline-variant cursor-pointer" for="order3"></label>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-error-container text-on-error-container">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+                                    SUSPENDED
+                                </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-1 hover:bg-primary-container/20 rounded-md text-on-secondary-container">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Merchant Row 4 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-variant flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A high-tech electronics store interior with glowing displays of laptops and smartphones. The lighting is sophisticated with cool blue and white accents, creating a futuristic and trustworthy shopping experience for technology enthusiasts." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCrPUSSpNBbSp61syNztQ40VOPx8437bg5qmwX9Zcoat5xXtOuT52NVatR7aISBEyMrq0-R_8R3fAoyyWMWPxWDGdYouzt7fyqvNbKlZNiJScjv5B_xxe0TmhCUZ0vqOHE6nimlsyOpb6jGPeBxgF56740kx0OJSm3GUp1iwimKa81Nqbmr_G3Ih-9OKQ5VpTZjMIZvRjF82fjQprr1eQDdyhN6sIznEO8h9BwoLeazRLEFVeNcQtMy"/>
+</div>
+<div>
+<div class="text-body-md font-semibold text-primary">Gadget &amp; Gear</div>
+<div class="text-[11px] text-outline">ID: HG-MRT-55210</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="text-body-sm font-medium">Jahid Hasan</div>
+<div class="text-[11px] text-outline">+880 1515-XXXXXX</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-secondary-fixed text-on-secondary-fixed-variant text-[11px] font-bold rounded-md uppercase">Electronics</span>
+</td>
+<td class="px-6 py-4 text-body-sm">Banani, Dhaka</td>
+<td class="px-6 py-4">
+<div class="flex justify-center">
+<div class="relative inline-block w-10 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer" id="toggle4" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-outline-variant cursor-pointer" for="toggle4"></label>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex justify-center">
+<div class="relative inline-block w-10 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer" id="order4" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-outline-variant cursor-pointer" for="order4"></label>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-green-100 text-green-800">
+<span class="w-1.5 h-1.5 rounded-full bg-green-600"></span>
+                                    ACTIVE
+                                </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-1 hover:bg-primary-container/20 rounded-md text-on-secondary-container">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="px-6 py-4 border-t border-outline-variant flex items-center justify-between">
+<span class="text-body-sm text-on-secondary-container">Showing 1 to 10 of 1,482 entries</span>
+<div class="flex items-center gap-2">
+<button class="p-2 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center bg-primary text-on-primary rounded-lg font-bold text-sm">1</button>
+<button class="w-8 h-8 flex items-center justify-center hover:bg-surface-container-low rounded-lg font-medium text-sm">2</button>
+<button class="w-8 h-8 flex items-center justify-center hover:bg-surface-container-low rounded-lg font-medium text-sm">3</button>
+<span class="mx-1 text-outline">...</span>
+<button class="w-8 h-8 flex items-center justify-center hover:bg-surface-container-low rounded-lg font-medium text-sm">149</button>
+<button class="p-2 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Action Button (Self-Determined Visibility) -->
+<!-- Suppressed for Table/Details view as per instructions, but kept as a subtle helper if needed -->
+<div class="fixed bottom-8 right-8 z-50">
+<button class="w-14 h-14 bg-primary-container text-white rounded-full shadow-lg flex items-center justify-center hover:scale-110 transition-transform active:scale-95 group">
+<span class="material-symbols-outlined text-[28px]">support_agent</span>
+<span class="absolute right-full mr-4 bg-on-surface text-white text-label-sm px-3 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">Support Desk</span>
+</button>
+</div>
+<script>
+        // Simple Interaction Logics
+        document.querySelectorAll('.toggle-checkbox').forEach(toggle => {
+            toggle.addEventListener('change', (e) => {
+                const action = e.target.id.includes('toggle') ? 'Open State' : 'Order Acceptance';
+                const store = e.target.closest('tr').querySelector('.text-primary').innerText;
+                console.log(`Action: ${action} for ${store} is now ${e.target.checked}`);
+                
+                // Add a small visual feedback toast simulation
+                const toast = document.createElement('div');
+                toast.className = 'fixed bottom-20 left-1/2 -translate-x-1/2 bg-on-surface text-white px-6 py-3 rounded-full shadow-2xl transition-all duration-300 opacity-0 transform translate-y-4';
+                toast.innerText = `${store} ${action} updated successfully.`;
+                document.body.appendChild(toast);
+                setTimeout(() => { toast.classList.remove('opacity-0', 'translate-y-4'); }, 10);
+                setTimeout(() => { toast.classList.add('opacity-0', 'translate-y-4'); }, 3000);
+                setTimeout(() => { toast.remove(); }, 3300);
+            });
+        });
+    </script>
+</body></html>

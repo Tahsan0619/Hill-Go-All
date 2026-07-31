@@ -1,0 +1,32 @@
+name: vendor_marchant_app
+description: Vendor Marchant App — merchant management frontend for the HillGo platform.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.9.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  http: ^1.2.2
+  provider: ^6.1.2
+  go_router: ^14.8.1
+  shared_preferences: ^2.5.3
+  google_fonts: ^6.2.1
+  image_picker: ^1.1.2
+  fl_chart: ^0.70.2
+  flutter_map: ^7.0.2
+  latlong2: ^0.9.1
+  intl: ^0.20.2
+  uuid: ^4.5.1
+  cached_network_image: ^3.4.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
