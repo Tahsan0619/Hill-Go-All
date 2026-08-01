@@ -59,3 +59,6 @@ hillgo_backup_before_fixes.sql
 *.tmp
 .temp/
 tmp/
+
+# Office lock files
+**/~$*
