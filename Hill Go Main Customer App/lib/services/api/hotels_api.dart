@@ -7,6 +7,7 @@ class HotelsApi {
 
   static Future<List<HotelInfo>> list({String? location, String? query}) async {
     final data = await ApiClient.get('/customer/hotels', query: {
+      'per_page': '50',
       if (location != null && location != 'All') 'location': location,
       if (query != null && query.isNotEmpty) 'q': query,
     });

@@ -52,13 +52,26 @@ class OnboardingController extends Controller
         $docs = [];
         foreach (['trade_license' => 'Trade License', 'nid' => 'NID'] as $field => $label) {
             if ($request->hasFile($field)) {
-                $docs[] = ['name' => $label, 'path' => $request->file($field)->store("kyc/merchant/{$userId}", 'local')];
+                $docs[] = [
+                    'name' => $label,
+                    'path' => \App\Support\StoredFiles::putPrivate($request->file($field), "kyc/merchant/{$userId}"),
+                    'disk' => 'local',
+                ];
             }
         }
-        $logoPath = $request->hasFile('logo') ? $request->file('logo')->store("stores/{$userId}", 'public') : null;
-        $storefrontPath = $request->hasFile('storefront') ? $request->file('storefront')->store("stores/{$userId}", 'public') : null;
-        if ($storefrontPath) {
-            $docs[] = ['name' => 'Storefront Photo', 'path' => $storefrontPath];
+        // Branding on public disk; storefront also copied to private for admin review.
+        $logoPath = $request->hasFile('logo')
+            ? \App\Support\StoredFiles::putPublic($request->file('logo'), "stores/{$userId}")
+            : null;
+        $storefrontPath = null;
+        if ($request->hasFile('storefront')) {
+            $privateKey = \App\Support\StoredFiles::putPrivate($request->file('storefront'), "kyc/merchant/{$userId}");
+            $bytes = \Illuminate\Support\Facades\Storage::disk('local')->get($privateKey);
+            $ext = pathinfo($privateKey, PATHINFO_EXTENSION) ?: 'jpg';
+            $publicKey = "stores/{$userId}/".\Illuminate\Support\Str::random(40).'.'.$ext;
+            \Illuminate\Support\Facades\Storage::disk('public')->put($publicKey, $bytes);
+            $storefrontPath = '/storage/'.$publicKey;
+            $docs[] = ['name' => 'Storefront Photo', 'path' => $privateKey, 'disk' => 'local'];
         }
 
         $onboarding = MerchantOnboarding::create([

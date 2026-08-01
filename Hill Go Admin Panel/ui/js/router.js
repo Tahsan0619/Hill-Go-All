@@ -77,7 +77,7 @@ window.Router = (() => {
     runCleanup();
 
     if (!matched || typeof matched.handler !== 'function') {
-      root.innerHTML = `<div class="p-8"><h2 class="text-xl font-bold">Page not found</h2><p class="text-sm text-outline mt-2">${path}</p><a class="text-primary-container underline mt-4 inline-block" href="#/overview">Back to overview</a></div>`;
+      root.innerHTML = `<div class="p-8"><h2 class="text-xl font-bold">Page not found</h2><p class="text-sm text-outline mt-2">${UI.escapeHtml(path)}</p><a class="text-primary-container underline mt-4 inline-block" href="#/overview">Back to overview</a></div>`;
       return;
     }
 
@@ -93,11 +93,12 @@ window.Router = (() => {
       }
     } catch (err) {
       console.error('Route error', path, err);
+      const errMsg = String(err && err.message ? err.message : err);
       root.innerHTML = `
         <div class="p-8 max-w-xl">
           <h2 class="text-xl font-bold text-error mb-2">Screen failed to load</h2>
-          <p class="text-sm text-outline mb-1">${path}</p>
-          <pre class="text-xs bg-red-50 border border-red-100 rounded-lg p-3 overflow-auto mb-4">${String(err && err.message ? err.message : err)}</pre>
+          <p class="text-sm text-outline mb-1">${UI.escapeHtml(path)}</p>
+          <pre class="text-xs bg-red-50 border border-red-100 rounded-lg p-3 overflow-auto mb-4">${UI.escapeHtml(errMsg)}</pre>
           <a class="px-4 py-2 rounded-lg bg-primary-container text-white text-sm font-semibold inline-block" href="#/overview">Back to overview</a>
         </div>`;
     }

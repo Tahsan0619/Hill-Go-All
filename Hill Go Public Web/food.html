@@ -31,13 +31,13 @@
     <a href="merchant.html" class="btn btn-primary">Get Started</a>
   </nav>
 
-  <section class="hero" style="background:linear-gradient(rgba(15,39,68,0.7),rgba(15,39,68,0.7)),url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1400&q=80') center/cover;padding-bottom:80px;">
+  <section class="hero" style="background:linear-gradient(rgba(15,39,68,0.7),rgba(15,39,68,0.7)),url('assets/img/food.svg') center/cover;padding-bottom:80px;">
     <div class="container" style="padding-top:calc(var(--header-h) + 40px);max-width:700px;">
       <span class="badge badge-orange">Fastest Delivery in Town</span>
       <h1 style="color:var(--white);margin:16px 0;">Your Favorite Food, <span style="color:var(--blue-light);">Delivered Fast</span></h1>
       <p style="color:rgba(255,255,255,0.85);margin-bottom:32px;">Order from the highest-rated restaurants with real-time tracking and zero delivery fees on your first order.</p>
       <form class="availability-form" style="background:var(--white);padding:8px;border-radius:12px;display:flex;gap:8px;">
-        <input type="text" placeholder="Enter your city or district" required style="border:none;flex:1;">
+        <input type="text" name="city" placeholder="Enter your city or district" required maxlength="100" style="border:none;flex:1;">
         <button type="submit" class="btn btn-orange">Find Food</button>
       </form>
     </div>
@@ -51,7 +51,7 @@
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
         <div style="grid-row:span 2;border-radius:var(--radius-lg);overflow:hidden;position:relative;min-height:300px;">
-          <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&q=80" alt="Burgers" style="width:100%;height:100%;object-fit:cover;">
+          <img loading="lazy" src="assets/img/food.svg" alt="Burgers" style="width:100%;height:100%;object-fit:cover;">
           <div style="position:absolute;bottom:20px;left:20px;color:var(--white);">
             <h3 style="color:var(--white);">Juicy Burgers</h3>
             <p style="font-size:0.9rem;opacity:0.9;">42 Restaurants Nearby</p>
@@ -59,11 +59,11 @@
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
           <div style="border-radius:var(--radius);overflow:hidden;position:relative;aspect-ratio:1;">
-            <img src="https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=400&q=80" alt="Sushi" style="width:100%;height:100%;object-fit:cover;">
+            <img loading="lazy" src="assets/img/food.svg" alt="Sushi" style="width:100%;height:100%;object-fit:cover;">
             <div style="position:absolute;bottom:12px;left:12px;color:var(--white);font-weight:600;">Sushi Art</div>
           </div>
           <div style="border-radius:var(--radius);overflow:hidden;position:relative;aspect-ratio:1;">
-            <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400&q=80" alt="Pizza" style="width:100%;height:100%;object-fit:cover;">
+            <img loading="lazy" src="assets/img/food.svg" alt="Pizza" style="width:100%;height:100%;object-fit:cover;">
             <div style="position:absolute;bottom:12px;left:12px;color:var(--white);font-weight:600;">Italian Pizza</div>
           </div>
           <div style="background:var(--blue-pale);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;aspect-ratio:1;">
@@ -91,7 +91,7 @@
 
   <section class="split-section">
     <div class="container split-grid">
-      <div class="split-image"><img src="https://images.unsplash.com/photo-1574484284002-952d92456975?w=800&q=80" alt="Chef"></div>
+      <div class="split-image"><img loading="lazy" src="assets/img/food.svg" alt="Chef"></div>
       <div class="split-content" style="background:var(--navy);color:var(--white);padding:48px;border-radius:var(--radius-lg);">
         <h2 style="color:var(--white);">Are You a Restaurant Owner?</h2>
         <p style="color:rgba(255,255,255,0.75);margin:16px 0 24px;">Grow your business with HillGo's delivery network, low commissions, and powerful merchant dashboard.</p>

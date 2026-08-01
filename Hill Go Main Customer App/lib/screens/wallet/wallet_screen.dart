@@ -5,6 +5,7 @@ import '../../services/api/api_client.dart';
 import '../../services/api/wallet_api.dart';
 import '../../services/auth_service.dart';
 import '../../theme/app_theme.dart';
+import '../../utils/user_facing_error.dart';
 import '../../widgets/app_back_bar.dart';
 import '../../widgets/load_state_views.dart';
 import '../../widgets/transaction_tile.dart';
@@ -53,7 +54,7 @@ class _WalletScreenState extends State<WalletScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = e.toString();
+        _error = userFacingError(e);
         _loading = false;
       });
     }
@@ -89,6 +90,12 @@ class _WalletScreenState extends State<WalletScreen> {
       ),
     );
     if (amount == null || amount <= 0 || !mounted) return;
+    if (amount < 10 || amount > 50000) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Enter an amount between ৳10 and ৳50,000')),
+      );
+      return;
+    }
     try {
       final message =
           await WalletApi.topUp(amount: amount, method: 'bkash');

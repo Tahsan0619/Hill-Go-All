@@ -29,16 +29,21 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     super.dispose();
   }
 
-  Future<void> _send() async {
+  Future<void> _send({bool isResend = false}) async {
     if (!_formKey.currentState!.validate()) return;
     final auth = context.read<AuthProvider>();
+    if (isResend && auth.resendSeconds > 0) return;
     final ok = await auth.requestPasswordReset(_phone.text.trim());
     if (!mounted) return;
     if (ok) {
       setState(() => _codeSent = true);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('If the account exists, a reset code was sent by SMS.'),
+        SnackBar(
+          content: Text(
+            isResend
+                ? 'Code resent'
+                : 'If the account exists, a reset code was sent by SMS.',
+          ),
         ),
       );
     } else if (auth.error != null) {
@@ -117,8 +122,23 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 PrimaryButton(
                   label: _codeSent ? 'Update Password' : 'Send Code',
                   loading: auth.isLoading,
-                  onPressed: _codeSent ? _reset : _send,
+                  onPressed: _codeSent ? _reset : () => _send(),
                 ),
+                if (_codeSent) ...[
+                  const SizedBox(height: 12),
+                  Center(
+                    child: TextButton(
+                      onPressed: auth.resendSeconds > 0 || auth.isLoading
+                          ? null
+                          : () => _send(isResend: true),
+                      child: Text(
+                        auth.resendSeconds > 0
+                            ? 'Resend in ${auth.resendSeconds}s'
+                            : 'Resend code',
+                      ),
+                    ),
+                  ),
+                ],
               ],
             ),
           ),

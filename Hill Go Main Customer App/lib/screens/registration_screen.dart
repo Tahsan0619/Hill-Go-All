@@ -230,8 +230,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           ),
                         ),
                         const SizedBox(height: 6),
-                        DropdownButtonFormField<DistrictOption>(
-                          initialValue: _selectedDistrict,
+                        DropdownButtonFormField<DistrictOption>(                          value: _selectedDistrict,
                           isExpanded: true,
                           decoration: InputDecoration(
                             prefixIcon: const Icon(Icons.location_on_outlined,

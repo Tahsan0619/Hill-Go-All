@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
@@ -20,6 +22,8 @@ class UploadDocumentsScreen extends StatefulWidget {
 }
 
 class _UploadDocumentsScreenState extends State<UploadDocumentsScreen> {
+  static const int _maxBytes = 5 * 1024 * 1024;
+
   @override
   void initState() {
     super.initState();
@@ -28,9 +32,30 @@ class _UploadDocumentsScreenState extends State<UploadDocumentsScreen> {
     });
   }
 
-  Future<void> _pickAndUploadLicense(DocumentItem doc) async {
+  Future<XFile?> _pickConstrainedImage() async {
     final picker = ImagePicker();
-    final file = await picker.pickImage(source: ImageSource.gallery);
+    final file = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80,
+      maxWidth: 1600,
+    );
+    if (file == null) return null;
+    if (file.path.isNotEmpty) {
+      final length = await File(file.path).length();
+      if (length > _maxBytes) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Image must be 5 MB or smaller')),
+          );
+        }
+        return null;
+      }
+    }
+    return file;
+  }
+
+  Future<void> _pickAndUploadLicense(DocumentItem doc) async {
+    final file = await _pickConstrainedImage();
     if (file == null || !mounted) return;
     final ok = await context.read<DocumentProvider>().upload(doc.id, file.path);
     if (!mounted) return;
@@ -40,8 +65,7 @@ class _UploadDocumentsScreenState extends State<UploadDocumentsScreen> {
   }
 
   Future<void> _pickAndUploadGeneric(DocumentItem doc) async {
-    final picker = ImagePicker();
-    final file = await picker.pickImage(source: ImageSource.gallery);
+    final file = await _pickConstrainedImage();
     if (file == null || !mounted) return;
     final ok = await context.read<DocumentProvider>().upload(doc.id, file.path);
     if (!mounted) return;
@@ -118,8 +142,7 @@ class _UploadDocumentsScreenState extends State<UploadDocumentsScreen> {
       return;
     }
 
-    final picker = ImagePicker();
-    final file = await picker.pickImage(source: ImageSource.gallery);
+    final file = await _pickConstrainedImage();
     if (file == null || !mounted) {
       tokenCtrl.dispose();
       return;

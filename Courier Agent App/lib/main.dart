@@ -19,6 +19,7 @@ Future<void> main() async {
   final prefs = await SharedPreferences.getInstance();
 
   final api = ApiClient(prefs);
+  await api.loadToken();
   final authRepo = ApiAuthRepository(api, prefs);
   final parcelRepo = ApiParcelRepository(api);
   final earningsRepo = ApiEarningsRepository(api);

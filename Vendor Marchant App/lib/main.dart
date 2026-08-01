@@ -19,7 +19,8 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
 
-  final api = ApiClient(prefs);
+  final api = ApiClient();
+  await api.loadToken();
   final authRepo = ApiAuthRepository(api);
   final orderRepo = ApiOrderRepository(api);
   final productRepo = ApiProductRepository(api);

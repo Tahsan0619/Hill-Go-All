@@ -11,7 +11,9 @@ class WalletApi {
   }
 
   static Future<List<WalletTransaction>> transactions() async {
-    final data = await ApiClient.get('/customer/wallet/transactions');
+    final data = await ApiClient.get('/customer/wallet/transactions', query: {
+      'per_page': '50',
+    });
     final rows = (data as Map<String, dynamic>)['data'] as List? ?? [];
     return rows
         .whereType<Map<String, dynamic>>()

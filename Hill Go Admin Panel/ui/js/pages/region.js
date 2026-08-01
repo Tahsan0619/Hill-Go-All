@@ -3,6 +3,7 @@ window.Pages = window.Pages || {};
 (function regionPages() {
   const S = () => AppStore;
   const U = () => UI;
+  const esc = (s) => U().escapeHtml(s);
 
   function openDistrictEditor(districtId, onSaved) {
     const d = S().getDistrict(districtId);
@@ -13,8 +14,8 @@ window.Pages = window.Pages || {};
       bodyHtml: `
         <div class="space-y-4 text-sm">
           <div class="grid grid-cols-2 gap-3">
-            <div><p class="text-xs text-outline mb-1">Division</p><p class="font-semibold">${d.divisionName}</p></div>
-            <div><p class="text-xs text-outline mb-1">District</p><p class="font-semibold">${d.name}</p></div>
+            <div><p class="text-xs text-outline mb-1">Division</p><p class="font-semibold">${esc(d.divisionName)}</p></div>
+            <div><p class="text-xs text-outline mb-1">District</p><p class="font-semibold">${esc(d.name)}</p></div>
           </div>
           <label class="block"><span class="text-xs font-semibold text-outline">Status</span>
             <select id="de-status" class="mt-1 w-full rounded-lg border-slate-200 text-sm">
@@ -23,7 +24,7 @@ window.Pages = window.Pages || {};
             </select>
           </label>
           <label class="block"><span class="text-xs font-semibold text-outline">Opened at</span>
-            <input id="de-opened" type="datetime-local" class="mt-1 w-full rounded-lg border-slate-200 text-sm" value="${(d.openedAt || '').slice(0, 16)}" />
+            <input id="de-opened" type="datetime-local" class="mt-1 w-full rounded-lg border-slate-200 text-sm" value="${esc((d.openedAt || '').slice(0, 16))}" />
           </label>
           <fieldset class="space-y-2">
             <legend class="text-xs font-semibold text-outline mb-1">Allow registration</legend>
@@ -33,7 +34,7 @@ window.Pages = window.Pages || {};
             }).join('')}
           </fieldset>
           <label class="block"><span class="text-xs font-semibold text-outline">Internal note</span>
-            <textarea id="de-note" rows="3" class="mt-1 w-full rounded-lg border-slate-200 text-sm">${d.note || ''}</textarea>
+            <textarea id="de-note" rows="3" class="mt-1 w-full rounded-lg border-slate-200 text-sm">${esc(d.note || '')}</textarea>
           </label>
         </div>`,
       footerHtml: `
@@ -82,8 +83,8 @@ window.Pages = window.Pages || {};
             <a href="#/region/${d.id}" class="block bg-white rounded-xl border border-slate-200 shadow-sm p-5 hover:border-primary-container transition">
               <div class="flex justify-between items-start mb-3">
                 <div>
-                  <h3 class="font-semibold text-lg">${d.name}</h3>
-                  <p class="text-xs text-outline">${d.zone}</p>
+                  <h3 class="font-semibold text-lg">${esc(d.name)}</h3>
+                  <p class="text-xs text-outline">${esc(d.zone)}</p>
                 </div>
                 ${U().badge(d.status === 'open' ? 'open' : d.status === 'closed' ? 'closed' : 'partial')}
               </div>
@@ -102,7 +103,7 @@ window.Pages = window.Pages || {};
             <div class="bg-white rounded-xl border p-5 h-full">
               <h4 class="font-semibold mb-3">Division centers</h4>
               <ul class="space-y-2 text-sm">
-                ${divs.map((d) => `<li class="flex justify-between"><a class="text-primary-container font-medium" href="#/region/${d.id}">${d.name}</a>${U().badge(d.status === 'open' ? 'open' : d.status === 'closed' ? 'closed' : 'partial')}</li>`).join('')}
+                ${divs.map((d) => `<li class="flex justify-between"><a class="text-primary-container font-medium" href="#/region/${d.id}">${esc(d.name)}</a>${U().badge(d.status === 'open' ? 'open' : d.status === 'closed' ? 'closed' : 'partial')}</li>`).join('')}
               </ul>
               <p class="text-xs text-outline mt-4">Green = open district · Red = closed. Click a division card to manage toggles.</p>
             </div>`,
@@ -149,8 +150,8 @@ window.Pages = window.Pages || {};
         <div class="mb-6 flex justify-between items-end flex-wrap gap-3">
           <div>
             <nav class="flex items-center gap-2 text-xs text-outline mb-2">${U().breadcrumb(['Region Lock', div.name])}</nav>
-            <h2 class="text-3xl font-bold">${div.name} Division</h2>
-            <p class="text-sm text-outline mt-1">${div.open} open · ${div.closed} closed · ${div.zone}</p>
+            <h2 class="text-3xl font-bold">${esc(div.name)} Division</h2>
+            <p class="text-sm text-outline mt-1">${div.open} open · ${div.closed} closed · ${esc(div.zone)}</p>
           </div>
           <div class="flex gap-2">
             <a href="#/region" class="px-4 py-2 text-sm font-semibold rounded-lg border bg-white">All divisions</a>
@@ -173,7 +174,7 @@ window.Pages = window.Pages || {};
               <tbody class="divide-y divide-slate-100">
                 ${pg.rows.map((d) => `
                   <tr class="hover:bg-slate-50/80">
-                    <td class="px-4 py-3 font-medium">${d.name}</td>
+                    <td class="px-4 py-3 font-medium">${esc(d.name)}</td>
                     <td class="px-4 py-3">
                       <button type="button" data-toggle="${d.id}" class="focus:outline-none">${U().badge(d.status)}</button>
                     </td>
@@ -193,7 +194,7 @@ window.Pages = window.Pages || {};
           <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
             <h3 class="font-semibold mb-3">Activity</h3>
             <ul class="space-y-3 text-sm">
-              ${logs.map((l) => `<li><p>${l.text}</p><p class="text-xs text-outline">${U().formatDate(l.at)}</p></li>`).join('') || '<li class="text-outline">No related logs</li>'}
+              ${logs.map((l) => `<li><p>${esc(l.text)}</p><p class="text-xs text-outline">${U().formatDate(l.at)}</p></li>`).join('') || '<li class="text-outline">No related logs</li>'}
             </ul>
           </div>
         </div>
@@ -211,7 +212,7 @@ window.Pages = window.Pages || {};
           const status = btn.getAttribute('data-bulk');
           const ok = await U().confirmDialog({
             title: `${status === 'open' ? 'Open' : 'Close'} all districts`,
-            message: `Set every district in ${div.name} to <strong>${status}</strong>?`,
+            message: `Set every district in ${div.name} to ${status}?`,
             confirmLabel: status === 'open' ? 'Open all' : 'Close all',
             danger: status === 'closed',
           });

@@ -37,8 +37,39 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
     final entered = double.tryParse(_amount.text.trim()) ?? 0;
     final messenger = ScaffoldMessenger.of(context);
     final nav = Navigator.of(context);
+    final payout = earnings.payout;
+    if (payout == null) {
+      messenger.showSnackBar(const SnackBar(content: Text('Balance is not available yet.')));
+      return;
+    }
     if (entered <= 0) {
       messenger.showSnackBar(const SnackBar(content: Text('Enter a valid amount.')));
+      return;
+    }
+    if (!payout.isVerified) {
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Bank verification is required before withdrawing.')),
+      );
+      return;
+    }
+    if (entered < payout.withdrawalMin) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            'Minimum withdrawal is ৳${payout.withdrawalMin.toStringAsFixed(0)}.',
+          ),
+        ),
+      );
+      return;
+    }
+    if (entered > payout.balance) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            'Amount exceeds your available balance of ৳${payout.balance.toStringAsFixed(2)}.',
+          ),
+        ),
+      );
       return;
     }
     final ok = await earnings.withdraw(amount: entered, method: _method);

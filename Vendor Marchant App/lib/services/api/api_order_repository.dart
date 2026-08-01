@@ -9,7 +9,10 @@ class ApiOrderRepository implements OrderRepository {
 
   @override
   Future<List<OrderModel>> getOrders() async {
-    final response = await _api.get('/merchant/orders') as Map<String, dynamic>;
+    final response = await _api.get(
+      '/merchant/orders',
+      query: {'per_page': '50'},
+    ) as Map<String, dynamic>;
     return ((response['data'] as List?) ?? const [])
         .map((o) => OrderModel.fromJson(o as Map<String, dynamic>))
         .toList();

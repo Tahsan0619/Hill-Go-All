@@ -3,6 +3,7 @@ window.Pages = window.Pages || {};
 window.Pages.settings = async function settings(root) {
   const S = AppStore;
   const U = UI;
+  const esc = (s) => U.escapeHtml(s);
   const render = () => {
     const s = S.getSettings();
     root.innerHTML = `
@@ -13,10 +14,10 @@ window.Pages.settings = async function settings(root) {
       </div>
       <form id="settings-form" class="bg-white rounded-xl border shadow-sm p-6 max-w-xl space-y-4">
         <label class="block text-xs font-semibold text-outline">Organization name
-          <input name="orgName" value="${s.orgName}" required class="mt-1 w-full rounded-lg border-slate-200 text-sm" />
+          <input name="orgName" value="${esc(s.orgName)}" required class="mt-1 w-full rounded-lg border-slate-200 text-sm" />
         </label>
         <label class="block text-xs font-semibold text-outline">Admin email
-          <input name="orgEmail" type="email" value="${s.orgEmail}" required class="mt-1 w-full rounded-lg border-slate-200 text-sm" />
+          <input name="orgEmail" type="email" value="${esc(s.orgEmail)}" required class="mt-1 w-full rounded-lg border-slate-200 text-sm" />
         </label>
         <label class="block text-xs font-semibold text-outline">Timezone
           <select name="timezone" class="mt-1 w-full rounded-lg border-slate-200 text-sm">

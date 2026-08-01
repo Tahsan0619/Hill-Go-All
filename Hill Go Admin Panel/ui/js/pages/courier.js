@@ -3,6 +3,7 @@ window.Pages = window.Pages || {};
 (function courierPages() {
   const S = () => AppStore;
   const U = () => UI;
+  const esc = (s) => U().escapeHtml(s);
   const hdr = (title, crumbs, actions = '') => `
     <div class="mb-6 flex justify-between items-end flex-wrap gap-3">
       <div><nav class="flex items-center gap-2 text-xs text-outline mb-2">${U().breadcrumb(crumbs)}</nav><h2 class="text-3xl font-bold">${title}</h2></div>
@@ -17,8 +18,13 @@ window.Pages = window.Pages || {};
       width: 'max-w-lg',
       bodyHtml: `
         <div class="space-y-3 text-sm">
-          <p class="text-outline">${k.agentId} · submitted ${k.submitted}</p>
-          <ul class="list-disc pl-5">${k.docs.map((d) => `<li>${d}</li>`).join('')}</ul>
+          <p class="text-outline">${esc(k.agentId)} · submitted ${esc(k.submitted)}</p>
+          <ul class="space-y-2">${(k.docDetails || []).map((d) => `
+            <li class="flex items-center justify-between gap-2 rounded-lg border px-3 py-2">
+              <span>${esc(d.title || d.key || 'Document')}${d.tokenNumber ? ` · token ${esc(d.tokenNumber)}` : ''}</span>
+              ${d.fileUrl ? `<button type="button" data-doc-url="${esc(d.fileUrl)}" data-doc-name="${esc(d.title || 'document')}" class="text-xs font-semibold text-primary-container">Open</button>` : '<span class="text-xs text-outline">No file</span>'}
+            </li>`).join('') || (k.docs || []).map((d) => `<li>${esc(d)}</li>`).join('')}
+          </ul>
           <label class="flex items-center gap-2"><input type="checkbox" id="ck-bank" ${k.bankVerified ? 'checked' : ''} class="rounded border-slate-300 text-primary-container" /> Bank verified</label>
           <p>Current: ${U().badge(k.status)}</p>
         </div>`,
@@ -26,6 +32,13 @@ window.Pages = window.Pages || {};
         <button type="button" id="ck-reject" class="px-4 py-2 rounded-lg bg-error text-white text-sm font-semibold">Reject</button>
         <button type="button" id="ck-approve" class="px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-semibold">Approve</button>`,
     });
+    document.querySelectorAll('[data-doc-url]').forEach((b) => b.addEventListener('click', async () => {
+      try {
+        await S().openAuthenticatedFile(b.getAttribute('data-doc-url'), b.getAttribute('data-doc-name') || 'document');
+      } catch (e) {
+        U().notice(e.message || 'Could not open document', 'error');
+      }
+    }));
     document.getElementById('ck-approve')?.addEventListener('click', () => {
       S().setCourierKycStatus(id, 'verified', document.getElementById('ck-bank').checked);
       U().closeModal();
@@ -73,7 +86,7 @@ window.Pages = window.Pages || {};
       root.innerHTML = `
         ${hdr('Agents', ['Courier Panel', 'Agents'], '<button type="button" id="ex" class="px-4 py-2 text-sm font-semibold rounded-lg border bg-white">Export</button>')}
         <div class="bg-white rounded-xl border p-4 mb-4 flex flex-wrap gap-3">
-          <input id="q" value="${filter.q}" class="flex-1 rounded-lg border-slate-200 text-sm" placeholder="Search…" />
+          <input id="q" value="${esc(filter.q)}" class="flex-1 rounded-lg border-slate-200 text-sm" placeholder="Search…" />
           <select id="st" class="rounded-lg border-slate-200 text-sm">
             <option value="all">All</option>
             <option value="active" ${filter.status === 'active' ? 'selected' : ''}>Active</option>
@@ -89,12 +102,12 @@ window.Pages = window.Pages || {};
             </tr></thead>
             <tbody class="divide-y">${pg.rows.map((a) => `
               <tr>
-                <td class="px-4 py-3"><p class="font-medium">${a.name}</p><p class="text-xs text-outline">${a.id} · ${a.district} · ${a.phone}</p></td>
-                <td class="px-4 py-3">${a.vehicle}<p class="text-xs text-outline">${a.plate}</p></td>
+                <td class="px-4 py-3"><p class="font-medium">${esc(a.name)}</p><p class="text-xs text-outline">${esc(a.id)} · ${esc(a.district)} · ${esc(a.phone)}</p></td>
+                <td class="px-4 py-3">${esc(a.vehicle)}<p class="text-xs text-outline">${esc(a.plate)}</p></td>
                 <td class="px-4 py-3">${a.verified ? U().badge('verified') : U().badge('pending')}</td>
                 <td class="px-4 py-3">${a.deliveries} · ${a.rating}★</td>
                 <td class="px-4 py-3">${U().badge(a.status)}</td>
-                <td class="px-4 py-3 text-right"><button type="button" data-tog="${a.id}" class="text-xs font-semibold text-primary-container">${a.status === 'active' ? 'Suspend' : 'Activate'}</button></td>
+                <td class="px-4 py-3 text-right"><button type="button" data-tog="${esc(a.id)}" class="text-xs font-semibold text-primary-container">${a.status === 'active' ? 'Suspend' : 'Activate'}</button></td>
               </tr>`).join('')}</tbody>
           </table>
           ${U().pagerHtml(pg.page, pg.pages, pg.total)}
@@ -132,8 +145,8 @@ window.Pages = window.Pages || {};
             </tr></thead>
             <tbody class="divide-y">${rows.map((k) => `
               <tr>
-                <td class="px-4 py-3"><p class="font-medium">${k.agentName}</p><p class="text-xs text-outline">${k.agentId}</p></td>
-                <td class="px-4 py-3 text-xs">${k.docs.join(', ')}</td>
+                <td class="px-4 py-3"><p class="font-medium">${esc(k.agentName)}</p><p class="text-xs text-outline">${esc(k.agentId)}</p></td>
+                <td class="px-4 py-3 text-xs">${esc(k.docs.join(', '))}</td>
                 <td class="px-4 py-3">${k.bankVerified ? U().badge('verified') : U().badge('pending')}</td>
                 <td class="px-4 py-3">${U().badge(k.status)}</td>
                 <td class="px-4 py-3 text-right"><button type="button" data-k="${k.id}" class="text-xs font-semibold text-primary-container">Review</button></td>
@@ -156,7 +169,7 @@ window.Pages = window.Pages || {};
       root.innerHTML = `
         ${hdr('Parcels', ['Courier Panel', 'Parcels'], '<button type="button" id="ex" class="px-4 py-2 text-sm font-semibold rounded-lg border bg-white">Export</button>')}
         <div class="bg-white rounded-xl border p-4 mb-4 flex flex-wrap gap-3">
-          <input id="q" value="${filter.q}" class="flex-1 rounded-lg border-slate-200 text-sm" placeholder="Search…" />
+          <input id="q" value="${esc(filter.q)}" class="flex-1 rounded-lg border-slate-200 text-sm" placeholder="Search…" />
           <select id="st" class="rounded-lg border-slate-200 text-sm">
             <option value="all">All</option>
             ${['assigned', 'picked_up', 'in_transit', 'delivered', 'failed'].map((s) => `<option value="${s}" ${filter.status === s ? 'selected' : ''}>${s.replace(/_/g, ' ')}</option>`).join('')}
@@ -170,9 +183,9 @@ window.Pages = window.Pages || {};
             </tr></thead>
             <tbody class="divide-y">${pg.rows.map((p) => `
               <tr>
-                <td class="px-4 py-3 font-medium">${p.id}<p class="text-xs text-outline capitalize">${p.priority}</p></td>
-                <td class="px-4 py-3">${p.agent}</td>
-                <td class="px-4 py-3">${p.pickup} → ${p.drop}<p class="text-xs text-outline">${p.distanceKm} km · ${p.weightKg} kg</p></td>
+                <td class="px-4 py-3 font-medium">${esc(p.id)}<p class="text-xs text-outline capitalize">${esc(p.priority)}</p></td>
+                <td class="px-4 py-3">${esc(p.agent)}</td>
+                <td class="px-4 py-3">${esc(p.pickup)} → ${esc(p.drop)}<p class="text-xs text-outline">${p.distanceKm} km · ${p.weightKg} kg</p></td>
                 <td class="px-4 py-3">${U().formatTk(p.earnings)}${p.surge ? ` + ${U().formatTk(p.surge)}` : ''}</td>
                 <td class="px-4 py-3">${U().badge(p.status)}</td>
               </tr>`).join('')}</tbody>
@@ -201,7 +214,7 @@ window.Pages = window.Pages || {};
                   const k = kinds[i % kinds.length];
                   return `<div class="flex items-start gap-3 p-3 rounded-lg border ${k.cls}">
                     <span class="material-symbols-outlined text-[20px]">${k.icon}</span>
-                    <div><p class="font-semibold text-sm">#${p.id} ${k.title}</p><p class="text-[11px] opacity-80">${k.sub} · ${p.agent}</p></div>
+                    <div><p class="font-semibold text-sm">#${esc(p.id)} ${k.title}</p><p class="text-[11px] opacity-80">${k.sub} · ${esc(p.agent)}</p></div>
                   </div>`;
                 }).join('')}
               </div>
@@ -242,15 +255,15 @@ window.Pages = window.Pages || {};
             </tr></thead>
             <tbody class="divide-y">${rows.map((w) => `
               <tr>
-                <td class="px-4 py-3 font-medium">${w.id}<p class="text-xs text-outline">${w.date}</p></td>
-                <td class="px-4 py-3">${w.agent}</td>
+                <td class="px-4 py-3 font-medium">${esc(w.id)}<p class="text-xs text-outline">${esc(w.date)}</p></td>
+                <td class="px-4 py-3">${esc(w.agent)}</td>
                 <td class="px-4 py-3 font-semibold">${U().formatTk(w.amount)}</td>
-                <td class="px-4 py-3">${w.method} ·••${w.bankLast4}</td>
+                <td class="px-4 py-3">${esc(w.method)} ·••${esc(w.bankLast4)}</td>
                 <td class="px-4 py-3">${U().badge(w.status)}</td>
                 <td class="px-4 py-3 space-x-2">
                   ${w.status === 'pending' ? `
-                    <button type="button" data-act="approved" data-id="${w.id}" class="text-xs font-semibold text-emerald-700">Approve</button>
-                    <button type="button" data-act="rejected" data-id="${w.id}" class="text-xs font-semibold text-error">Reject</button>` : '<span class="text-xs text-outline">—</span>'}
+                    <button type="button" data-act="approved" data-id="${esc(w.id)}" class="text-xs font-semibold text-emerald-700">Approve</button>
+                    <button type="button" data-act="rejected" data-id="${esc(w.id)}" class="text-xs font-semibold text-error">Reject</button>` : '<span class="text-xs text-outline">—</span>'}
                 </td>
               </tr>`).join('')}</tbody>
           </table>
@@ -259,7 +272,7 @@ window.Pages = window.Pages || {};
       root.querySelectorAll('[data-act]').forEach((b) => b.addEventListener('click', async () => {
         const act = b.getAttribute('data-act');
         const id = b.getAttribute('data-id');
-        const ok = await U().confirmDialog({ title: `${act} withdrawal`, message: `Mark withdrawal as <strong>${act}</strong>?`, danger: act === 'rejected' });
+        const ok = await U().confirmDialog({ title: `${act} withdrawal`, message: `Mark withdrawal as ${act}?`, danger: act === 'rejected' });
         if (!ok) return;
         S().setWithdrawalStatus(id, act);
         U().notice(`Withdrawal ${act}`);
@@ -290,7 +303,7 @@ window.Pages = window.Pages || {};
             <label class="block text-xs font-semibold text-outline">District
               <select name="district" class="mt-1 w-full rounded-lg border-slate-200 text-sm">
                 <option value="">Any</option>
-                ${districts.map((d) => `<option>${d}</option>`).join('')}
+                ${districts.map((d) => `<option>${esc(d)}</option>`).join('')}
               </select>
             </label>
             <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="active" checked class="rounded border-slate-300 text-primary-container" /> Activate immediately</label>
@@ -300,9 +313,9 @@ window.Pages = window.Pages || {};
             ${list.map((i) => `
               <div class="bg-white rounded-xl border p-5 flex justify-between gap-4">
                 <div>
-                  <div class="flex items-center gap-2 mb-1">${U().badge(i.status)} <h3 class="font-semibold">${i.title}</h3></div>
+                  <div class="flex items-center gap-2 mb-1">${U().badge(i.status)} <h3 class="font-semibold">${esc(i.title)}</h3></div>
                   <p class="text-sm text-outline">${i.description || '—'}</p>
-                  <p class="text-xs text-outline mt-2">${i.multiplier}x · Goal ${i.goalDeliveries} · Bonus ${U().formatTk(i.bonusTk)} · ${i.district || 'All'} · until ${i.validUntil}</p>
+                  <p class="text-xs text-outline mt-2">${i.multiplier}x · Goal ${i.goalDeliveries} · Bonus ${U().formatTk(i.bonusTk)} · ${i.district || 'All'} · until ${esc(i.validUntil)}</p>
                 </div>
                 <button type="button" data-tog="${i.id}" class="self-start text-xs font-semibold text-primary-container">${i.active ? 'Deactivate' : 'Activate'}</button>
               </div>`).join('') || '<p class="text-outline text-sm">No incentives yet</p>'}

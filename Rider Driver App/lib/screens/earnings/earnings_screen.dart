@@ -268,6 +268,21 @@ class _EarningsScreenState extends State<EarningsScreen> {
                     loading: driver.isLoading,
                     onPressed: () async {
                       final amount = double.tryParse(amountCtrl.text) ?? 0;
+                      final balance = driver.earnings?.currentBalance;
+                      if (amount < 100) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Minimum cash-out is ৳100')),
+                        );
+                        return;
+                      }
+                      if (balance != null && amount > balance) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Amount exceeds available balance'),
+                          ),
+                        );
+                        return;
+                      }
                       final ok = await driver.cashOut(amount, method);
                       if (!context.mounted) return;
                       Navigator.pop(context);

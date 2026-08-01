@@ -93,8 +93,9 @@ class ProfileController extends Controller
             'expires_at' => ['nullable', 'date', 'after:today'],
         ]);
 
-        $path = $request->file('file')->store('kyc/courier/' . $request->user()->id, 'local');
         $profile = $request->user()->courierProfile;
+        $existing = CourierDocument::where('courier_profile_id', $profile->id)->where('doc_key', $docKey)->first();
+        $path = \App\Support\StoredFiles::replacePrivate($existing?->file_path, $request->file('file'), 'kyc/courier/' . $request->user()->id);
 
         CourierDocument::updateOrCreate(
             ['courier_profile_id' => $profile->id, 'doc_key' => $docKey],

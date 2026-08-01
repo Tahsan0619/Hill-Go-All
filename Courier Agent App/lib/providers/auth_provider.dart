@@ -152,6 +152,7 @@ class AuthProvider extends ChangeNotifier {
           'You can retry from Profile → Document Status.';
     }
 
+    _clearRegistrationSecrets();
     status = AuthStatus.authenticated;
     isLoading = false;
     notifyListeners();
@@ -162,10 +163,20 @@ class AuthProvider extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
     await _repo.logout();
+    _clearRegistrationSecrets();
     status = AuthStatus.unauthenticated;
     user = null;
     isLoading = false;
     notifyListeners();
+  }
+
+  /// Drops password, NID, and local document paths from memory.
+  void _clearRegistrationSecrets() {
+    regPassword = '';
+    regNid = '';
+    licensePath = null;
+    nidDocPath = null;
+    vehicleDocPath = null;
   }
 
   void clearError() {

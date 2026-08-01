@@ -8,6 +8,7 @@ class FoodApi {
   static Future<List<RestaurantInfo>> restaurants(
       {String? query, String? cuisine}) async {
     final data = await ApiClient.get('/customer/food/restaurants', query: {
+      'per_page': '50',
       if (query != null && query.isNotEmpty) 'q': query,
       if (cuisine != null && cuisine != 'All') 'cuisine': cuisine,
     });

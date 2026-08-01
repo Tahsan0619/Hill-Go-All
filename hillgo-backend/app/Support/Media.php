@@ -16,6 +16,12 @@ final class Media
             return $path;
         }
 
+        // Bare public-disk keys (e.g. stores/1/x.jpg from older onboarding) → /storage/...
+        $key = StoredFiles::publicKey($path);
+        if ($key !== null) {
+            return url('/storage/'.$key);
+        }
+
         return url(str_starts_with($path, '/') ? $path : '/'.$path);
     }
 

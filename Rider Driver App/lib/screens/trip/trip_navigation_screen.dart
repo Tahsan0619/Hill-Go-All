@@ -81,7 +81,7 @@ class _TripNavigationScreenState extends State<TripNavigationScreen>
   /// Detect customer cancel after accept while the rider is on navigation.
   void _startCancelWatch() {
     _cancelPoll?.cancel();
-    _cancelPoll = Timer.periodic(const Duration(seconds: 2), (_) async {
+    _cancelPoll = Timer.periodic(const Duration(seconds: 5), (_) async {
       if (!mounted || _handlingRemoteCancel) return;
       final driver = context.read<DriverProvider>();
       if (driver.activeTrip == null) return;

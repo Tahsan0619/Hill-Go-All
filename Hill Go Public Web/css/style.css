@@ -1,5 +1,5 @@
-/* HillGo Public Website - Design System */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+/* HillGo Public Website - Design System
+   Fonts: local system stack only (no Google Fonts CDN / @import). */
 
 :root {
   --navy: #0f2744;
@@ -34,7 +34,7 @@
 html { scroll-behavior: smooth; }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
   color: var(--gray-700);
   line-height: 1.6;
   background: var(--white);

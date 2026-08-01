@@ -5,6 +5,9 @@ import 'api_client.dart';
 class RidesApi {
   RidesApi._();
 
+  static double _clampDistance(double km) => km.clamp(0.1, 500.0);
+  static double _clampDuration(double min) => min.clamp(0.0, 1000.0);
+
   static Future<RideQuote> quote({
     required String vehicleType,
     required double distanceKm,
@@ -12,8 +15,8 @@ class RidesApi {
   }) async {
     final data = await ApiClient.post('/customer/rides/quote', body: {
       'vehicle_type': vehicleType,
-      'distance_km': distanceKm,
-      'duration_min': durationMin,
+      'distance_km': _clampDistance(distanceKm),
+      'duration_min': _clampDuration(durationMin),
     });
     return RideQuote.fromJson(data as Map<String, dynamic>);
   }
@@ -38,15 +41,17 @@ class RidesApi {
       if (pickupLng != null) 'pickup_lng': pickupLng,
       if (dropLat != null) 'drop_lat': dropLat,
       if (dropLng != null) 'drop_lng': dropLng,
-      'distance_km': distanceKm,
-      'duration_min': durationMin,
+      'distance_km': _clampDistance(distanceKm),
+      'duration_min': _clampDuration(durationMin),
       'payment_method': paymentMethod,
     });
     return RideEntry.fromJson(data as Map<String, dynamic>);
   }
 
   static Future<List<RideEntry>> list() async {
-    final data = await ApiClient.get('/customer/rides');
+    final data = await ApiClient.get('/customer/rides', query: {
+      'per_page': '50',
+    });
     final rows = (data as Map<String, dynamic>)['data'] as List? ?? [];
     return rows
         .whereType<Map<String, dynamic>>()

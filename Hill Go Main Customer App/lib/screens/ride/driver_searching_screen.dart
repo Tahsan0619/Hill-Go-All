@@ -88,7 +88,7 @@ class _DriverSearchingScreenState extends State<DriverSearchingScreen>
   }
 
   void _startPolling() {
-    _pollTimer = Timer.periodic(const Duration(seconds: 1), (_) => _poll());
+    _pollTimer = Timer.periodic(const Duration(seconds: 3), (_) => _poll());
     // Immediate first check so assignment feels real-time.
     unawaited(_poll());
   }

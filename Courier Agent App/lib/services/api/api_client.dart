@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -20,32 +22,72 @@ class ApiException implements Exception {
 
 /// Thin HTTP client for the HillGo Laravel backend.
 ///
-/// - Base URL comes from `--dart-define=HILLGO_API_BASE=...`
-///   (default `http://localhost:8000/api`).
-/// - The Sanctum bearer token is persisted in SharedPreferences under
-///   [tokenKey]; it is attached to every request and cleared on 401.
+/// - Base URL comes from `--dart-define=HILLGO_API_BASE=...`.
+///   Release builds require the define; debug defaults to `http://127.0.0.1:8000/api`.
+/// - The Sanctum bearer token is stored in [FlutterSecureStorage] under
+///   [tokenKey], cached in memory, and cleared on 401.
 class ApiClient {
-  ApiClient(this._prefs);
+  ApiClient(this._prefs, {FlutterSecureStorage? secureStorage})
+      : _secure = secureStorage ?? const FlutterSecureStorage();
 
   static const String tokenKey = 'hillgo_courier_token';
-  static const String baseUrl = String.fromEnvironment(
-    'HILLGO_API_BASE',
-    defaultValue: 'http://localhost:8000/api',
-  );
+  static const int maxUploadBytes = 5 * 1024 * 1024;
+
+  /// Resolved API base. Release builds must pass `--dart-define=HILLGO_API_BASE=...`.
+  static String get baseUrl {
+    const fromEnv = String.fromEnvironment('HILLGO_API_BASE');
+    if (fromEnv.isNotEmpty) return fromEnv;
+    if (kReleaseMode) {
+      throw StateError(
+        'HILLGO_API_BASE must be set via --dart-define for release builds.',
+      );
+    }
+    return 'http://127.0.0.1:8000/api';
+  }
 
   final SharedPreferences _prefs;
+  final FlutterSecureStorage _secure;
   final http.Client _http = http.Client();
+
+  String? _token;
+  bool _tokenLoaded = false;
 
   /// Invoked when the backend rejects the stored token (401).
   void Function()? onUnauthorized;
 
-  String? get token => _prefs.getString(tokenKey);
+  String? get token => _token;
 
-  bool get hasToken => (token ?? '').isNotEmpty;
+  bool get hasToken => (_token ?? '').isNotEmpty;
 
-  Future<void> saveToken(String value) => _prefs.setString(tokenKey, value);
+  /// Loads the token from secure storage into the memory cache.
+  /// Migrates a legacy SharedPreferences value when present.
+  Future<void> loadToken() async {
+    if (_tokenLoaded) return;
+    _token = await _secure.read(key: tokenKey);
+    final legacy = _prefs.getString(tokenKey);
+    if ((_token == null || _token!.isEmpty) && legacy != null && legacy.isNotEmpty) {
+      _token = legacy;
+      await _secure.write(key: tokenKey, value: legacy);
+      await _prefs.remove(tokenKey);
+    } else if (legacy != null) {
+      await _prefs.remove(tokenKey);
+    }
+    _tokenLoaded = true;
+  }
 
-  Future<void> clearToken() async => _prefs.remove(tokenKey);
+  Future<void> saveToken(String value) async {
+    _token = value;
+    _tokenLoaded = true;
+    await _secure.write(key: tokenKey, value: value);
+    await _prefs.remove(tokenKey);
+  }
+
+  Future<void> clearToken() async {
+    _token = null;
+    _tokenLoaded = true;
+    await _secure.delete(key: tokenKey);
+    await _prefs.remove(tokenKey);
+  }
 
   Uri _uri(String path, [Map<String, String>? query]) {
     final url = Uri.parse('$baseUrl$path');
@@ -79,12 +121,17 @@ class ApiClient {
   );
 
   /// Multipart POST used for KYC document and delivery proof uploads.
+  /// Rejects files larger than [maxUploadBytes] (5 MB) before upload.
   Future<dynamic> multipart(
     String path, {
     required String filePath,
     String fileField = 'file',
     Map<String, String> fields = const {},
-  }) {
+  }) async {
+    final length = await File(filePath).length();
+    if (length > maxUploadBytes) {
+      throw const ApiException(0, 'File is too large. Maximum size is 5 MB.');
+    }
     return _run(() async {
       final request = http.MultipartRequest('POST', _uri(path))
         ..headers.addAll(_headers(json: false))
@@ -107,7 +154,7 @@ class ApiClient {
     return _decode(response);
   }
 
-  dynamic _decode(http.Response response) {
+  Future<dynamic> _decode(http.Response response) async {
     dynamic body;
     if (response.body.isNotEmpty) {
       try {
@@ -122,7 +169,7 @@ class ApiClient {
     }
 
     if (response.statusCode == 401) {
-      clearToken();
+      await clearToken();
       onUnauthorized?.call();
       throw ApiException(401, _message(body) ?? 'Your session has expired. Please log in again.');
     }

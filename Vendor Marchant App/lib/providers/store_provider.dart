@@ -28,7 +28,7 @@ class StoreProvider extends ChangeNotifier {
   /// (onboarding submitted but not approved).
   bool storePending = false;
 
-  // Settings (mirrors of backend prefs, cached locally for instant UI).
+  // Settings: server is source of truth; in-memory only (no SharedPreferences).
   bool notifyNewOrders = true;
   bool notifyPayouts = true;
   bool notifyReviews = false;
@@ -39,10 +39,24 @@ class StoreProvider extends ChangeNotifier {
     error = null;
     notifyListeners();
 
-    notifyNewOrders = _prefs.getBool('notify_orders') ?? true;
-    notifyPayouts = _prefs.getBool('notify_payouts') ?? true;
-    notifyReviews = _prefs.getBool('notify_reviews') ?? false;
-    language = _prefs.getString('language') ?? 'English';
+    try {
+      final me = await _repo.getMePrefs();
+      if (me != null) {
+        notifyNewOrders = me['notify_new_orders'] as bool? ?? notifyNewOrders;
+        notifyPayouts = me['notify_payouts'] as bool? ?? notifyPayouts;
+        notifyReviews = me['notify_reviews'] as bool? ?? notifyReviews;
+        final lang = me['language'] as String?;
+        if (lang == 'bn') language = 'বাংলা (Bangla)';
+        if (lang == 'en') language = 'English';
+      }
+      // Drop any legacy preference keys from older builds.
+      await _prefs.remove('notify_orders');
+      await _prefs.remove('notify_payouts');
+      await _prefs.remove('notify_reviews');
+      await _prefs.remove('language');
+    } catch (_) {
+      /* keep defaults until server responds */
+    }
 
     try {
       store = await _repo.getStore();
@@ -201,28 +215,24 @@ class StoreProvider extends ChangeNotifier {
 
   Future<void> setNotifyNewOrders(bool v) async {
     notifyNewOrders = v;
-    await _prefs.setBool('notify_orders', v);
     notifyListeners();
     _pushSettings({'notify_new_orders': v});
   }
 
   Future<void> setNotifyPayouts(bool v) async {
     notifyPayouts = v;
-    await _prefs.setBool('notify_payouts', v);
     notifyListeners();
     _pushSettings({'notify_payouts': v});
   }
 
   Future<void> setNotifyReviews(bool v) async {
     notifyReviews = v;
-    await _prefs.setBool('notify_reviews', v);
     notifyListeners();
     _pushSettings({'notify_reviews': v});
   }
 
   Future<void> setLanguage(String lang) async {
     language = lang;
-    await _prefs.setString('language', lang);
     notifyListeners();
     _pushSettings({'language': lang == 'বাংলা (Bangla)' ? 'bn' : 'en'});
   }

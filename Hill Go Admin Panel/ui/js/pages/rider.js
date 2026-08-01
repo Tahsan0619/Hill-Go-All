@@ -3,6 +3,7 @@ window.Pages = window.Pages || {};
 (function riderPages() {
   const S = () => AppStore;
   const U = () => UI;
+  const esc = (s) => U().escapeHtml(s);
   const hdr = (title, crumbs, actions = '') => `
     <div class="mb-6 flex justify-between items-end flex-wrap gap-3">
       <div><nav class="flex items-center gap-2 text-xs text-outline mb-2">${U().breadcrumb(crumbs)}</nav><h2 class="text-3xl font-bold">${title}</h2></div>
@@ -45,7 +46,7 @@ window.Pages = window.Pages || {};
       root.innerHTML = `
         ${hdr('Riders', ['Rider Panel', 'Riders'], '<button type="button" id="ex" class="px-4 py-2 text-sm font-semibold rounded-lg border bg-white">Export CSV</button>')}
         <div class="bg-white rounded-xl border p-4 mb-4 flex flex-wrap gap-3">
-          <input id="q" value="${filter.q}" class="flex-1 rounded-lg border-slate-200 text-sm" placeholder="Search riders…" />
+          <input id="q" value="${esc(filter.q)}" class="flex-1 rounded-lg border-slate-200 text-sm" placeholder="Search riders…" />
           <select id="st" class="rounded-lg border-slate-200 text-sm">
             <option value="all">All</option>
             <option value="active" ${filter.status === 'active' ? 'selected' : ''}>Active</option>
@@ -61,13 +62,13 @@ window.Pages = window.Pages || {};
             <tbody class="divide-y">
               ${pg.rows.map((r) => `
                 <tr>
-                  <td class="px-4 py-3"><p class="font-medium">${r.name}</p><p class="text-xs text-outline">${r.id} · ${r.district}</p></td>
-                  <td class="px-4 py-3 capitalize">${r.vehicle}<p class="text-xs text-outline">${r.plate}</p></td>
+                  <td class="px-4 py-3"><p class="font-medium">${esc(r.name)}</p><p class="text-xs text-outline">${esc(r.id)} · ${esc(r.district)}</p></td>
+                  <td class="px-4 py-3 capitalize">${esc(r.vehicle)}<p class="text-xs text-outline">${esc(r.plate)}</p></td>
                   <td class="px-4 py-3">${r.online ? U().badge('active') : '<span class="text-xs text-outline">Offline</span>'}</td>
                   <td class="px-4 py-3">${U().formatTk(r.todayEarnings)} · ${r.tripsToday} trips</td>
                   <td class="px-4 py-3">${U().badge(r.status)}</td>
                   <td class="px-4 py-3 text-right">
-                    <button type="button" data-toggle="${r.id}" class="text-xs font-semibold text-primary-container">${r.status === 'active' ? 'Suspend' : 'Activate'}</button>
+                    <button type="button" data-toggle="${esc(r.id)}" class="text-xs font-semibold text-primary-container">${r.status === 'active' ? 'Suspend' : 'Activate'}</button>
                   </td>
                 </tr>`).join('')}
             </tbody>
@@ -90,7 +91,7 @@ window.Pages = window.Pages || {};
         const id = b.getAttribute('data-toggle');
         const r = S().listRiders().find((x) => x.id === id);
         const next = r.status === 'active' ? 'suspended' : 'active';
-        const ok = await U().confirmDialog({ title: `${next} rider`, message: `${r.name} → <strong>${next}</strong>`, danger: next === 'suspended', confirmLabel: next === 'suspended' ? 'Suspend' : 'Activate' });
+        const ok = await U().confirmDialog({ title: `${next} rider`, message: `${r.name} → ${next}`, danger: next === 'suspended', confirmLabel: next === 'suspended' ? 'Suspend' : 'Activate' });
         if (!ok) return;
         S().updateRider(id, { status: next, online: next === 'active' ? r.online : false });
         U().notice(`${r.name} is ${next}`);
@@ -119,7 +120,7 @@ window.Pages = window.Pages || {};
       ${HillGoMaps.mapShell({
         id: 'map-rider-live',
         title: 'Live rider & trip map',
-        liveLabel: 'Realtime mock positions',
+        liveLabel: 'Realtime positions from API',
         height: '520px',
         sideHtml: `
           <div class="bg-white rounded-xl border shadow-sm overflow-hidden h-[520px] flex flex-col">
@@ -127,7 +128,7 @@ window.Pages = window.Pages || {};
             <ul class="flex-1 overflow-y-auto divide-y">
               ${riders.filter((r) => r.online).map((r) => `
                 <li class="px-4 py-3 text-sm flex justify-between gap-2">
-                  <div><p class="font-medium">${r.name}</p><p class="text-xs text-outline">${r.vehicle} · ${r.district}</p></div>
+                  <div><p class="font-medium">${esc(r.name)}</p><p class="text-xs text-outline">${esc(r.vehicle)} · ${esc(r.district)}</p></div>
                   <span class="text-xs font-semibold text-emerald-600">Online</span>
                 </li>`).join('') || '<li class="px-4 py-6 text-outline text-sm">No riders online</li>'}
             </ul>
@@ -171,10 +172,16 @@ window.Pages = window.Pages || {};
               ${rows.map((k) => `
                 <tr class="${k.status === 'verified' ? 'opacity-60' : ''}">
                   <td class="px-4 py-3"><input type="checkbox" data-sel="${k.id}" ${selected.has(k.id) ? 'checked' : ''} ${k.status === 'verified' ? 'disabled' : ''} /></td>
-                  <td class="px-4 py-3"><p class="font-medium">${k.riderName}</p><p class="text-xs text-outline">${k.riderId}${k.priority ? ' · Priority' : ''}${k.flagged ? ' · Flagged' : ''}</p></td>
-                  <td class="px-4 py-3 text-xs">${k.docs.join(', ')}</td>
+                  <td class="px-4 py-3"><p class="font-medium">${esc(k.riderName)}</p><p class="text-xs text-outline">${esc(k.riderId)}${k.priority ? ' · Priority' : ''}${k.flagged ? ' · Flagged' : ''}</p></td>
+                  <td class="px-4 py-3 text-xs">
+                    <div class="flex flex-col gap-1">
+                      ${(k.docDetails || []).map((d) => d.fileUrl
+                        ? `<button type="button" data-doc-url="${esc(d.fileUrl)}" data-doc-name="${esc(d.title || d.key || 'document')}" class="text-left text-primary-container font-semibold hover:underline">${esc(d.title || d.key)}</button>`
+                        : `<span>${esc(d.title || d.key || '')}</span>`).join('') || esc((k.docs || []).join(', '))}
+                    </div>
+                  </td>
                   <td class="px-4 py-3">${U().badge(k.status)}</td>
-                  <td class="px-4 py-3 text-xs">${k.submitted}</td>
+                  <td class="px-4 py-3 text-xs">${esc(k.submitted)}</td>
                   <td class="px-4 py-3 space-x-2 whitespace-nowrap">
                     <button type="button" data-act="verified" data-id="${k.id}" class="text-xs font-semibold text-emerald-700" ${k.status === 'verified' ? 'disabled' : ''}>Approve</button>
                     <button type="button" data-act="action_required" data-id="${k.id}" class="text-xs font-semibold text-amber-700">Reupload</button>
@@ -205,11 +212,18 @@ window.Pages = window.Pages || {};
       root.querySelectorAll('[data-bulk]').forEach((b) => b.addEventListener('click', async () => {
         const act = b.getAttribute('data-bulk');
         if (!selected.size) { U().notice('Select at least one row', 'error'); return; }
-        const ok = await U().confirmDialog({ title: 'Bulk KYC update', message: `Apply <strong>${act}</strong> to ${selected.size} applications?`, danger: act === 'rejected' });
+        const ok = await U().confirmDialog({ title: 'Bulk KYC update', message: `Apply ${act} to ${selected.size} applications?`, danger: act === 'rejected' });
         if (!ok) return;
         S().bulkRiderKyc([...selected], act);
         selected.clear();
         U().notice(`Updated ${act}`);
+      }));
+      root.querySelectorAll('[data-doc-url]').forEach((b) => b.addEventListener('click', async () => {
+        try {
+          await S().openAuthenticatedFile(b.getAttribute('data-doc-url'), b.getAttribute('data-doc-name') || 'document');
+        } catch (e) {
+          U().notice(e.message || 'Could not open document', 'error');
+        }
       }));
     };
     render();
@@ -229,7 +243,7 @@ window.Pages = window.Pages || {};
         <div class="flex flex-wrap gap-2 mb-4">
           ${['all', 'ride', 'food', 'parcel'].map((t) => `
             <button type="button" data-type="${t}" class="px-3 py-1.5 rounded-full text-xs font-semibold border capitalize ${type === t ? 'bg-primary-container text-white border-primary-container' : 'bg-white'}">${t}</button>`).join('')}
-          <input id="q" value="${q}" class="ml-auto rounded-lg border-slate-200 text-sm" placeholder="Search…" />
+          <input id="q" value="${esc(q)}" class="ml-auto rounded-lg border-slate-200 text-sm" placeholder="Search…" />
           <button type="button" id="apply" class="px-3 py-1.5 rounded-lg bg-slate-900 text-white text-xs font-semibold">Search</button>
         </div>
         <div class="bg-white rounded-xl border overflow-hidden">
@@ -239,12 +253,12 @@ window.Pages = window.Pages || {};
             </tr></thead>
             <tbody class="divide-y">${pg.rows.map((t) => `
               <tr>
-                <td class="px-4 py-3 font-medium">${t.id}</td>
-                <td class="px-4 py-3 capitalize">${t.type}${t.surge > 1 ? ` · ${t.surge}x` : ''}</td>
-                <td class="px-4 py-3">${t.rider}</td>
-                <td class="px-4 py-3">${t.route} <span class="text-xs text-outline">${t.km} km</span></td>
+                <td class="px-4 py-3 font-medium">${esc(t.id)}</td>
+                <td class="px-4 py-3 capitalize">${esc(t.type)}${t.surge > 1 ? ` · ${t.surge}x` : ''}</td>
+                <td class="px-4 py-3">${esc(t.rider)}</td>
+                <td class="px-4 py-3">${esc(t.route)} <span class="text-xs text-outline">${t.km} km</span></td>
                 <td class="px-4 py-3">${U().formatTk(t.earning)}${t.cod ? `<p class="text-xs text-outline">COD ${U().formatTk(t.cod)}</p>` : ''}</td>
-                <td class="px-4 py-3 capitalize">${t.payment}</td>
+                <td class="px-4 py-3 capitalize">${esc(t.payment)}</td>
                 <td class="px-4 py-3">${U().badge(t.status)}</td>
               </tr>`).join('')}</tbody>
           </table>
@@ -271,7 +285,7 @@ window.Pages = window.Pages || {};
           <label class="block text-xs font-semibold text-outline">Rider
             <select name="riderId" required class="mt-1 w-full rounded-lg border-slate-200 text-sm">
               <option value="">Select rider…</option>
-              ${riders.map((r) => `<option value="${r.id}" data-name="${r.name}">${r.name} (${r.id}) — today ${U().formatTk(r.todayEarnings)}</option>`).join('')}
+              ${riders.map((r) => `<option value="${esc(r.id)}" data-name="${esc(r.name)}">${esc(r.name)} (${esc(r.id)}) — today ${U().formatTk(r.todayEarnings)}</option>`).join('')}
             </select>
           </label>
           <div class="grid grid-cols-2 gap-3">
@@ -301,7 +315,7 @@ window.Pages = window.Pages || {};
         <div class="lg:col-span-2 bg-white rounded-xl border shadow-sm p-5">
           <h3 class="font-semibold mb-3">Recent payments</h3>
           <ul class="space-y-3 text-sm">
-            ${recent.map((p) => `<li class="flex justify-between gap-2 border-b pb-2"><div><p class="font-medium">${p.rider}</p><p class="text-xs text-outline">${p.method} · ${p.id}</p></div><div class="text-right"><p class="font-semibold">${U().formatTk(p.amount)}</p>${U().badge(p.status)}</div></li>`).join('')}
+            ${recent.map((p) => `<li class="flex justify-between gap-2 border-b pb-2"><div><p class="font-medium">${esc(p.rider)}</p><p class="text-xs text-outline">${esc(p.method)} · ${esc(p.id)}</p></div><div class="text-right"><p class="font-semibold">${U().formatTk(p.amount)}</p>${U().badge(p.status)}</div></li>`).join('')}
           </ul>
         </div>
       </div>`;
@@ -328,7 +342,7 @@ window.Pages = window.Pages || {};
       if (amount <= 0) { U().notice('Net pay must be positive', 'error'); return; }
       const ok = await U().confirmDialog({
         title: 'Confirm salary payment',
-        message: `Pay <strong>${U().formatTk(amount)}</strong> to <strong>${rider.name}</strong> via ${form.method.value}? This appends a Paid row to the payout log.`,
+        message: `Pay ${U().formatTk(amount)} to ${rider.name} via ${form.method.value}? This appends a Paid row to the payout log.`,
         confirmLabel: 'Mark paid',
       });
       if (!ok) return;
@@ -359,7 +373,7 @@ window.Pages = window.Pages || {};
           ${U().kpiCard('Failed', all.filter((p) => p.status === 'failed').length, '')}
         </div>
         <div class="bg-white rounded-xl border p-4 mb-4 flex flex-wrap gap-3">
-          <input id="q" value="${filter.q}" class="flex-1 rounded-lg border-slate-200 text-sm" placeholder="Search…" />
+          <input id="q" value="${esc(filter.q)}" class="flex-1 rounded-lg border-slate-200 text-sm" placeholder="Search…" />
           <select id="method" class="rounded-lg border-slate-200 text-sm">
             <option value="all">All methods</option>
             ${['bKash', 'Nagad', 'Bank'].map((m) => `<option ${filter.method === m ? 'selected' : ''}>${m}</option>`).join('')}
@@ -377,11 +391,11 @@ window.Pages = window.Pages || {};
             </tr></thead>
             <tbody class="divide-y">${pg.rows.map((p) => `
               <tr>
-                <td class="px-4 py-3 font-medium">${p.id}<p class="text-xs text-outline">${p.ref || '—'}</p></td>
-                <td class="px-4 py-3">${p.rider}</td>
+                <td class="px-4 py-3 font-medium">${esc(p.id)}<p class="text-xs text-outline">${p.ref || '—'}</p></td>
+                <td class="px-4 py-3">${esc(p.rider)}</td>
                 <td class="px-4 py-3 font-semibold">${U().formatTk(p.amount)}</td>
-                <td class="px-4 py-3">${p.method}</td>
-                <td class="px-4 py-3 text-xs">${p.periodFrom} → ${p.periodTo}</td>
+                <td class="px-4 py-3">${esc(p.method)}</td>
+                <td class="px-4 py-3 text-xs">${esc(p.periodFrom)} → ${esc(p.periodTo)}</td>
                 <td class="px-4 py-3">${U().badge(p.status)}</td>
               </tr>`).join('')}</tbody>
           </table>
@@ -423,7 +437,7 @@ window.Pages = window.Pages || {};
         </form>
         <div class="mt-6 bg-white rounded-xl border p-5 max-w-5xl">
           <h3 class="font-semibold mb-2">Audit</h3>
-          <ul class="text-sm divide-y">${audit.map((a) => `<li class="py-2">${a.field}: ${a.oldValue} → ${a.newValue} <span class="text-xs text-outline">${U().formatDate(a.at)}</span></li>`).join('') || '<li class="text-outline">No changes</li>'}</ul>
+          <ul class="text-sm divide-y">${audit.map((a) => `<li class="py-2">${esc(a.field)}: ${esc(a.oldValue)} → ${esc(a.newValue)} <span class="text-xs text-outline">${U().formatDate(a.at)}</span></li>`).join('') || '<li class="text-outline">No changes</li>'}</ul>
         </div>`;
       root.querySelector('#rp-form')?.addEventListener('submit', (e) => {
         e.preventDefault();

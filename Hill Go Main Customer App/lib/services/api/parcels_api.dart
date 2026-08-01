@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:math' as math;
+
 import '../../models/catalog_models.dart';
 import 'api_client.dart';
 
@@ -5,14 +8,44 @@ import 'api_client.dart';
 class ParcelsApi {
   ParcelsApi._();
 
+  static double _clampWeight(double kg) => kg.clamp(0.1, 50.0);
+  static double _clampDistance(double km) => km.clamp(0.1, 500.0);
+
+  /// Great-circle distance in km when both endpoints have coordinates.
+  static double? haversineKm({
+    double? pickupLat,
+    double? pickupLng,
+    double? dropLat,
+    double? dropLng,
+  }) {
+    if (pickupLat == null ||
+        pickupLng == null ||
+        dropLat == null ||
+        dropLng == null) {
+      return null;
+    }
+    const earthRadiusKm = 6371.0;
+    final dLat = _toRad(dropLat - pickupLat);
+    final dLng = _toRad(dropLng - pickupLng);
+    final a = math.sin(dLat / 2) * math.sin(dLat / 2) +
+        math.cos(_toRad(pickupLat)) *
+            math.cos(_toRad(dropLat)) *
+            math.sin(dLng / 2) *
+            math.sin(dLng / 2);
+    final c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
+    return earthRadiusKm * c;
+  }
+
+  static double _toRad(double deg) => deg * math.pi / 180.0;
+
   static Future<ParcelQuote> quote({
     required double distanceKm,
     required double weightKg,
     String priority = 'standard',
   }) async {
     final data = await ApiClient.post('/customer/parcels/quote', body: {
-      'distance_km': distanceKm,
-      'weight_kg': weightKg,
+      'distance_km': _clampDistance(distanceKm),
+      'weight_kg': _clampWeight(weightKg),
       'priority': priority,
     });
     return ParcelQuote.fromJson(data as Map<String, dynamic>);
@@ -28,8 +61,8 @@ class ParcelsApi {
       'receiver_name': booking.receiverContact,
       'receiver_phone': booking.receiverPhone,
       'drop_address': booking.receiverAddress,
-      'weight_kg': booking.weightKg,
-      'distance_km': booking.distanceKm,
+      'weight_kg': _clampWeight(booking.weightKg),
+      'distance_km': _clampDistance(booking.distanceKm),
       'payment_method': booking.paymentMethod,
     });
     return ParcelEntry.fromJson(data as Map<String, dynamic>);

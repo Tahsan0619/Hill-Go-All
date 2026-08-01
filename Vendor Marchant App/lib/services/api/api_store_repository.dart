@@ -47,8 +47,10 @@ class ApiStoreRepository implements StoreRepository {
 
   @override
   Future<List<ReviewModel>> getReviews() async {
-    final response =
-        await _api.get('/merchant/reviews') as Map<String, dynamic>;
+    final response = await _api.get(
+      '/merchant/reviews',
+      query: {'per_page': '50'},
+    ) as Map<String, dynamic>;
     return ((response['data'] as List?) ?? const [])
         .map((r) => ReviewModel.fromJson(
               r as Map<String, dynamic>,
@@ -67,8 +69,10 @@ class ApiStoreRepository implements StoreRepository {
 
   @override
   Future<List<PayoutModel>> getPayouts() async {
-    final response =
-        await _api.get('/merchant/payouts') as Map<String, dynamic>;
+    final response = await _api.get(
+      '/merchant/payouts',
+      query: {'per_page': '50'},
+    ) as Map<String, dynamic>;
     return ((response['data'] as List?) ?? const [])
         .map((p) => PayoutModel.fromJson(p as Map<String, dynamic>))
         .toList();
@@ -76,7 +80,10 @@ class ApiStoreRepository implements StoreRepository {
 
   @override
   Future<List<TransactionModel>> getTransactions() async {
-    final response = await _api.get('/merchant/transactions') as List;
+    final response = await _api.get(
+      '/merchant/transactions',
+      query: {'per_page': '50'},
+    ) as List;
     return [
       for (var i = 0; i < response.length; i++)
         TransactionModel.fromJson(response[i] as Map<String, dynamic>, i),
@@ -143,5 +150,21 @@ class ApiStoreRepository implements StoreRepository {
   @override
   Future<void> updateSettings(Map<String, dynamic> settings) async {
     await _api.patch('/merchant/settings', settings);
+  }
+
+  @override
+  Future<Map<String, dynamic>?> getMePrefs() async {
+    final me = await _api.get('/merchant/me') as Map<String, dynamic>;
+    final user = me['user'] as Map<String, dynamic>? ?? me;
+    final prefs = user['prefs'];
+    if (prefs is Map<String, dynamic>) {
+      return {
+        ...prefs,
+        'language': user['language'] ?? prefs['language'],
+      };
+    }
+    return {
+      if (user['language'] != null) 'language': user['language'],
+    };
   }
 }

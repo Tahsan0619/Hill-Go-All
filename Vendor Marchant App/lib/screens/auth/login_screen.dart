@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -25,15 +27,35 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _obscure = true;
   bool _isRegister = false;
   bool _awaitingOtp = false;
+  int _resendSeconds = 0;
+  Timer? _resendTimer;
 
   @override
   void dispose() {
+    _resendTimer?.cancel();
     _emailCtrl.dispose();
     _passwordCtrl.dispose();
     _nameCtrl.dispose();
     _phoneCtrl.dispose();
     _otpCtrl.dispose();
     super.dispose();
+  }
+
+  void _startResendCooldown() {
+    _resendTimer?.cancel();
+    setState(() => _resendSeconds = 45);
+    _resendTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      if (_resendSeconds <= 1) {
+        timer.cancel();
+        setState(() => _resendSeconds = 0);
+      } else {
+        setState(() => _resendSeconds--);
+      }
+    });
   }
 
   void _afterAuth(AuthProvider auth) {
@@ -76,6 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
         break;
       case RegisterOutcome.otpRequired:
         setState(() => _awaitingOtp = true);
+        _startResendCooldown();
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('We sent a verification code to your phone.'),
@@ -84,6 +107,28 @@ class _LoginScreenState extends State<LoginScreen> {
         break;
       case RegisterOutcome.failed:
         _showError(auth);
+    }
+  }
+
+  Future<void> _resendOtp() async {
+    if (_resendSeconds > 0) return;
+    final auth = context.read<AuthProvider>();
+    final outcome = await auth.register(
+      name: _nameCtrl.text.trim(),
+      phone: _phoneCtrl.text.trim(),
+      email: _emailCtrl.text.trim(),
+      password: _passwordCtrl.text,
+      otp: null,
+    );
+    if (!mounted) return;
+    if (outcome == RegisterOutcome.otpRequired ||
+        outcome == RegisterOutcome.success) {
+      _startResendCooldown();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Verification code resent.')),
+      );
+    } else {
+      _showError(auth);
     }
   }
 
@@ -243,8 +288,13 @@ class _LoginScreenState extends State<LoginScreen> {
             hintText: '6-digit code',
             counterText: '',
           ),
-          validator: (v) =>
-              (v == null || v.trim().isEmpty) ? 'Enter the code' : null,
+          validator: (v) {
+            final code = v?.trim() ?? '';
+            if (!RegExp(r'^\d{6}$').hasMatch(code)) {
+              return 'Enter the 6-digit code';
+            }
+            return null;
+          },
         ),
         const SizedBox(height: 20),
         PrimaryButton(
@@ -255,10 +305,29 @@ class _LoginScreenState extends State<LoginScreen> {
         const SizedBox(height: 8),
         Center(
           child: TextButton(
-            onPressed: () => setState(() {
-              _awaitingOtp = false;
-              _otpCtrl.clear();
-            }),
+            onPressed: (_resendSeconds > 0 || auth.isLoading) ? null : _resendOtp,
+            child: Text(
+              _resendSeconds > 0
+                  ? 'Resend in ${_resendSeconds}s'
+                  : 'Resend code',
+              style: AppTextStyles.bodyBold.copyWith(
+                color: _resendSeconds > 0
+                    ? AppColors.textMuted
+                    : AppColors.primary,
+              ),
+            ),
+          ),
+        ),
+        Center(
+          child: TextButton(
+            onPressed: () {
+              _resendTimer?.cancel();
+              setState(() {
+                _awaitingOtp = false;
+                _resendSeconds = 0;
+                _otpCtrl.clear();
+              });
+            },
             child: Text(
               'Back',
               style: AppTextStyles.bodyBold.copyWith(color: AppColors.primary),

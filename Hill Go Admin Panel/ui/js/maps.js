@@ -53,12 +53,18 @@ window.HillGoMaps = (() => {
     return [lat + a - 0.01, lng + b - 0.01];
   }
 
+  function escapeHtml(s) {
+    return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
   function divIcon(color, label) {
+    const safeLabel = escapeHtml(label);
+    const safeColor = escapeHtml(color);
     const html = label
-      ? `<div style="display:flex;align-items:center;gap:4px;background:#fff;border:1px solid ${color};border-radius:8px;padding:2px 6px;box-shadow:0 1px 4px rgba(0,0,0,.2);font:600 10px Inter,sans-serif;color:#191c1e;white-space:nowrap">
-           <span style="width:8px;height:8px;border-radius:50%;background:${color}"></span>${label}
+      ? `<div style="display:flex;align-items:center;gap:4px;background:#fff;border:1px solid ${safeColor};border-radius:8px;padding:2px 6px;box-shadow:0 1px 4px rgba(0,0,0,.2);font:600 10px Inter,sans-serif;color:#191c1e;white-space:nowrap">
+           <span style="width:8px;height:8px;border-radius:50%;background:${safeColor}"></span>${safeLabel}
          </div>`
-      : `<div style="width:12px;height:12px;background:${color};border:2px solid #fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.35)"></div>`;
+      : `<div style="width:12px;height:12px;background:${safeColor};border:2px solid #fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.35)"></div>`;
     return L.divIcon({
       className: 'hg-marker',
       html,
@@ -185,11 +191,14 @@ window.HillGoMaps = (() => {
       .map((r, i) => {
         const hub = resolvePlace(r.district) || HUBS.gulshan;
         const [lat, lng] = jitter(hub.lat, hub.lng, i + 3);
+        const name = escapeHtml(r.name);
+        const vehicle = escapeHtml(r.vehicle);
+        const district = escapeHtml(r.district);
         return {
           lat, lng,
           color: r.online ? '#10B981' : '#F59E0B',
-          label: r.name.split(' ')[0],
-          popup: `<strong>${r.name}</strong><br>${r.vehicle} · ${r.district}<br>${r.online ? 'Online' : 'Offline'}`,
+          label: String(r.name || '').split(' ')[0],
+          popup: `<strong>${name}</strong><br>${vehicle} · ${district}<br>${r.online ? 'Online' : 'Offline'}`,
         };
       });
   }
@@ -201,8 +210,8 @@ window.HillGoMaps = (() => {
       return {
         lat, lng,
         color: a.online ? '#0047ab' : '#9CA3AF',
-        label: a.id.replace('CG-', ''),
-        popup: `<strong>${a.name}</strong><br>${a.vehicle}<br>${a.status}`,
+        label: String(a.id || '').replace('CG-', ''),
+        popup: `<strong>${escapeHtml(a.name)}</strong><br>${escapeHtml(a.vehicle)}<br>${escapeHtml(a.status)}`,
       };
     });
   }
@@ -218,7 +227,7 @@ window.HillGoMaps = (() => {
       return {
         lat, lng, color,
         label: t.type || t.id,
-        popup: `<strong>${t.id || ''}</strong><br>${t.route || ''}<br>${t.status}`,
+        popup: `<strong>${escapeHtml(t.id || '')}</strong><br>${escapeHtml(t.route || '')}<br>${escapeHtml(t.status)}`,
       };
     });
   }
@@ -231,7 +240,7 @@ window.HillGoMaps = (() => {
         lat, lng,
         color: '#F59E0B',
         label: (o.id || '').slice(-4),
-        popup: `<strong>${o.id}</strong><br>${o[pickupKey] || o.store || ''}<br>${o.status}`,
+        popup: `<strong>${escapeHtml(o.id)}</strong><br>${escapeHtml(o[pickupKey] || o.store || '')}<br>${escapeHtml(o.status)}`,
       };
     });
   }
@@ -244,7 +253,7 @@ window.HillGoMaps = (() => {
         lat, lng,
         color: p.status === 'delivered' ? '#10B981' : '#0047ab',
         label: (p.id || '').replace(/\D/g, '').slice(-3),
-        popup: `<strong>${p.id}</strong><br>${p.pickup || ''} → ${p.drop || p.destination || ''}<br>${p.status}`,
+        popup: `<strong>${escapeHtml(p.id)}</strong><br>${escapeHtml(p.pickup || '')} → ${escapeHtml(p.drop || p.destination || '')}<br>${escapeHtml(p.status)}`,
       };
     });
   }
@@ -257,7 +266,7 @@ window.HillGoMaps = (() => {
         lat, lng,
         color: d.status === 'open' ? '#10B981' : '#EF4444',
         label: '',
-        popup: `<strong>${d.name}</strong><br>${d.divisionName}<br>Status: ${d.status}`,
+        popup: `<strong>${escapeHtml(d.name)}</strong><br>${escapeHtml(d.divisionName)}<br>Status: ${escapeHtml(d.status)}`,
       };
     });
   }
@@ -265,15 +274,18 @@ window.HillGoMaps = (() => {
   function mapShell({ id, title, liveLabel, height = '360px', sideHtml = '' }) {
     const cols = sideHtml ? 'lg:grid-cols-3' : 'grid-cols-1';
     const mapSpan = sideHtml ? 'lg:col-span-2' : '';
+    const safeId = escapeHtml(id);
+    const safeTitle = escapeHtml(title);
+    const safeLive = liveLabel ? escapeHtml(liveLabel) : '';
     return `
       <div class="grid grid-cols-1 ${cols} gap-4 mt-6" data-map-shell>
         <div class="${mapSpan} bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden relative">
           <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
-            <h3 class="text-sm font-semibold uppercase tracking-wider text-on-surface">${title}</h3>
-            ${liveLabel ? `<span class="flex items-center gap-2 text-xs font-semibold text-emerald-600"><span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>${liveLabel}</span>` : ''}
+            <h3 class="text-sm font-semibold uppercase tracking-wider text-on-surface">${safeTitle}</h3>
+            ${liveLabel ? `<span class="flex items-center gap-2 text-xs font-semibold text-emerald-600"><span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>${safeLive}</span>` : ''}
           </div>
           <div class="relative">
-            <div id="${id}" class="bg-slate-100" style="height:${height}"></div>
+            <div id="${safeId}" class="bg-slate-100" style="height:${escapeHtml(height)}"></div>
             <div class="absolute top-3 left-3 z-[400] pointer-events-none">
               <div class="bg-white/95 backdrop-blur px-3 py-1.5 rounded-full border border-slate-200 text-[10px] font-bold text-primary uppercase shadow-sm">
                 Live · Dhaka Metropolitan

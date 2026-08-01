@@ -66,7 +66,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
     if (_watching && _offerPoll != null) return;
     _watching = true;
     _offerPoll?.cancel();
-    _offerPoll = Timer.periodic(const Duration(seconds: 2), (_) async {
+    _offerPoll = Timer.periodic(const Duration(seconds: 5), (_) async {
       if (!mounted) return;
       final d = context.read<DriverProvider>();
       if (!d.isOnline || d.activeTrip != null) {
@@ -126,7 +126,6 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                     const SizedBox(width: 8),
                     Switch.adaptive(
                       value: driver.isOnline,
-                      activeThumbColor: Colors.white,
                       activeTrackColor: AppColors.primary,
                       onChanged: (v) async {
                         final ok = await driver.toggleOnline(v);

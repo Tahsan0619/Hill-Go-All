@@ -5,6 +5,7 @@ import '../services/api/food_api.dart';
 import '../services/api/hotels_api.dart';
 import '../services/api/rentals_api.dart';
 import '../theme/app_theme.dart';
+import '../utils/user_facing_error.dart';
 import '../widgets/app_network_image.dart';
 import '../widgets/app_pull_refresh.dart';
 import '../widgets/cart_icon_button.dart';
@@ -124,7 +125,7 @@ class _NearbyServicesScreenState extends State<NearbyServicesScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = e.toString();
+        _error = userFacingError(e);
         _loading = false;
       });
     }

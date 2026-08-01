@@ -52,7 +52,7 @@
         <h1>One App, <span>Every Service</span></h1>
         <p>HillGo is your all-in-one ecosystem for mobility and logistics. Book rides, order food, and send parcels — all from a single platform built for speed and reliability.</p>
         <form class="availability-form">
-          <input type="text" placeholder="Enter your city to check availability" required>
+          <input type="text" name="city" placeholder="Enter your city to check availability" required maxlength="100">
           <button type="submit" class="btn btn-primary">Check Availability →</button>
         </form>
         <div class="hero-btns" style="margin-bottom:20px;">
@@ -66,7 +66,7 @@
       </div>
       <div class="hero-visual">
         <div class="hero-image-wrap">
-          <img src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&q=80" alt="Woman using HillGo app in city">
+          <img loading="lazy" src="assets/img/people.svg" alt="Woman using HillGo app in city">
           <div class="hero-float-card top">
             <strong>12,580</strong>
             <span>Active Rides</span>
@@ -105,7 +105,7 @@
         <h2>Track Your Order</h2>
         <p>Sign in now to have a reliable product delivery experience</p>
         <form class="track-form" id="trackForm">
-          <input type="text" placeholder="Enter Tracking Number" required>
+          <input type="text" name="tracking_id" placeholder="Enter Tracking Number" required maxlength="64" autocomplete="off">
           <button type="submit" class="btn btn-orange">Track Order</button>
         </form>
       </div>
@@ -248,7 +248,7 @@
   <section class="split-section">
     <div class="container split-grid">
       <div class="split-image">
-        <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800&q=80" alt="Logistics delivery">
+        <img loading="lazy" src="assets/img/logistics.svg" alt="Logistics delivery">
       </div>
       <div class="split-content">
         <h2>Merchant and Customer Satisfaction is Our First Priority</h2>
@@ -410,7 +410,7 @@
       </div>
       <div class="partner-grid">
         <div class="partner-card">
-          <div class="partner-card-bg" style="background-image:url('https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=800&q=80')"></div>
+          <div class="partner-card-bg" style="background-image:url('assets/img/city.svg')"></div>
           <div class="partner-card-content">
             <h3>Become a Driver</h3>
             <p>Earn on your schedule with flexible hours and competitive rates.</p>
@@ -418,7 +418,7 @@
           </div>
         </div>
         <div class="partner-card">
-          <div class="partner-card-bg" style="background-image:url('https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=800&q=80')"></div>
+          <div class="partner-card-bg" style="background-image:url('assets/img/food.svg')"></div>
           <div class="partner-card-content">
             <h3>Partner as Merchant</h3>
             <p>Grow your business with our delivery network and merchant tools.</p>

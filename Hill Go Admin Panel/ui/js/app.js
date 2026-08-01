@@ -113,15 +113,23 @@
     try {
       await AppStore.init();
     } catch (e) {
-      content.innerHTML = `<div class="h-full flex items-center justify-center text-sm text-error">${e.message || 'Failed to load data from the API.'}</div>`;
+      content.innerHTML = `<div class="h-full flex items-center justify-center text-sm text-error">${UI.escapeHtml(e.message || 'Failed to load data from the API.')}</div>`;
       return;
     }
     const user = AppStore.currentUser();
+    if (!user || (user.role && user.role !== 'admin')) {
+      UI.notice('This panel requires an admin account.', 'error');
+      await AppStore.logout();
+      showLogin();
+      return;
+    }
     if (user) {
       const nameEl = document.getElementById('admin-name');
       if (nameEl) nameEl.textContent = user.name;
       const avatarEl = document.getElementById('admin-avatar');
       if (avatarEl) avatarEl.textContent = (user.name || 'A').split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase();
+      // Client role gate: non-admin roles never see the shell (server still enforces).
+      document.getElementById('sidebar-nav')?.setAttribute('data-role', user.role || 'admin');
     }
     Router.start();
   }
@@ -162,11 +170,12 @@
 
     document.getElementById('btn-notifications')?.addEventListener('click', () => {
       const logs = AppStore.getState().activityLog.slice(0, 20);
+      const esc = UI.escapeHtml;
       UI.openModal({
         title: 'Notifications / activity',
         width: 'max-w-xl',
         bodyHtml: `<ul class="divide-y max-h-96 overflow-y-auto text-sm">${logs.map((l) => `
-          <li class="py-2"><p>${l.text}</p><p class="text-xs text-outline">${l.by} · ${UI.formatDate(l.at)}</p></li>`).join('') || '<li class="py-4 text-center text-outline">No activity yet</li>'}</ul>`,
+          <li class="py-2"><p>${esc(l.text)}</p><p class="text-xs text-outline">${esc(l.by)} · ${UI.formatDate(l.at)}</p></li>`).join('') || '<li class="py-4 text-center text-outline">No activity yet</li>'}</ul>`,
         footerHtml: `<button type="button" id="n-close" class="px-4 py-2 rounded-lg bg-primary-container text-white text-sm font-semibold">Close</button>`,
       });
       document.getElementById('n-close')?.addEventListener('click', () => UI.closeModal());

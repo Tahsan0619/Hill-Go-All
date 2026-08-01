@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import '../models/user_model.dart';
+import '../services/api/api_client.dart';
 import '../services/auth_repository.dart';
 
 enum AuthStatus { unknown, authenticated, unauthenticated }
@@ -135,6 +136,8 @@ class AuthProvider extends ChangeNotifier {
 
   void notifyOnboardingChanged() => notifyListeners();
 
-  String _message(Object e) =>
-      e.toString().replaceFirst('Exception: ', '');
+  String _message(Object e) {
+    if (e is ApiException) return e.message;
+    return e.toString().replaceFirst('Exception: ', '');
+  }
 }

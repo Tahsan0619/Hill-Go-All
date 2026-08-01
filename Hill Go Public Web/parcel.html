@@ -31,7 +31,7 @@
     <a href="merchant.html" class="btn btn-primary">Get Started</a>
   </nav>
 
-  <section class="hero" style="padding-bottom:60px;background:linear-gradient(rgba(15,39,68,0.55),rgba(15,39,68,0.55)),url('https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1400&q=80') center/cover;">
+  <section class="hero" style="padding-bottom:60px;background:linear-gradient(rgba(15,39,68,0.55),rgba(15,39,68,0.55)),url('assets/img/logistics.svg') center/cover;">
     <div class="container hero-grid">
       <div class="hero-content">
         <span class="badge badge-orange">⚡ Next-Day Delivery Enabled</span>
@@ -49,11 +49,11 @@
             <div class="form-row">
               <div class="form-group">
                 <label for="origin">Origin Zip</label>
-                <input type="text" id="origin" placeholder="10001" value="10001">
+                <input type="text" id="origin" name="origin" placeholder="10001" value="10001" required maxlength="32">
               </div>
               <div class="form-group">
                 <label for="destination">Destination Zip</label>
-                <input type="text" id="destination" placeholder="90210" value="90210">
+                <input type="text" id="destination" name="destination" placeholder="90210" value="90210" required maxlength="32">
               </div>
             </div>
             <div class="form-group">

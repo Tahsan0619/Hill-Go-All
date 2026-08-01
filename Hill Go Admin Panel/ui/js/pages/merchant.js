@@ -3,6 +3,7 @@ window.Pages = window.Pages || {};
 (function merchantPages() {
   const S = () => AppStore;
   const U = () => UI;
+  const esc = (s) => U().escapeHtml(s);
   const hdr = (title, crumbs, actions = '') => `
     <div class="mb-6 flex justify-between items-end flex-wrap gap-3">
       <div><nav class="flex items-center gap-2 text-xs text-outline mb-2">${U().breadcrumb(crumbs)}</nav><h2 class="text-3xl font-bold">${title}</h2></div>
@@ -17,18 +18,25 @@ window.Pages = window.Pages || {};
       width: 'max-w-md',
       bodyHtml: `
         <div class="space-y-3 text-sm">
-          <p class="text-xl font-semibold">${o.businessName}</p>
-          <p class="text-outline">${o.id} · ${U().badge(o.status)}</p>
+          <p class="text-xl font-semibold">${esc(o.businessName)}</p>
+          <p class="text-outline">${esc(o.id)} · ${U().badge(o.status)}</p>
           <dl class="grid grid-cols-2 gap-3">
-            <div><dt class="text-xs text-outline">Owner</dt><dd>${o.owner}</dd></div>
-            <div><dt class="text-xs text-outline">Category</dt><dd>${o.category}</dd></div>
-            <div><dt class="text-xs text-outline">Phone</dt><dd>${o.phone}</dd></div>
-            <div><dt class="text-xs text-outline">Email</dt><dd class="truncate">${o.email}</dd></div>
-            <div class="col-span-2"><dt class="text-xs text-outline">Address</dt><dd>${o.address}, ${o.city} ${o.zip}</dd></div>
-            <div><dt class="text-xs text-outline">District</dt><dd>${o.district}</dd></div>
-            <div><dt class="text-xs text-outline">Submitted</dt><dd>${o.submitted}</dd></div>
+            <div><dt class="text-xs text-outline">Owner</dt><dd>${esc(o.owner)}</dd></div>
+            <div><dt class="text-xs text-outline">Category</dt><dd>${esc(o.category)}</dd></div>
+            <div><dt class="text-xs text-outline">Phone</dt><dd>${esc(o.phone)}</dd></div>
+            <div><dt class="text-xs text-outline">Email</dt><dd class="truncate">${esc(o.email)}</dd></div>
+            <div class="col-span-2"><dt class="text-xs text-outline">Address</dt><dd>${esc(o.address)}, ${esc(o.city)} ${esc(o.zip)}</dd></div>
+            <div><dt class="text-xs text-outline">District</dt><dd>${esc(o.district)}</dd></div>
+            <div><dt class="text-xs text-outline">Submitted</dt><dd>${esc(o.submitted)}</dd></div>
           </dl>
-          <div><p class="text-xs text-outline mb-1">Documents</p><ul class="list-disc pl-5">${o.docs.map((d) => `<li>${d}</li>`).join('')}</ul></div>
+          <div><p class="text-xs text-outline mb-1">Documents</p>
+            <ul class="space-y-2">${(o.docFiles || []).map((d, i) => `
+              <li class="flex items-center justify-between gap-2 rounded-lg border px-3 py-2">
+                <span>${esc(d.name || (o.docs && o.docs[i]) || 'Document')}</span>
+                ${d.fileUrl ? `<button type="button" data-doc-url="${esc(d.fileUrl)}" data-doc-name="${esc(d.name || 'document')}" class="text-xs font-semibold text-primary-container">Open</button>` : '<span class="text-xs text-outline">No file</span>'}
+              </li>`).join('') || (o.docs || []).map((d) => `<li class="text-sm">${esc(d)}</li>`).join('') || '<li class="text-outline text-sm">None</li>'}
+            </ul>
+          </div>
           <div class="flex flex-col gap-2 pt-4">
             <button type="button" data-onb="approved" class="px-4 py-2 rounded-lg bg-emerald-600 text-white font-semibold">Approve</button>
             <button type="button" data-onb="changes_requested" class="px-4 py-2 rounded-lg border font-semibold">Request changes</button>
@@ -36,9 +44,16 @@ window.Pages = window.Pages || {};
           </div>
         </div>`,
     });
+    document.querySelectorAll('[data-doc-url]').forEach((b) => b.addEventListener('click', async () => {
+      try {
+        await S().openAuthenticatedFile(b.getAttribute('data-doc-url'), b.getAttribute('data-doc-name') || 'document');
+      } catch (e) {
+        U().notice(e.message || 'Could not open document', 'error');
+      }
+    }));
     document.querySelectorAll('[data-onb]').forEach((b) => b.addEventListener('click', async () => {
       const status = b.getAttribute('data-onb');
-      const ok = await U().confirmDialog({ title: status.replace(/_/g, ' '), message: `Set ${o.businessName} to <strong>${status}</strong>?`, danger: status === 'rejected' });
+      const ok = await U().confirmDialog({ title: status.replace(/_/g, ' '), message: `Set ${o.businessName} to ${status}?`, danger: status === 'rejected' });
       if (!ok) return;
       S().setOnboardingStatus(id, status);
       U().closeDrawer();
@@ -65,7 +80,7 @@ window.Pages = window.Pages || {};
       </div>
       <div class="bg-white rounded-xl border overflow-hidden">
         <div class="px-5 py-3 border-b flex justify-between"><h3 class="font-semibold">Stores in closed districts</h3><a href="#/region" class="text-xs font-semibold text-primary-container">Region Lock</a></div>
-        <ul class="divide-y">${blocked.map((m) => `<li class="px-5 py-3 text-sm flex justify-between"><span>${m.name} · ${m.district}</span>${U().badge('closed')}</li>`).join('') || '<li class="px-5 py-6 text-sm text-outline">None</li>'}</ul>
+        <ul class="divide-y">${blocked.map((m) => `<li class="px-5 py-3 text-sm flex justify-between"><span>${esc(m.name)} · ${esc(m.district)}</span>${U().badge('closed')}</li>`).join('') || '<li class="px-5 py-6 text-sm text-outline">None</li>'}</ul>
       </div>`;
   };
 
@@ -79,7 +94,7 @@ window.Pages = window.Pages || {};
       root.innerHTML = `
         ${hdr('Merchants / Stores', ['Merchant Panel', 'Stores'], '<button type="button" id="ex" class="px-4 py-2 text-sm font-semibold rounded-lg border bg-white">Export</button>')}
         <div class="bg-white rounded-xl border p-4 mb-4 flex flex-wrap gap-3">
-          <input id="q" value="${filter.q}" class="flex-1 rounded-lg border-slate-200 text-sm" placeholder="Search…" />
+          <input id="q" value="${esc(filter.q)}" class="flex-1 rounded-lg border-slate-200 text-sm" placeholder="Search…" />
           <select id="st" class="rounded-lg border-slate-200 text-sm">
             <option value="all">All</option>
             ${['active', 'pending', 'onboarding', 'suspended'].map((s) => `<option value="${s}" ${filter.status === s ? 'selected' : ''}>${s}</option>`).join('')}
@@ -93,12 +108,12 @@ window.Pages = window.Pages || {};
             </tr></thead>
             <tbody class="divide-y">${pg.rows.map((m) => `
               <tr>
-                <td class="px-4 py-3"><p class="font-medium">${m.name}</p><p class="text-xs text-outline">${m.id} · ${m.owner} · ${m.district}</p></td>
-                <td class="px-4 py-3">${m.category}</td>
-                <td class="px-4 py-3"><button type="button" data-open="${m.id}" class="text-xs font-semibold">${m.isOpen ? U().badge('open') : U().badge('closed')}</button></td>
-                <td class="px-4 py-3"><button type="button" data-acc="${m.id}" class="text-xs font-semibold text-primary-container">${m.acceptingOrders ? 'Yes' : 'No'}</button></td>
+                <td class="px-4 py-3"><p class="font-medium">${esc(m.name)}</p><p class="text-xs text-outline">${esc(m.id)} · ${esc(m.owner)} · ${esc(m.district)}</p></td>
+                <td class="px-4 py-3">${esc(m.category)}</td>
+                <td class="px-4 py-3"><button type="button" data-open="${esc(m.id)}" class="text-xs font-semibold">${m.isOpen ? U().badge('open') : U().badge('closed')}</button></td>
+                <td class="px-4 py-3"><button type="button" data-acc="${esc(m.id)}" class="text-xs font-semibold text-primary-container">${m.acceptingOrders ? 'Yes' : 'No'}</button></td>
                 <td class="px-4 py-3">${U().badge(m.status)}</td>
-                <td class="px-4 py-3 text-right"><button type="button" data-sus="${m.id}" class="text-xs font-semibold text-error">${m.status === 'suspended' ? 'Activate' : 'Suspend'}</button></td>
+                <td class="px-4 py-3 text-right"><button type="button" data-sus="${esc(m.id)}" class="text-xs font-semibold text-error">${m.status === 'suspended' ? 'Activate' : 'Suspend'}</button></td>
               </tr>`).join('')}</tbody>
           </table>
           ${U().pagerHtml(pg.page, pg.pages, pg.total)}
@@ -145,11 +160,11 @@ window.Pages = window.Pages || {};
             </tr></thead>
             <tbody class="divide-y">${rows.map((o) => `
               <tr>
-                <td class="px-4 py-3"><p class="font-medium">${o.businessName}</p><p class="text-xs text-outline">${o.owner} · ${o.submitted}</p></td>
-                <td class="px-4 py-3">${o.category}</td>
-                <td class="px-4 py-3">${o.district}</td>
+                <td class="px-4 py-3"><p class="font-medium">${esc(o.businessName)}</p><p class="text-xs text-outline">${esc(o.owner)} · ${esc(o.submitted)}</p></td>
+                <td class="px-4 py-3">${esc(o.category)}</td>
+                <td class="px-4 py-3">${esc(o.district)}</td>
                 <td class="px-4 py-3">${U().badge(o.status)}</td>
-                <td class="px-4 py-3 text-right"><button type="button" data-rev="${o.id}" class="text-xs font-semibold text-primary-container">Review</button></td>
+                <td class="px-4 py-3 text-right"><button type="button" data-rev="${esc(o.id)}" class="text-xs font-semibold text-primary-container">Review</button></td>
               </tr>`).join('')}</tbody>
           </table>
         </div>`;
@@ -172,7 +187,7 @@ window.Pages = window.Pages || {};
         <div class="flex flex-wrap gap-2 mb-4">
           ${['active', 'scheduled', 'completed'].map((t) => `
             <button type="button" data-tab="${t}" class="px-3 py-1.5 rounded-full text-xs font-semibold border capitalize ${tab === t ? 'bg-primary-container text-white border-primary-container' : 'bg-white'}">${t}</button>`).join('')}
-          <input id="q" value="${q}" class="ml-auto rounded-lg border-slate-200 text-sm" placeholder="Search…" />
+          <input id="q" value="${esc(q)}" class="ml-auto rounded-lg border-slate-200 text-sm" placeholder="Search…" />
           <button type="button" id="apply" class="px-3 py-1.5 rounded-lg bg-slate-900 text-white text-xs font-semibold">Search</button>
         </div>
         <div class="bg-white rounded-xl border overflow-hidden">
@@ -182,10 +197,10 @@ window.Pages = window.Pages || {};
             </tr></thead>
             <tbody class="divide-y">${pg.rows.map((o) => `
               <tr>
-                <td class="px-4 py-3 font-medium">${o.id}<p class="text-xs text-outline">${o.date}</p></td>
-                <td class="px-4 py-3">${o.store}</td>
-                <td class="px-4 py-3">${o.customer}</td>
-                <td class="px-4 py-3 capitalize">${o.priority}</td>
+                <td class="px-4 py-3 font-medium">${esc(o.id)}<p class="text-xs text-outline">${esc(o.date)}</p></td>
+                <td class="px-4 py-3">${esc(o.store)}</td>
+                <td class="px-4 py-3">${esc(o.customer)}</td>
+                <td class="px-4 py-3 capitalize">${esc(o.priority)}</td>
                 <td class="px-4 py-3">${U().formatTk(o.total)}</td>
                 <td class="px-4 py-3">${U().badge(o.status)}</td>
               </tr>`).join('')}</tbody>
@@ -241,14 +256,14 @@ window.Pages = window.Pages || {};
             </tr></thead>
             <tbody class="divide-y">${rows.map((p) => `
               <tr>
-                <td class="px-4 py-3 font-medium">${p.id}${p.earlyRequest ? '<p class="text-xs text-amber-700">Early request</p>' : ''}</td>
-                <td class="px-4 py-3">${p.store}</td>
+                <td class="px-4 py-3 font-medium">${esc(p.id)}${p.earlyRequest ? '<p class="text-xs text-amber-700">Early request</p>' : ''}</td>
+                <td class="px-4 py-3">${esc(p.store)}</td>
                 <td class="px-4 py-3 font-semibold">${U().formatTk(p.amount)}</td>
-                <td class="px-4 py-3">${p.method}</td>
+                <td class="px-4 py-3">${esc(p.method)}</td>
                 <td class="px-4 py-3">${U().badge(p.status)}</td>
                 <td class="px-4 py-3 space-x-2">
-                  ${p.status === 'pending' ? `<button type="button" data-act="processing" data-id="${p.id}" class="text-xs font-semibold text-amber-700">Approve</button>` : ''}
-                  ${p.status === 'processing' || p.status === 'pending' ? `<button type="button" data-act="completed" data-id="${p.id}" class="text-xs font-semibold text-emerald-700">Mark paid</button>` : ''}
+                  ${p.status === 'pending' ? `<button type="button" data-act="processing" data-id="${esc(p.id)}" class="text-xs font-semibold text-amber-700">Approve</button>` : ''}
+                  ${p.status === 'processing' || p.status === 'pending' ? `<button type="button" data-act="completed" data-id="${esc(p.id)}" class="text-xs font-semibold text-emerald-700">Mark paid</button>` : ''}
                   ${p.status === 'completed' ? '<span class="text-xs text-outline">Done</span>' : ''}
                 </td>
               </tr>`).join('')}</tbody>
@@ -258,7 +273,7 @@ window.Pages = window.Pages || {};
       root.querySelectorAll('[data-act]').forEach((b) => b.addEventListener('click', async () => {
         const act = b.getAttribute('data-act');
         const id = b.getAttribute('data-id');
-        const ok = await U().confirmDialog({ title: act === 'completed' ? 'Mark paid' : 'Approve payout', message: `Set payout to <strong>${act}</strong>?` });
+        const ok = await U().confirmDialog({ title: act === 'completed' ? 'Mark paid' : 'Approve payout', message: `Set payout to ${act}?` });
         if (!ok) return;
         S().setMerchantPayoutStatus(id, act);
         U().notice(`Payout → ${act}`);

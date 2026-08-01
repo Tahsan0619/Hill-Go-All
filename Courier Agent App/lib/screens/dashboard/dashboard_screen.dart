@@ -76,7 +76,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ])),
                   Switch(
                     value: provider.isOnline,
-                    activeThumbColor: AppColors.accent,
                     onChanged: provider.presenceUpdating ? null : _toggleOnline,
                   ),
                 ]),

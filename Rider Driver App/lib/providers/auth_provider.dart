@@ -80,7 +80,11 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<bool> requestPasswordReset(String phone) async {
-    return _run(() => _repo.requestPasswordReset(phone: phone));
+    return _run(() async {
+      await _repo.requestPasswordReset(phone: phone);
+      resendSeconds = 45;
+      _tickResend();
+    });
   }
 
   Future<bool> resetPassword(String phone, String code, String password) async {

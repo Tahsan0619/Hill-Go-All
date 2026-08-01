@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -91,8 +93,14 @@ class OtpVerificationScreen extends StatefulWidget {
 
 class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   static const int _boxCount = 6;
+  static const int _resendCooldownSeconds = 45;
+
   String? _error;
   bool _busy = false;
+  bool _resending = false;
+  int _resendSecondsLeft = 0;
+  Timer? _resendTimer;
+
   final List<TextEditingController> _controllers = List.generate(
     _boxCount,
     (_) => TextEditingController(),
@@ -103,7 +111,14 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   );
 
   @override
+  void initState() {
+    super.initState();
+    _startResendCooldown();
+  }
+
+  @override
   void dispose() {
+    _resendTimer?.cancel();
     for (final controller in _controllers) {
       controller.dispose();
     }
@@ -111,6 +126,23 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
       node.dispose();
     }
     super.dispose();
+  }
+
+  void _startResendCooldown() {
+    _resendTimer?.cancel();
+    setState(() => _resendSecondsLeft = _resendCooldownSeconds);
+    _resendTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      if (_resendSecondsLeft <= 1) {
+        timer.cancel();
+        setState(() => _resendSecondsLeft = 0);
+      } else {
+        setState(() => _resendSecondsLeft--);
+      }
+    });
   }
 
   void _onChanged(int index, String value) {
@@ -149,11 +181,14 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   }
 
   Future<void> _resend() async {
+    if (_resendSecondsLeft > 0 || _resending) return;
+    setState(() => _resending = true);
     try {
       if (!AuthService.hasPendingRegistration) {
         await AuthService.requestLoginOtp(widget.phoneNumber);
       }
       if (!mounted) return;
+      _startResendCooldown();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('A new code was sent to your phone.'),
@@ -165,11 +200,15 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.message), duration: const Duration(seconds: 2)),
       );
+    } finally {
+      if (mounted) setState(() => _resending = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final canResend = _resendSecondsLeft == 0 && !_resending;
+
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.dark,
       child: Scaffold(
@@ -291,16 +330,20 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                         ],
                         const SizedBox(height: 24),
                         TextButton(
-                          onPressed: _resend,
+                          onPressed: canResend ? _resend : null,
                           child: Text.rich(
                             TextSpan(
                               text: "Didn't receive the code? ",
                               style: Theme.of(context).textTheme.bodyMedium,
-                              children: const [
+                              children: [
                                 TextSpan(
-                                  text: 'Resend',
+                                  text: canResend
+                                      ? 'Resend'
+                                      : 'Resend in ${_resendSecondsLeft}s',
                                   style: TextStyle(
-                                    color: AppColors.signUpAccent,
+                                    color: canResend
+                                        ? AppColors.signUpAccent
+                                        : AppColors.textMuted,
                                     fontWeight: FontWeight.w700,
                                   ),
                                 ),

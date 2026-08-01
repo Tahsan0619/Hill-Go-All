@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'providers/auth_provider.dart';
 import 'providers/document_provider.dart';
@@ -15,9 +14,9 @@ import 'theme/app_theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final prefs = await SharedPreferences.getInstance();
 
-  final apiClient = ApiClient(prefs);
+  final apiClient = ApiClient();
+  await apiClient.loadToken();
   final authRepo = ApiAuthRepository(apiClient);
   final tripRepo = ApiTripRepository(apiClient);
   final docRepo = ApiDocumentRepository(apiClient);

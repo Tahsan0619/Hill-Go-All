@@ -90,7 +90,11 @@ class _OtpConfirmationScreenState extends State<OtpConfirmationScreen> {
   /// (audited alternative — `POST /courier/parcels/{id}/proof`).
   Future<void> _uploadPhotoProof() async {
     final picker = ImagePicker();
-    final image = await picker.pickImage(source: ImageSource.camera);
+    final image = await picker.pickImage(
+      source: ImageSource.camera,
+      imageQuality: 80,
+      maxWidth: 1600,
+    );
     if (image == null || !mounted) return;
     final provider = context.read<ParcelProvider>();
     final ok = await provider.uploadProof(type: 'photo', filePath: image.path);

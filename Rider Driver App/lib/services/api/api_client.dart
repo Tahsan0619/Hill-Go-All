@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -22,30 +24,63 @@ class ApiException implements Exception {
 
 /// Thin JSON + multipart HTTP client for the HillGo Laravel backend.
 ///
-/// Persists the Sanctum bearer token in SharedPreferences and clears it
-/// automatically when the server responds 401.
+/// Persists the Sanctum bearer token in [FlutterSecureStorage] (with a one-time
+/// migration from legacy SharedPreferences) and clears it automatically when
+/// the server responds 401.
 class ApiClient {
-  ApiClient(this._prefs, {http.Client? httpClient})
-      : _http = httpClient ?? http.Client();
+  ApiClient({http.Client? httpClient, FlutterSecureStorage? secureStorage})
+      : _http = httpClient ?? http.Client(),
+        _secure = secureStorage ?? const FlutterSecureStorage();
 
-  static const String baseUrl = String.fromEnvironment(
-    'HILLGO_API_BASE',
-    defaultValue: 'http://localhost:8000/api',
-  );
+  /// Release builds require `--dart-define=HILLGO_API_BASE=...`.
+  /// Debug defaults to the local Laravel API.
+  static String get baseUrl {
+    const fromEnv = String.fromEnvironment('HILLGO_API_BASE');
+    if (fromEnv.isNotEmpty) return fromEnv;
+    if (kDebugMode) return 'http://127.0.0.1:8000/api';
+    throw StateError(
+      'HILLGO_API_BASE must be set via --dart-define for release builds.',
+    );
+  }
 
   static const String _tokenKey = 'hillgo_rider_token';
 
-  final SharedPreferences _prefs;
+  final FlutterSecureStorage _secure;
   final http.Client _http;
 
-  String? get token => _prefs.getString(_tokenKey);
+  /// In-memory cache of the bearer token (loaded by [loadToken]).
+  String? _token;
 
-  bool get hasToken => token != null && token!.isNotEmpty;
+  String? get token => _token;
 
-  Future<void> saveToken(String value) => _prefs.setString(_tokenKey, value);
+  bool get hasToken => _token != null && _token!.isNotEmpty;
+
+  /// Loads the token from secure storage into memory.
+  /// Migrates a legacy SharedPreferences token once, then deletes it.
+  Future<void> loadToken() async {
+    var value = await _secure.read(key: _tokenKey);
+    if (value == null || value.isEmpty) {
+      final prefs = await SharedPreferences.getInstance();
+      final legacy = prefs.getString(_tokenKey);
+      if (legacy != null && legacy.isNotEmpty) {
+        await _secure.write(key: _tokenKey, value: legacy);
+        await prefs.remove(_tokenKey);
+        value = legacy;
+      }
+    }
+    _token = (value != null && value.isNotEmpty) ? value : null;
+  }
+
+  Future<void> saveToken(String value) async {
+    _token = value;
+    await _secure.write(key: _tokenKey, value: value);
+  }
 
   Future<void> clearToken() async {
-    await _prefs.remove(_tokenKey);
+    _token = null;
+    await _secure.delete(key: _tokenKey);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_tokenKey);
   }
 
   Uri _uri(String path, [Map<String, String>? query]) {

@@ -1,10 +1,30 @@
 // HillGo Public Website - Main JavaScript
+// Production: set window.HILLGO_API_BASE to your API origin before this script loads.
+const HG_API = window.HILLGO_API_BASE || 'http://127.0.0.1:8000/api';
 
-const HG_API = window.HILLGO_API_BASE || 'http://localhost:8000/api';
+function escapeHtml(s) {
+  return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function assertApiReachableConfig() {
+  try {
+    const api = new URL(HG_API, window.location.href);
+    // Same-site or explicitly configured cross-origin — both OK; warn on file:// pages.
+    if (window.location.protocol === 'file:') {
+      console.info('HillGo: open via http(s) host for CORS; file:// pages cannot call the API.');
+    }
+    return api.origin;
+  } catch (_) {
+    return null;
+  }
+}
+assertApiReachableConfig();
 
 async function hgApi(method, path, body) {
   const res = await fetch(HG_API + path, {
     method,
+    mode: 'cors',
+    credentials: 'omit',
     headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
     body: body !== undefined ? JSON.stringify(body) : undefined,
   });
@@ -40,7 +60,7 @@ function initHeader() {
   if (!header) return;
   window.addEventListener('scroll', () => {
     header.classList.toggle('scrolled', window.scrollY > 20);
-  });
+  }, { passive: true });
 }
 
 /* Mobile navigation */
@@ -207,8 +227,18 @@ function initQuoteCalculator() {
       const q = res.quote;
       if (resultEl) {
         resultEl.style.display = '';
-        resultEl.innerHTML = `Estimated Total: <strong>৳${q.fare}</strong>`
-          + `<span style="display:block;font-size:0.75rem;opacity:0.7;">${res.estimated ? 'Based on an estimated distance — ' : ''}live rates from HillGo pricing</span>`;
+        resultEl.textContent = '';
+        const lead = document.createTextNode('Estimated Total: ');
+        const strong = document.createElement('strong');
+        strong.textContent = `৳${q.fare}`;
+        resultEl.appendChild(lead);
+        resultEl.appendChild(strong);
+        const hint = document.createElement('span');
+        hint.style.display = 'block';
+        hint.style.fontSize = '0.75rem';
+        hint.style.opacity = '0.7';
+        hint.textContent = (res.estimated ? 'Based on an estimated distance — ' : '') + 'live rates from HillGo pricing';
+        resultEl.appendChild(hint);
       } else {
         showToast(`Estimated fare: ৳${q.fare}`);
       }
@@ -280,14 +310,18 @@ function initContactForm() {
         });
         showToast(res.message || 'Thank you! Your message has been sent.');
       } else {
-        // register.html partner application: name, phone, email, vehicle select, city
-        const inputs = form.querySelectorAll('input');
+        // register.html partner application — prefer named fields
+        const fullName = form.elements.full_name || form.querySelector('[name="full_name"]');
+        const phone = form.elements.phone || form.querySelector('[name="phone"]');
+        const email = form.elements.email || form.querySelector('[name="email"]');
+        const vehicle = form.elements.vehicle_type || form.querySelector('[name="vehicle_type"]');
+        const city = form.elements.city || form.querySelector('[name="city"]');
         const res = await hgApi('POST', '/public/partner-applications', {
-          full_name: inputs[0].value.trim(),
-          phone: inputs[1].value.trim(),
-          email: inputs[2].value.trim(),
-          vehicle_type: form.querySelector('select').value,
-          city: inputs[3].value.trim(),
+          full_name: fullName.value.trim(),
+          phone: phone.value.trim(),
+          email: email.value.trim(),
+          vehicle_type: vehicle.value,
+          city: city.value.trim(),
         });
         showToast(res.message || 'Application received. Our onboarding team will contact you.');
       }

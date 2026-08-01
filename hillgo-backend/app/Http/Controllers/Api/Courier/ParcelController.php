@@ -19,15 +19,17 @@ class ParcelController extends Controller
 {
     public function assigned(Request $request)
     {
+        $limit = min(50, max(1, (int) $request->query('per_page', 50)));
         $rows = Parcel::where('courier_id', $request->user()->id)
             ->whereIn('status', ['assigned', 'picked_up', 'in_transit'])
-            ->latest()->get();
+            ->latest()->limit($limit)->get();
 
         return response()->json($rows->map(fn ($p) => $this->shape($p)));
     }
 
     public function history(Request $request)
     {
+        $perPage = min(50, max(1, (int) $request->query('per_page', 30)));
         $rows = Parcel::where('courier_id', $request->user()->id)
             ->whereIn('status', ['delivered', 'failed'])
             ->when($request->query('q'), function ($query, $q) {
@@ -38,7 +40,7 @@ class ParcelController extends Controller
             ->when($request->query('period') === 'today', fn ($q) => $q->whereDate('updated_at', today()))
             ->when($request->query('period') === 'week', fn ($q) => $q->where('updated_at', '>=', now()->startOfWeek()))
             ->when($request->query('period') === 'month', fn ($q) => $q->where('updated_at', '>=', now()->startOfMonth()))
-            ->latest('updated_at')->paginate(30);
+            ->latest('updated_at')->paginate($perPage);
 
         return response()->json([
             'data' => collect($rows->items())->map(fn ($p) => $this->shape($p)),
@@ -152,7 +154,7 @@ class ParcelController extends Controller
             'file' => ['required', 'file', 'mimes:jpg,jpeg,png,webp', 'max:8192'],
         ]);
 
-        $path = $request->file('file')->store('proofs/' . $parcel->id, 'local');
+        $path = \App\Support\StoredFiles::putPrivate($request->file('file'), 'proofs/' . $parcel->id);
         $proof = ParcelProof::create(['parcel_id' => $parcel->id, 'type' => $data['type'], 'file_path' => $path]);
 
         return response()->json(['message' => 'Proof stored.', 'id' => $proof->id], 201);

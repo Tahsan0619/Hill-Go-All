@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import '../models/order_model.dart';
+import '../services/api/api_client.dart';
 import '../services/repositories.dart';
 
 class OrdersProvider extends ChangeNotifier {
@@ -27,7 +28,7 @@ class OrdersProvider extends ChangeNotifier {
       isLoading = false;
       notifyListeners();
     } catch (e) {
-      error = e.toString();
+      error = e is ApiException ? e.message : e.toString();
       isLoading = false;
       notifyListeners();
     }

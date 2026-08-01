@@ -49,6 +49,8 @@ Route::prefix('public')->middleware('throttle:public-read')->group(function () {
     Route::get('/blog', [PublicController::class, 'blog']);
     Route::get('/blog/{slug}', [PublicController::class, 'blogPost']);
     Route::get('/content/home', [PublicController::class, 'homeContent']);
+    // Rider nav proxy — apps must not call third-party OSRM with live GPS.
+    Route::get('/route', [PublicController::class, 'route'])->middleware('throttle:public-write');
 });
 
 // ------------------------------------------------------------------

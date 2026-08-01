@@ -98,7 +98,7 @@ class CatalogController extends Controller
         $data['marketplace_category'] = $this->marketplaceCategory($store->category, $data['marketplace_category'] ?? null);
 
         if ($request->hasFile('image')) {
-            $data['images'] = ['/storage/' . $request->file('image')->store("products/{$store->id}", 'public')];
+            $data['images'] = [\App\Support\StoredFiles::putPublic($request->file('image'), "products/{$store->id}")];
         }
 
         $product = Product::create(collect($data)->except('image')->all());
@@ -110,7 +110,8 @@ class CatalogController extends Controller
         $this->authorizeProduct($request, $product);
         $data = $this->validateProduct($request, false);
         if ($request->hasFile('image')) {
-            $data['images'] = ['/storage/' . $request->file('image')->store("products/{$product->store_id}", 'public')];
+            $old = ($product->images ?? [])[0] ?? null;
+            $data['images'] = [\App\Support\StoredFiles::replacePublic($old, $request->file('image'), "products/{$product->store_id}")];
         }
         $product->update(collect($data)->except('image')->all());
         return response()->json($this->productShape($product->fresh('category')));
@@ -119,6 +120,9 @@ class CatalogController extends Controller
     public function deleteProduct(Request $request, Product $product)
     {
         $this->authorizeProduct($request, $product);
+        foreach ($product->images ?? [] as $img) {
+            \App\Support\StoredFiles::deletePublic($img);
+        }
         $product->delete();
         return response()->json(['message' => 'Deleted.']);
     }

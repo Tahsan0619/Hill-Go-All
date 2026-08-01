@@ -110,14 +110,18 @@ class CourierController extends Controller
     public function document(\App\Models\CourierDocument $document)
     {
         abort_unless($document->file_path, 404);
-        return response()->file(storage_path('app/private/' . $document->file_path));
+        $full = \App\Support\StoredFiles::absolute($document->file_path, 'local');
+        abort_unless($full, 404);
+        return response()->file($full);
     }
 
     /** Delivery proof photos/signatures — admin-only, served off the private disk. */
     public function proofFile(\App\Models\ParcelProof $proof)
     {
         abort_unless($proof->file_path, 404);
-        return response()->file(storage_path('app/private/' . $proof->file_path));
+        $full = \App\Support\StoredFiles::absolute($proof->file_path, 'local');
+        abort_unless($full, 404);
+        return response()->file($full);
     }
 
     // —— Parcels ——

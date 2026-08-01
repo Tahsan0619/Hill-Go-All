@@ -8,6 +8,7 @@ class RentalsApi {
   static Future<List<RentalVehicle>> list(
       {String? category, String? query}) async {
     final data = await ApiClient.get('/customer/rentals', query: {
+      'per_page': '50',
       if (category != null && category != 'All') 'category': category,
       if (query != null && query.isNotEmpty) 'q': query,
     });

@@ -3,6 +3,7 @@ window.Pages = window.Pages || {};
 window.Pages.overview = async function overview(root) {
   const S = AppStore;
   const U = UI;
+  const esc = U.escapeHtml;
   const k = S.overviewKpis();
   const divs = S.getDivisions();
   const logs = S.getState().activityLog.slice(0, 6);
@@ -14,7 +15,7 @@ window.Pages.overview = async function overview(root) {
       <div>
         <nav class="flex items-center gap-2 text-xs text-outline mb-2">${U.breadcrumb(['HillGo', 'Overview Dashboard'])}</nav>
         <h2 class="text-3xl font-bold text-on-surface tracking-tight">Global Operations Hub</h2>
-        <p class="text-sm text-outline mt-1">Live aggregates from the admin store (mock / frontend).</p>
+        <p class="text-sm text-outline mt-1">Live aggregates from the Live API.</p>
       </div>
       <div class="flex gap-2">
         <button type="button" id="ov-export" class="px-4 py-2 text-sm font-semibold rounded-lg border border-slate-200 bg-white hover:bg-slate-50">Export snapshot CSV</button>
@@ -38,22 +39,22 @@ window.Pages.overview = async function overview(root) {
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <a href="#/customer" class="block p-4 rounded-xl border border-slate-200 hover:border-primary-container hover:bg-blue-50/40 transition">
             <p class="text-xs uppercase tracking-wide text-outline font-semibold">Customer</p>
-            <p class="text-2xl font-bold mt-1">${k.customers}</p>
+            <p class="text-2xl font-bold mt-1">${esc(k.customers)}</p>
             <p class="text-xs text-outline mt-1">Active customers</p>
           </a>
           <a href="#/rider" class="block p-4 rounded-xl border border-slate-200 hover:border-primary-container hover:bg-blue-50/40 transition">
             <p class="text-xs uppercase tracking-wide text-outline font-semibold">Rider</p>
-            <p class="text-2xl font-bold mt-1">${k.riders}</p>
-            <p class="text-xs text-outline mt-1">Online now · ${pendingKyc} KYC pending</p>
+            <p class="text-2xl font-bold mt-1">${esc(k.riders)}</p>
+            <p class="text-xs text-outline mt-1">Online now · ${esc(pendingKyc)} KYC pending</p>
           </a>
           <a href="#/merchant" class="block p-4 rounded-xl border border-slate-200 hover:border-primary-container hover:bg-blue-50/40 transition">
             <p class="text-xs uppercase tracking-wide text-outline font-semibold">Merchant</p>
-            <p class="text-2xl font-bold mt-1">${k.stores}</p>
-            <p class="text-xs text-outline mt-1">Active stores · ${pendingOnb} onboarding</p>
+            <p class="text-2xl font-bold mt-1">${esc(k.stores)}</p>
+            <p class="text-xs text-outline mt-1">Active stores · ${esc(pendingOnb)} onboarding</p>
           </a>
           <a href="#/courier" class="block p-4 rounded-xl border border-slate-200 hover:border-primary-container hover:bg-blue-50/40 transition">
             <p class="text-xs uppercase tracking-wide text-outline font-semibold">Courier</p>
-            <p class="text-2xl font-bold mt-1">${k.parcelsInTransit}</p>
+            <p class="text-2xl font-bold mt-1">${esc(k.parcelsInTransit)}</p>
             <p class="text-xs text-outline mt-1">Parcels in pipeline</p>
           </a>
         </div>
@@ -63,13 +64,13 @@ window.Pages.overview = async function overview(root) {
           <h3 class="font-semibold">Region coverage</h3>
           <a href="#/region" class="text-xs font-semibold text-primary-container">Manage</a>
         </div>
-        <p class="text-3xl font-bold">${k.openDistricts}<span class="text-lg text-outline font-medium"> / ${k.totalDistricts}</span></p>
+        <p class="text-3xl font-bold">${esc(k.openDistricts)}<span class="text-lg text-outline font-medium"> / ${esc(k.totalDistricts)}</span></p>
         <p class="text-xs text-outline mb-4">Districts open for registration</p>
         <ul class="space-y-2 max-h-56 overflow-y-auto">
           ${divs.map((d) => `
             <li>
-              <a href="#/region/${d.id}" class="flex items-center justify-between text-sm px-2 py-1.5 rounded-lg hover:bg-slate-50">
-                <span>${d.name}</span>
+              <a href="#/region/${esc(d.id)}" class="flex items-center justify-between text-sm px-2 py-1.5 rounded-lg hover:bg-slate-50">
+                <span>${esc(d.name)}</span>
                 ${U.badge(d.status === 'open' ? 'open' : d.status === 'closed' ? 'closed' : 'partial')}
               </a>
             </li>`).join('')}
@@ -86,8 +87,8 @@ window.Pages.overview = async function overview(root) {
         ${logs.map((l) => `
           <li class="px-5 py-3 flex justify-between gap-4 text-sm">
             <div>
-              <p class="text-on-surface">${l.text}</p>
-              <p class="text-xs text-outline mt-0.5">${l.by}</p>
+              <p class="text-on-surface">${esc(l.text)}</p>
+              <p class="text-xs text-outline mt-0.5">${esc(l.by)}</p>
             </div>
             <span class="text-xs text-outline whitespace-nowrap">${U.formatDate(l.at)}</span>
           </li>`).join('') || '<li class="px-5 py-6 text-sm text-outline">No activity yet</li>'}
@@ -145,7 +146,7 @@ window.Pages.overview = async function overview(root) {
       title: 'Activity log',
       width: 'max-w-2xl',
       bodyHtml: `<ul class="divide-y divide-slate-100 max-h-96 overflow-y-auto">${all.map((l) => `
-        <li class="py-2 text-sm"><p>${l.text}</p><p class="text-xs text-outline">${l.by} · ${U.formatDate(l.at)}</p></li>`).join('')}</ul>`,
+        <li class="py-2 text-sm"><p>${esc(l.text)}</p><p class="text-xs text-outline">${esc(l.by)} · ${U.formatDate(l.at)}</p></li>`).join('')}</ul>`,
       footerHtml: `<button type="button" id="close-logs" class="px-4 py-2 text-sm font-semibold rounded-lg bg-primary-container text-white">Close</button>`,
     });
     document.getElementById('close-logs')?.addEventListener('click', () => U.closeModal());

@@ -18,8 +18,9 @@ class NotificationsApi {
   NotificationsApi._();
 
   static Future<NotificationInbox> inbox() async {
-    final data = await ApiClient.get('/customer/notifications')
-        as Map<String, dynamic>;
+    final data = await ApiClient.get('/customer/notifications', query: {
+      'per_page': '50',
+    }) as Map<String, dynamic>;
     final rows = data['data'] as List? ?? [];
     return NotificationInbox(
       items: rows

@@ -30,10 +30,17 @@ abstract class AuthRepository {
 }
 
 class ParcelHistoryPage {
-  const ParcelHistoryPage({required this.items, required this.total});
+  const ParcelHistoryPage({
+    required this.items,
+    required this.total,
+    this.totalEarnings,
+  });
 
   final List<ParcelModel> items;
   final int total;
+
+  /// Server-reported earnings total when present (`total_earnings` / `payout_total`).
+  final double? totalEarnings;
 }
 
 abstract class ParcelRepository {

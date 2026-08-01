@@ -133,7 +133,10 @@ class MerchantController extends Controller
         $onb = MerchantOnboarding::findOrFail($id);
         $doc = collect($onb->docs ?? [])->values()->get($index);
         abort_unless($doc && ! empty($doc['path']), 404);
-        return response()->file(storage_path('app/private/' . $doc['path']));
+        $disk = $doc['disk'] ?? 'local';
+        $full = \App\Support\StoredFiles::absolute($doc['path'], $disk);
+        abort_unless($full, 404);
+        return response()->file($full);
     }
 
     public function onboardingStatus(Request $request, int $id)
@@ -157,8 +160,8 @@ class MerchantController extends Controller
                     'city' => $onb->city,
                     'district_id' => $onb->district_id,
                     'zip' => $onb->zip,
-                    'logo' => $onb->logo_path,
-                    'banner' => $onb->storefront_path,
+                    'logo' => \App\Support\StoredFiles::asPublicDbPath($onb->logo_path),
+                    'banner' => \App\Support\StoredFiles::asPublicDbPath($onb->storefront_path),
                     'is_open' => true,
                     'accepting_orders' => true,
                     'hours' => self::defaultHours(),

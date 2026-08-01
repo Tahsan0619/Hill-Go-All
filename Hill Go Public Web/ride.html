@@ -69,21 +69,21 @@
       </div>
       <div class="service-cards-grid">
         <div class="service-card-lg">
-          <img src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=400&q=80" alt="Budget" style="border-radius:8px;margin-bottom:16px;height:140px;width:100%;object-fit:cover;">
+          <img loading="lazy" src="assets/img/hero.svg" alt="Budget" style="border-radius:8px;margin-bottom:16px;height:140px;width:100%;object-fit:cover;">
           <h3>HillGo Budget</h3>
           <p>Affordable everyday rides with reliable pickup times.</p>
           <ul><li>4 Seats</li><li>5 min avg pickup</li></ul>
         </div>
         <div class="service-card-lg" style="background:var(--navy);color:var(--white);border-color:var(--navy);">
           <span class="badge badge-orange" style="margin-bottom:12px;">Most Popular</span>
-          <img src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=400&q=80" alt="Comfort" style="border-radius:8px;margin-bottom:16px;height:140px;width:100%;object-fit:cover;">
+          <img loading="lazy" src="assets/img/hero.svg" alt="Comfort" style="border-radius:8px;margin-bottom:16px;height:140px;width:100%;object-fit:cover;">
           <h3 style="color:var(--white);">HillGo Comfort</h3>
           <p style="color:rgba(255,255,255,0.75);">Premium sedans with top-rated drivers.</p>
           <ul style="color:rgba(255,255,255,0.75);"><li>Climate Control</li><li>Top 1% Drivers</li></ul>
         </div>
         <div class="service-card-lg">
           <span class="badge badge-blue" style="margin-bottom:12px;">Elite Selection</span>
-          <img src="https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=400&q=80" alt="Elite" style="border-radius:8px;margin-bottom:16px;height:140px;width:100%;object-fit:cover;">
+          <img loading="lazy" src="assets/img/hero.svg" alt="Elite" style="border-radius:8px;margin-bottom:16px;height:140px;width:100%;object-fit:cover;">
           <h3>HillGo Elite</h3>
           <p>Luxury SUVs for groups and special occasions.</p>
           <ul><li>High Capacity</li><li>Bottled Water Inc.</li></ul>
@@ -120,7 +120,7 @@
   <section class="section" style="background:var(--navy);color:var(--white);">
     <div class="container split-grid">
       <div class="split-image">
-        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=800&q=80" alt="Fleet monitoring">
+        <img loading="lazy" src="assets/img/hero.svg" alt="Fleet monitoring">
       </div>
       <div class="split-content">
         <h2 style="color:var(--white);">Your Safety is Our Operating System</h2>
@@ -141,8 +141,8 @@
         <div>
           <h3 style="margin-bottom:20px;">Get an Estimate</h3>
           <form id="quoteForm">
-            <div class="form-group"><label>Pick-up point</label><input type="text" id="origin" placeholder="Enter pickup location" required></div>
-            <div class="form-group"><label>Where to?</label><input type="text" id="destination" placeholder="Enter destination" required></div>
+            <div class="form-group"><label>Pick-up point</label><input type="text" id="origin" name="origin" placeholder="Enter pickup location" required maxlength="200"></div>
+            <div class="form-group"><label>Where to?</label><input type="text" id="destination" name="destination" placeholder="Enter destination" required maxlength="200"></div>
             <input type="hidden" id="weight" value="1">
             <button type="submit" class="btn btn-orange" style="width:100%;">Calculate Fare</button>
           </form>

@@ -134,8 +134,7 @@ class _RentalBookingScreenState extends State<RentalBookingScreen> {
                           ),
                         ),
                         subtitle: const Text('+৳1,500 / day'),
-                        value: booking.withDriver,
-                        activeThumbColor: const Color(0xFF00897B),
+                        value: booking.withDriver),
                         onChanged: (v) =>
                             setState(() => booking.withDriver = v),
                       ),

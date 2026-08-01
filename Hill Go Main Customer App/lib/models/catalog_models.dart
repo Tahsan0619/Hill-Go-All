@@ -1041,6 +1041,8 @@ class FoodOrder {
 
 /// Mutable booking draft carried across the parcel booking flow screens.
 /// Fare comes from POST /customer/parcels/quote (never computed locally).
+/// Weight and distance must be set by the user (or computed from lat/lng)
+/// before quote/create — no silent 5 km / 2 kg defaults.
 class ParcelBooking {
   ParcelBooking({
     this.parcelType,
@@ -1050,8 +1052,12 @@ class ParcelBooking {
     this.receiverAddress = '',
     this.receiverContact = '',
     this.receiverPhone = '',
-    this.distanceKm = 5.0,
-    this.weightKg = 2.0,
+    this.pickupLat,
+    this.pickupLng,
+    this.dropLat,
+    this.dropLng,
+    this.distanceKm = 0,
+    this.weightKg = 0,
     this.priority = 'standard',
     this.paymentMethod = 'cash',
     this.quote,
@@ -1064,6 +1070,10 @@ class ParcelBooking {
   String receiverAddress;
   String receiverContact;
   String receiverPhone;
+  double? pickupLat;
+  double? pickupLng;
+  double? dropLat;
+  double? dropLng;
   double distanceKm;
   double weightKg;
   String priority; // standard|express|priority

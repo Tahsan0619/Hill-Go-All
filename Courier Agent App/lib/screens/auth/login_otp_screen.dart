@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -16,15 +18,50 @@ class LoginOtpScreen extends StatefulWidget {
 }
 
 class _LoginOtpScreenState extends State<LoginOtpScreen> {
+  static const _maxAttempts = 5;
+  static const _lockDuration = Duration(seconds: 30);
+
   final _contact = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _sent = false;
   String _otp = '';
+  int _failedAttempts = 0;
+  DateTime? _lockedUntil;
+  Timer? _lockTimer;
+  int _lockSecondsLeft = 0;
+
+  bool get _isLocked =>
+      _lockedUntil != null && DateTime.now().isBefore(_lockedUntil!);
 
   @override
   void dispose() {
+    _lockTimer?.cancel();
     _contact.dispose();
     super.dispose();
+  }
+
+  void _startLockout() {
+    _lockTimer?.cancel();
+    _lockedUntil = DateTime.now().add(_lockDuration);
+    _failedAttempts = 0;
+    _lockSecondsLeft = _lockDuration.inSeconds;
+    _lockTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      final remaining = _lockedUntil?.difference(DateTime.now()).inSeconds ?? 0;
+      if (remaining <= 0) {
+        timer.cancel();
+        setState(() {
+          _lockedUntil = null;
+          _lockSecondsLeft = 0;
+        });
+      } else {
+        setState(() => _lockSecondsLeft = remaining);
+      }
+    });
+    setState(() {});
   }
 
   Future<void> _sendCode() async {
@@ -33,7 +70,10 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
     final ok = await auth.sendLoginOtp(_contact.text.trim());
     if (!mounted) return;
     if (ok) {
-      setState(() => _sent = true);
+      setState(() {
+        _sent = true;
+        _failedAttempts = 0;
+      });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(auth.error ?? 'Could not send the code')),
@@ -42,6 +82,16 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
   }
 
   Future<void> _verify() async {
+    if (_isLocked) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Too many attempts. Try again in $_lockSecondsLeft seconds.',
+          ),
+        ),
+      );
+      return;
+    }
     if (_otp.length != 4) {
       ScaffoldMessenger.of(
         context,
@@ -56,11 +106,28 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
     if (success) {
       context.go('/dashboard');
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(context.read<AuthProvider>().error ?? 'Invalid code'),
-        ),
-      );
+      _failedAttempts += 1;
+      if (_failedAttempts >= _maxAttempts) {
+        _startLockout();
+      } else {
+        setState(() {});
+      }
+      final messenger = ScaffoldMessenger.of(context);
+      if (_isLocked) {
+        messenger.showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Too many failed attempts. Please wait 30 seconds before trying again.',
+            ),
+          ),
+        );
+      } else {
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text(context.read<AuthProvider>().error ?? 'Invalid code'),
+          ),
+        );
+      }
     }
   }
 
@@ -141,6 +208,17 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
                           ),
                         ),
                         const SizedBox(height: AppSpacing.md),
+                        if (_isLocked)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                            child: Text(
+                              'Submit disabled for $_lockSecondsLeft seconds after too many failed attempts.',
+                              style: AppTextStyles.caption.copyWith(
+                                color: AppColors.error,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
                         Center(
                           child: ResendTimer(
                             onResend: () async {
@@ -163,8 +241,11 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
                         ),
                         const SizedBox(height: AppSpacing.lg),
                         PrimaryButton(
-                          label: 'Verify & log in',
+                          label: _isLocked
+                              ? 'Try again in $_lockSecondsLeft s'
+                              : 'Verify & log in',
                           loading: auth.isLoading,
+                          enabled: !_isLocked,
                           onPressed: _verify,
                         ),
                         Center(

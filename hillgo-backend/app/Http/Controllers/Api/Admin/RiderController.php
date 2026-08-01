@@ -144,7 +144,9 @@ class RiderController extends Controller
     public function document(\App\Models\RiderDocument $document)
     {
         abort_unless($document->file_path, 404);
-        return response()->file(storage_path('app/private/' . $document->file_path));
+        $full = \App\Support\StoredFiles::absolute($document->file_path, 'local');
+        abort_unless($full, 404);
+        return response()->file($full);
     }
 
     // —— Trips ——

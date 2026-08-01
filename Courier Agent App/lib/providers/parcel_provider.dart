@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import '../models/earnings_model.dart';
 import '../models/parcel_model.dart';
+import '../services/api/api_client.dart';
 import '../services/repositories.dart';
 
 enum LoadState { idle, loading, error, success }
@@ -29,6 +30,7 @@ class ParcelProvider extends ChangeNotifier {
   bool loadingMore = false;
   int _historyPage = 1;
   int historyTotalCount = 0;
+  double? _serverHistoryEarnings;
 
   bool get hasMoreHistory => history.length < historyTotalCount;
 
@@ -85,6 +87,7 @@ class ParcelProvider extends ChangeNotifier {
       );
       history = page.items;
       historyTotalCount = page.total;
+      _serverHistoryEarnings = page.totalEarnings;
       historyState = LoadState.success;
     } catch (e) {
       error = e.toString().replaceFirst('Exception: ', '');
@@ -106,6 +109,9 @@ class ParcelProvider extends ChangeNotifier {
       _historyPage += 1;
       history = [...history, ...page.items];
       historyTotalCount = page.total;
+      if (page.totalEarnings != null) {
+        _serverHistoryEarnings = page.totalEarnings;
+      }
     } catch (e) {
       error = e.toString().replaceFirst('Exception: ', '');
     } finally {
@@ -114,15 +120,40 @@ class ParcelProvider extends ChangeNotifier {
     }
   }
 
+  /// When the assigned list is loaded, only allow IDs in assigned or history.
+  bool canAccessParcel(String id) {
+    if (assignedState != LoadState.success) return true;
+    if (selected?.id == id) return true;
+    if (assigned.any((p) => p.id == id)) return true;
+    if (history.any((p) => p.id == id)) return true;
+    return false;
+  }
+
+  String get _accessDeniedMessage =>
+      'This parcel is not available on your account.';
+
+  String _friendlyApiError(Object e) {
+    if (e is ApiException && (e.statusCode == 403 || e.statusCode == 404)) {
+      return 'This parcel was not found or you do not have access to it.';
+    }
+    return e.toString().replaceFirst('Exception: ', '');
+  }
+
   Future<void> loadParcel(String id) async {
     detailState = LoadState.loading;
     error = null;
     notifyListeners();
+    if (!canAccessParcel(id)) {
+      error = _accessDeniedMessage;
+      detailState = LoadState.error;
+      notifyListeners();
+      return;
+    }
     try {
       selected = await _parcelRepo.getParcelById(id);
       detailState = LoadState.success;
     } catch (e) {
-      error = e.toString().replaceFirst('Exception: ', '');
+      error = _friendlyApiError(e);
       detailState = LoadState.error;
     }
     notifyListeners();
@@ -144,6 +175,11 @@ class ParcelProvider extends ChangeNotifier {
   Future<void> startTransitIfNeeded() async {
     final parcel = selected;
     if (parcel == null || parcel.status != ParcelStatus.pickedUp) return;
+    if (!canAccessParcel(parcel.id)) {
+      error = _accessDeniedMessage;
+      notifyListeners();
+      return;
+    }
     try {
       selected = await _parcelRepo.startTransit(parcel.id);
       notifyListeners();
@@ -156,23 +192,36 @@ class ParcelProvider extends ChangeNotifier {
   Future<bool> uploadProof({required String type, required String filePath}) async {
     final parcel = selected;
     if (parcel == null) return false;
+    if (!canAccessParcel(parcel.id)) {
+      error = _accessDeniedMessage;
+      notifyListeners();
+      return false;
+    }
     try {
       await _parcelRepo.uploadProof(parcel.id, type: type, filePath: filePath);
       return true;
     } catch (e) {
-      error = e.toString().replaceFirst('Exception: ', '');
+      error = _friendlyApiError(e);
       notifyListeners();
       return false;
     }
   }
 
+  /// Prefers a server-reported history earnings total when available.
   double get historyTotal {
+    if (_serverHistoryEarnings != null) return _serverHistoryEarnings!;
     final delivered = history.where((p) => p.status == ParcelStatus.delivered);
     return delivered.fold<double>(0, (sum, p) => sum + (p.payout ?? 0));
   }
 
   Future<bool> _transition(Future<void> Function() action) async {
     if (selected == null) return false;
+    if (!canAccessParcel(selected!.id)) {
+      error = _accessDeniedMessage;
+      detailState = LoadState.error;
+      notifyListeners();
+      return false;
+    }
     detailState = LoadState.loading;
     notifyListeners();
     try {
@@ -182,7 +231,7 @@ class ParcelProvider extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      error = e.toString().replaceFirst('Exception: ', '');
+      error = _friendlyApiError(e);
       detailState = LoadState.error;
       notifyListeners();
       return false;

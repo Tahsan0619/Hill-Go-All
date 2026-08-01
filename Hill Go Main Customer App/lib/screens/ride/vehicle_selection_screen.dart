@@ -4,6 +4,7 @@ import '../../models/catalog_models.dart';
 import '../../models/route_result.dart';
 import '../../services/api/rides_api.dart';
 import '../../theme/app_theme.dart';
+import '../../utils/user_facing_error.dart';
 import '../../widgets/hillgo_app_bar.dart';
 import '../../widgets/map_placeholder.dart';
 import '../../widgets/primary_button.dart';
@@ -59,7 +60,7 @@ class _VehicleSelectionScreenState extends State<VehicleSelectionScreen> {
       });
     } catch (e) {
       if (!mounted) return;
-      setState(() => _quoteError = e.toString());
+      setState(() => _quoteError = userFacingError(e));
     }
   }
 

@@ -10,7 +10,8 @@ class ApiProductRepository implements ProductRepository {
   @override
   Future<List<ProductModel>> getProducts() async {
     final response =
-        await _api.get('/merchant/products') as Map<String, dynamic>;
+        await _api.get('/merchant/products', query: {'per_page': '50'})
+            as Map<String, dynamic>;
     return ((response['data'] as List?) ?? const [])
         .map((p) => ProductModel.fromJson(
               p as Map<String, dynamic>,
@@ -21,7 +22,9 @@ class ApiProductRepository implements ProductRepository {
 
   @override
   Future<List<CategoryModel>> getCategories() async {
-    final response = await _api.get('/merchant/categories') as List;
+    final response =
+        await _api.get('/merchant/categories', query: {'per_page': '50'})
+            as List;
     return response
         .map((c) => CategoryModel.fromJson(c as Map<String, dynamic>))
         .toList();

@@ -234,6 +234,110 @@ class PublicController extends Controller
         ]);
     }
 
+    /**
+     * Proxied driving directions. Clients send coordinates to HillGo only;
+     * the backend may call a routing provider server-side (never required of apps).
+     */
+    public function route(Request $request)
+    {
+        $data = $request->validate([
+            'from_lat' => ['required', 'numeric', 'between:-90,90'],
+            'from_lng' => ['required', 'numeric', 'between:-180,180'],
+            'to_lat' => ['required', 'numeric', 'between:-90,90'],
+            'to_lng' => ['required', 'numeric', 'between:-180,180'],
+        ]);
+
+        $url = sprintf(
+            'https://router.project-osrm.org/route/v1/driving/%F,%F;%F,%F?overview=full&geometries=geojson&steps=true&annotations=false',
+            $data['from_lng'],
+            $data['from_lat'],
+            $data['to_lng'],
+            $data['to_lat'],
+        );
+
+        try {
+            $raw = Cache::remember('osrm:'.md5($url), 30, function () use ($url) {
+                $ch = curl_init($url);
+                curl_setopt_array($ch, [
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_TIMEOUT => 12,
+                    CURLOPT_HTTPHEADER => ['User-Agent: HillGo-Backend/1.0'],
+                    CURLOPT_FOLLOWLOCATION => true,
+                ]);
+                $body = curl_exec($ch);
+                $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                curl_close($ch);
+                if ($code !== 200 || ! is_string($body)) {
+                    return null;
+                }
+
+                return $body;
+            });
+        } catch (\Throwable $e) {
+            $raw = null;
+        }
+
+        if ($raw) {
+            return response($raw, 200, ['Content-Type' => 'application/json']);
+        }
+
+        // Offline / provider-down fallback: straight-line geometry (still HillGo-owned).
+        $fromLat = (float) $data['from_lat'];
+        $fromLng = (float) $data['from_lng'];
+        $toLat = (float) $data['to_lat'];
+        $toLng = (float) $data['to_lng'];
+        $distanceM = $this->haversineMeters($fromLat, $fromLng, $toLat, $toLng);
+        $durationS = max(60, $distanceM / 8.3); // ~30 km/h
+
+        return response()->json([
+            'code' => 'Ok',
+            'routes' => [[
+                'distance' => $distanceM,
+                'duration' => $durationS,
+                'geometry' => [
+                    'type' => 'LineString',
+                    'coordinates' => [[$fromLng, $fromLat], [$toLng, $toLat]],
+                ],
+                'legs' => [[
+                    'steps' => [
+                        [
+                            'name' => '',
+                            'distance' => $distanceM,
+                            'duration' => $durationS,
+                            'maneuver' => [
+                                'type' => 'depart',
+                                'modifier' => 'straight',
+                                'location' => [$fromLng, $fromLat],
+                            ],
+                        ],
+                        [
+                            'name' => '',
+                            'distance' => 0,
+                            'duration' => 0,
+                            'maneuver' => [
+                                'type' => 'arrive',
+                                'modifier' => '',
+                                'location' => [$toLng, $toLat],
+                            ],
+                        ],
+                    ],
+                ]],
+            ]],
+        ]);
+    }
+
+    private function haversineMeters(float $lat1, float $lng1, float $lat2, float $lng2): float
+    {
+        $earth = 6371000.0;
+        $r1 = deg2rad($lat1);
+        $r2 = deg2rad($lat2);
+        $dLat = deg2rad($lat2 - $lat1);
+        $dLng = deg2rad($lng2 - $lng1);
+        $a = sin($dLat / 2) ** 2 + cos($r1) * cos($r2) * sin($dLng / 2) ** 2;
+
+        return 2 * $earth * asin(min(1, sqrt($a)));
+    }
+
     /** Map a free-text city to a district row (name or district containing city name). */
     private function resolveDistrict(string $city): ?District
     {

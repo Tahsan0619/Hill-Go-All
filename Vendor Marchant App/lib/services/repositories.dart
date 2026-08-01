@@ -34,4 +34,6 @@ abstract class StoreRepository {
     required String method,
   });
   Future<void> updateSettings(Map<String, dynamic> settings);
+  /// Notification/language prefs from `/merchant/me` (server source of truth).
+  Future<Map<String, dynamic>?> getMePrefs();
 }

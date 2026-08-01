@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../../models/models.dart';
 import '../../providers/driver_provider.dart';
+import '../../services/api/api_client.dart';
 import '../../theme/colors.dart';
 import '../../services/fare_config.dart';
 import '../../theme/spacing.dart';
@@ -37,13 +38,40 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
       _error = null;
     });
     try {
-      final trip = await context.read<DriverProvider>().getTrip(widget.tripId);
+      final driver = context.read<DriverProvider>();
+      final knownIds = <String>{
+        ...driver.history.map((t) => t.id),
+        if (driver.activeTrip != null) driver.activeTrip!.id,
+      };
+      if (knownIds.isNotEmpty && !knownIds.contains(widget.tripId)) {
+        setState(() {
+          _loading = false;
+          _error = 'You do not have access to this trip.';
+        });
+        return;
+      }
+
+      final trip = await driver.getTrip(widget.tripId);
+      if (!mounted) return;
       setState(() {
         _trip = trip;
         _loading = false;
         if (trip == null) _error = 'Trip not found';
       });
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+        if (e.statusCode == 403) {
+          _error = 'You do not have access to this trip.';
+        } else if (e.statusCode == 404) {
+          _error = 'Trip not found';
+        } else {
+          _error = e.message;
+        }
+      });
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _loading = false;
         _error = e.toString();

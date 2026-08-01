@@ -116,8 +116,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
             const SizedBox(height: 14),
             Text('District', style: AppTextStyles.label.copyWith(color: AppColors.primaryDark)),
             const SizedBox(height: 8),
-            DropdownButtonFormField<String>(
-              initialValue: _districtId,
+            DropdownButtonFormField<String>(              value: _districtId,
               hint: Text(
                 districts.isEmpty ? 'Loading districts…' : 'Select your district',
                 style: AppTextStyles.bodySecondary,

@@ -30,7 +30,11 @@ class _RegisterStep2ScreenState extends State<RegisterStep2Screen> {
   }
 
   Future<void> _pick(void Function(String) save) async {
-    final image = await _picker.pickImage(source: ImageSource.gallery);
+    final image = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80,
+      maxWidth: 1600,
+    );
     if (image != null && mounted) setState(() => save(image.path));
   }
 

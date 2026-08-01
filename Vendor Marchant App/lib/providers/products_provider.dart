@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/product_model.dart';
+import '../services/api/api_client.dart';
 import '../services/repositories.dart';
 
 class ProductsProvider extends ChangeNotifier {
@@ -17,6 +18,9 @@ class ProductsProvider extends ChangeNotifier {
   String categoryFilter = 'All Products';
   String categorySearch = '';
 
+  String _errorMessage(Object e) =>
+      e is ApiException ? e.message : e.toString();
+
   Future<void> load() async {
     isLoading = true;
     error = null;
@@ -27,7 +31,7 @@ class ProductsProvider extends ChangeNotifier {
       isLoading = false;
       notifyListeners();
     } catch (e) {
-      error = e.toString();
+      error = _errorMessage(e);
       isLoading = false;
       notifyListeners();
     }
@@ -88,7 +92,7 @@ class ProductsProvider extends ChangeNotifier {
       await _repo.setCategoryVisibility(id, visible);
     } catch (e) {
       cat.isVisible = previous;
-      error = e.toString();
+      error = _errorMessage(e);
       notifyListeners();
     }
   }
@@ -104,7 +108,7 @@ class ProductsProvider extends ChangeNotifier {
     try {
       await _repo.reorderCategories(categories.map((c) => c.id).toList());
     } catch (e) {
-      error = e.toString();
+      error = _errorMessage(e);
       notifyListeners();
     }
   }
@@ -119,7 +123,7 @@ class ProductsProvider extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      error = e.toString();
+      error = _errorMessage(e);
       isSaving = false;
       notifyListeners();
       return false;
@@ -152,7 +156,7 @@ class ProductsProvider extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      error = e.toString();
+      error = _errorMessage(e);
       isSaving = false;
       notifyListeners();
       return false;
@@ -167,7 +171,7 @@ class ProductsProvider extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      error = e.toString();
+      error = _errorMessage(e);
       notifyListeners();
       return false;
     }

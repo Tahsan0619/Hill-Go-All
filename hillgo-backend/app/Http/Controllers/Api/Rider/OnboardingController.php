@@ -70,9 +70,10 @@ class OnboardingController extends Controller
         ]);
 
         // Private disk — served to admins only via authenticated route.
-        $path = $request->file('file')->store('kyc/rider/' . $request->user()->id, 'local');
-
         $profile = $request->user()->riderProfile;
+        $existing = RiderDocument::where('rider_profile_id', $profile->id)->where('doc_key', $docKey)->first();
+        $path = \App\Support\StoredFiles::replacePrivate($existing?->file_path, $request->file('file'), 'kyc/rider/' . $request->user()->id);
+
         RiderDocument::updateOrCreate(
             ['rider_profile_id' => $profile->id, 'doc_key' => $docKey],
             ['title' => self::REQUIRED_DOCS[$docKey], 'status' => 'uploaded', 'file_path' => $path]
@@ -90,14 +91,24 @@ class OnboardingController extends Controller
             'photo' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp', 'max:8192'],
         ]);
 
-        $path = $request->hasFile('photo')
-            ? $request->file('photo')->store('kyc/rider/' . $request->user()->id, 'local')
-            : null;
-
         $profile = $request->user()->riderProfile;
+        $attrs = [
+            'title' => self::REQUIRED_DOCS['id_proof'],
+            'status' => 'uploaded',
+            'token_number' => $data['token_number'],
+        ];
+        if ($request->hasFile('photo')) {
+            $existingPath = RiderDocument::where('rider_profile_id', $profile->id)->where('doc_key', 'id_proof')->value('file_path');
+            $attrs['file_path'] = \App\Support\StoredFiles::replacePrivate(
+                $existingPath,
+                $request->file('photo'),
+                'kyc/rider/' . $request->user()->id
+            );
+        }
+
         RiderDocument::updateOrCreate(
             ['rider_profile_id' => $profile->id, 'doc_key' => 'id_proof'],
-            ['title' => self::REQUIRED_DOCS['id_proof'], 'status' => 'uploaded', 'token_number' => $data['token_number'], 'file_path' => $path]
+            $attrs
         );
 
         $this->refreshKycStatus($request);

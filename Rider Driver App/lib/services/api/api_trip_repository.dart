@@ -32,6 +32,7 @@ class ApiTripRepository implements TripRepository {
   Future<List<Trip>> getTripHistory({String query = '', String filter = 'all'}) async {
     final json = await _client.get('/rider/trips', query: {
       'filter': filter,
+      'per_page': '50',
       if (query.trim().isNotEmpty) 'q': query.trim(),
     }) as Map<String, dynamic>;
     return (json['data'] as List<dynamic>)
@@ -45,7 +46,7 @@ class ApiTripRepository implements TripRepository {
       final json = await _client.get('/rider/trips/$id');
       return _mapTrip(json as Map<String, dynamic>);
     } on ApiException catch (e) {
-      if (e.statusCode == 404) return null;
+      if (e.statusCode == 404 || e.statusCode == 403) return null;
       rethrow;
     }
   }
@@ -97,7 +98,9 @@ class ApiTripRepository implements TripRepository {
 
   @override
   Future<List<PayoutRecord>> getPayouts() async {
-    final json = await _client.get('/rider/payouts') as Map<String, dynamic>;
+    final json = await _client.get('/rider/payouts', query: {
+      'per_page': '50',
+    }) as Map<String, dynamic>;
     return (json['data'] as List<dynamic>)
         .map((p) => PayoutRecord.fromJson(p as Map<String, dynamic>))
         .toList();

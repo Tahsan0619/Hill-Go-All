@@ -94,9 +94,23 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     auth.notifyOnboardingChanged();
   }
 
+  static const _maxImageBytes = 5 * 1024 * 1024;
+
   Future<void> _pickImage(bool logo) async {
-    final file = await _picker.pickImage(source: ImageSource.gallery);
-    if (file == null || !mounted) return;
+    final file = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80,
+      maxWidth: 1600,
+    );
+    if (file == null) return;
+    final length = await file.length();
+    if (!mounted) return;
+    if (length > _maxImageBytes) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Image must be 5 MB or smaller')),
+      );
+      return;
+    }
     final d = context.read<AuthProvider>().onboarding;
     if (logo) {
       d.logoPath = file.path;

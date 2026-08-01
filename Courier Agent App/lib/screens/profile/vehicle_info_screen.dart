@@ -34,7 +34,7 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
         const SizedBox(height: 16),
         TextFormField(controller: _plate, decoration: const InputDecoration(labelText: 'License plate'), validator: _required),
         const SizedBox(height: 16),
-        DropdownButtonFormField<String>(initialValue: _type, decoration: const InputDecoration(labelText: 'Vehicle type'), items: const ['Motorbike', 'Bicycle', 'Van'].map((v) => DropdownMenuItem(value: v, child: Text(v))).toList(), onChanged: (v) => setState(() => _type = v!)),
+        DropdownButtonFormField<String>(value: _type, decoration: const InputDecoration(labelText: 'Vehicle type'), items: const ['Motorbike', 'Bicycle', 'Van'].map((v) => DropdownMenuItem(value: v, child: Text(v))).toList(), onChanged: (v) => setState(() => _type = v!)),
         const SizedBox(height: 28),
         PrimaryButton(label: 'Save vehicle details', loading: provider.loading, onPressed: () async {
           if (!_form.currentState!.validate()) return;

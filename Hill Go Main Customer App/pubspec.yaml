@@ -39,6 +39,8 @@ dependencies:
   geolocator: ^14.0.2
   http: ^1.6.0
   shared_preferences: ^2.5.3
+  crypto: ^3.0.6
+  flutter_secure_storage: ^9.2.4
 
 dev_dependencies:
   flutter_test:

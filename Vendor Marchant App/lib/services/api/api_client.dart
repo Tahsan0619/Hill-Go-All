@@ -1,6 +1,7 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb, kReleaseMode;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -21,25 +22,61 @@ class ApiException implements Exception {
 
 /// Thin JSON/multipart HTTP client for the HillGo Laravel API.
 ///
-/// Persists the Sanctum bearer token in SharedPreferences and clears it
-/// automatically when the server responds with 401.
+/// Persists the Sanctum bearer token in [FlutterSecureStorage] (with a
+/// one-time migration from SharedPreferences) and clears it automatically
+/// when the server responds with 401.
 class ApiClient {
-  ApiClient(this._prefs);
-
-  static const String baseUrl = String.fromEnvironment(
-    'HILLGO_API_BASE',
-    defaultValue: 'http://localhost:8000/api',
-  );
+  ApiClient({FlutterSecureStorage? secureStorage})
+      : _secure = secureStorage ?? const FlutterSecureStorage();
 
   static const _tokenKey = 'hillgo_merchant_token';
 
-  final SharedPreferences _prefs;
+  static String get baseUrl {
+    const fromEnv = String.fromEnvironment('HILLGO_API_BASE');
+    if (fromEnv.isNotEmpty) return fromEnv;
+    if (kReleaseMode) {
+      throw StateError(
+        'HILLGO_API_BASE must be set via --dart-define for release builds.',
+      );
+    }
+    return 'http://127.0.0.1:8000/api';
+  }
 
-  String? get token => _prefs.getString(_tokenKey);
-  bool get hasToken => token != null && token!.isNotEmpty;
+  final FlutterSecureStorage _secure;
 
-  Future<void> saveToken(String token) => _prefs.setString(_tokenKey, token);
-  Future<void> clearToken() async => _prefs.remove(_tokenKey);
+  String? _token;
+
+  String? get token => _token;
+  bool get hasToken => _token != null && _token!.isNotEmpty;
+
+  /// Loads the token into memory from secure storage. Migrates a legacy
+  /// SharedPreferences value once if present.
+  Future<void> loadToken() async {
+    var value = await _secure.read(key: _tokenKey);
+    if (value == null || value.isEmpty) {
+      final prefs = await SharedPreferences.getInstance();
+      final legacy = prefs.getString(_tokenKey);
+      if (legacy != null && legacy.isNotEmpty) {
+        await _secure.write(key: _tokenKey, value: legacy);
+        await prefs.remove(_tokenKey);
+        value = legacy;
+      }
+    }
+    _token = value;
+  }
+
+  Future<void> saveToken(String token) async {
+    _token = token;
+    await _secure.write(key: _tokenKey, value: token);
+  }
+
+  Future<void> clearToken() async {
+    _token = null;
+    await _secure.delete(key: _tokenKey);
+    // Also clear any leftover prefs copy from older builds.
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_tokenKey);
+  }
 
   /// Origin of the API server (base URL without the `/api` suffix), used to
   /// resolve relative asset paths like `/storage/...`.

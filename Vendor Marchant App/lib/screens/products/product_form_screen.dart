@@ -104,10 +104,23 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
     super.dispose();
   }
 
+  static const _maxImageBytes = 5 * 1024 * 1024;
+
   Future<void> _pickImage() async {
-    final file = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final file = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80,
+      maxWidth: 1600,
+    );
     if (file == null) return;
     final bytes = await file.readAsBytes();
+    if (bytes.length > _maxImageBytes) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Image must be 5 MB or smaller')),
+      );
+      return;
+    }
     setState(() {
       _localImages.add(_PickedImage(
         path: file.path,
@@ -291,8 +304,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                   const SizedBox(height: 12),
                   Text('Category', style: AppTextStyles.label),
                   const SizedBox(height: 6),
-                  DropdownButtonFormField<String>(
-                    initialValue: categories.contains(_category) ? _category : null,
+                  DropdownButtonFormField<String>(                    value: categories.contains(_category) ? _category : null,
                     items: categories
                         .map((c) => DropdownMenuItem(value: c, child: Text(c)))
                         .toList(),
@@ -308,8 +320,12 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                         const TextInputType.numberWithOptions(decimal: true),
                     decoration: const InputDecoration(prefixText: '৳ '),
                     validator: (v) {
-                      if (v == null || v.isEmpty) return 'Required';
-                      if (double.tryParse(v) == null) return 'Invalid price';
+                      if (v == null || v.trim().isEmpty) return 'Required';
+                      final price = double.tryParse(v.trim());
+                      if (price == null) return 'Invalid price';
+                      if (price < 0 || price > 1e7) {
+                        return 'Price must be between 0 and 10,000,000';
+                      }
                       return null;
                     },
                   ),

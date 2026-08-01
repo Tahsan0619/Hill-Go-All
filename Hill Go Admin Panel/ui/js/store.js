@@ -2,9 +2,12 @@
  * AppStore — live Laravel API client with an in-memory cache.
  * Reads are synchronous against the cache; mutations update the cache
  * optimistically, call the API, then reconcile with the server response.
+ *
+ * Token is kept in sessionStorage (not localStorage) so it does not survive
+ * the browser session. Still XSS-readable; production should prefer HttpOnly cookies.
  */
 window.AppStore = (() => {
-  const API_BASE = window.HILLGO_API_BASE || 'http://localhost:8000/api';
+  const API_BASE = window.HILLGO_API_BASE || 'http://127.0.0.1:8000/api';
   const TOKEN_KEY = 'hillgo-admin-token';
   const listeners = new Set();
 
@@ -44,7 +47,52 @@ window.AppStore = (() => {
   // —— HTTP ——
 
   function token() {
-    return localStorage.getItem(TOKEN_KEY) || '';
+    // Prefer sessionStorage; migrate any legacy localStorage token once.
+    let t = sessionStorage.getItem(TOKEN_KEY) || '';
+    if (!t) {
+      t = localStorage.getItem(TOKEN_KEY) || '';
+      if (t) {
+        sessionStorage.setItem(TOKEN_KEY, t);
+        localStorage.removeItem(TOKEN_KEY);
+      }
+    }
+    return t;
+  }
+
+  function setToken(value) {
+    sessionStorage.setItem(TOKEN_KEY, value);
+    localStorage.removeItem(TOKEN_KEY);
+  }
+
+  function clearToken() {
+    sessionStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(TOKEN_KEY);
+  }
+
+  /** Fetch a private storage URL with the admin Bearer token and open it. */
+  async function openAuthenticatedFile(fileUrl, fallbackName = 'document') {
+    if (!fileUrl) throw new Error('No file URL');
+    const res = await fetch(fileUrl, {
+      headers: { Authorization: `Bearer ${token()}`, Accept: '*/*' },
+    });
+    if (res.status === 401) {
+      clearToken();
+      window.dispatchEvent(new CustomEvent('hillgo:unauthenticated'));
+      throw new Error('Session expired. Please sign in again.');
+    }
+    if (!res.ok) throw new Error(`Could not open file (${res.status})`);
+    const blob = await res.blob();
+    const obj = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = obj;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    const cd = res.headers.get('content-disposition') || '';
+    const m = /filename\*?=(?:UTF-8'')?["']?([^"';]+)/i.exec(cd);
+    a.download = m ? decodeURIComponent(m[1]) : fallbackName;
+    // Prefer new tab for images/PDFs; download attribute still helps naming.
+    window.open(obj, '_blank', 'noopener');
+    setTimeout(() => URL.revokeObjectURL(obj), 120000);
   }
 
   async function http(method, path, body) {
@@ -58,7 +106,7 @@ window.AppStore = (() => {
       body: body !== undefined ? JSON.stringify(body) : undefined,
     });
     if (res.status === 401) {
-      localStorage.removeItem(TOKEN_KEY);
+      clearToken();
       window.dispatchEvent(new CustomEvent('hillgo:unauthenticated'));
       throw new Error('Session expired. Please sign in again.');
     }
@@ -82,7 +130,7 @@ window.AppStore = (() => {
     if (reloadKeys) refresh(reloadKeys);
   }
 
-  // —— Collection loaders ——
+  // —— Collection loaders (cap per_page at 50) ——
 
   const LOADERS = {
     divisions: async () => (await get('/admin/regions/divisions')).map(sid),
@@ -91,32 +139,32 @@ window.AppStore = (() => {
       const lists = await Promise.all(divisions.map((d) => get(`/admin/regions/divisions/${d.id}/districts`)));
       return lists.flat().map(sid);
     },
-    customers: async () => unwrap(await get('/admin/customers?per_page=200')).map(sid),
-    rides: async () => unwrap(await get('/admin/rides?per_page=200')).map(sid),
-    foodOrders: async () => unwrap(await get('/admin/food-orders?per_page=200')).map(sid),
-    customerParcels: async () => unwrap(await get('/admin/customer-parcels?per_page=200')).map(sid),
-    riders: async () => unwrap(await get('/admin/riders?per_page=200')).map(sid),
-    riderKyc: async () => unwrap(await get('/admin/riders/kyc')).map((k) => ({
+    customers: async () => unwrap(await get('/admin/customers?per_page=50')).map(sid),
+    rides: async () => unwrap(await get('/admin/rides?per_page=50')).map(sid),
+    foodOrders: async () => unwrap(await get('/admin/food-orders?per_page=50')).map(sid),
+    customerParcels: async () => unwrap(await get('/admin/customer-parcels?per_page=50')).map(sid),
+    riders: async () => unwrap(await get('/admin/riders?per_page=50')).map(sid),
+    riderKyc: async () => unwrap(await get('/admin/riders/kyc?per_page=50')).map((k) => ({
       ...sid(k),
       riderId: String(k.riderId ?? ''),
       docs: (k.docs || []).map((d) => d.title || d.key),
       docDetails: k.docs || [],
     })),
-    trips: async () => unwrap(await get('/admin/trips?per_page=200')).map(sid),
-    riderPayouts: async () => unwrap(await get('/admin/rider-payouts')).map(sid),
-    merchants: async () => unwrap(await get('/admin/merchants?per_page=200')).map(sid),
-    merchantOnboarding: async () => unwrap(await get('/admin/merchant-onboarding')).map(sid),
-    merchantOrders: async () => unwrap(await get('/admin/merchant-orders?per_page=200')).map(sid),
-    merchantPayouts: async () => unwrap(await get('/admin/merchant-payouts')).map(sid),
-    courierAgents: async () => unwrap(await get('/admin/courier/agents')).map(sid),
-    courierKyc: async () => unwrap(await get('/admin/courier/kyc')).map((k) => ({
+    trips: async () => unwrap(await get('/admin/trips?per_page=50')).map(sid),
+    riderPayouts: async () => unwrap(await get('/admin/rider-payouts?per_page=50')).map(sid),
+    merchants: async () => unwrap(await get('/admin/merchants?per_page=50')).map(sid),
+    merchantOnboarding: async () => unwrap(await get('/admin/merchant-onboarding?per_page=50')).map(sid),
+    merchantOrders: async () => unwrap(await get('/admin/merchant-orders?per_page=50')).map(sid),
+    merchantPayouts: async () => unwrap(await get('/admin/merchant-payouts?per_page=50')).map(sid),
+    courierAgents: async () => unwrap(await get('/admin/courier/agents?per_page=50')).map(sid),
+    courierKyc: async () => unwrap(await get('/admin/courier/kyc?per_page=50')).map((k) => ({
       ...sid(k),
       agentId: String(k.agentId ?? ''),
       docs: (k.docs || []).map((d) => d.title || d.key),
       docDetails: k.docs || [],
     })),
-    courierParcels: async () => unwrap(await get('/admin/courier/parcels')).map(sid),
-    courierWithdrawals: async () => unwrap(await get('/admin/courier/withdrawals')).map(sid),
+    courierParcels: async () => unwrap(await get('/admin/courier/parcels?per_page=50')).map(sid),
+    courierWithdrawals: async () => unwrap(await get('/admin/courier/withdrawals?per_page=50')).map(sid),
     incentives: async () => (await get('/admin/courier/incentives')).map(sid),
     pricing: async () => {
       const [customer, rider, merchant, courier] = await Promise.all(
@@ -166,15 +214,17 @@ window.AppStore = (() => {
     // —— Session ——
     isAuthed: () => !!token(),
     currentUser: () => state.user,
+    openAuthenticatedFile,
     async login(email, password) {
       const res = await http('POST', '/admin/auth/login', { email, password });
-      localStorage.setItem(TOKEN_KEY, res.token);
+      setToken(res.token);
       state.user = res.user;
       return res.user;
     },
     async logout() {
       try { await http('POST', '/admin/auth/logout'); } catch (_) { /* token may already be dead */ }
-      localStorage.removeItem(TOKEN_KEY);
+      clearToken();
+      sessionStorage.removeItem('hillgo-search');
       state = emptyState();
       if (refreshTimer) clearInterval(refreshTimer);
       window.dispatchEvent(new CustomEvent('hillgo:unauthenticated'));
@@ -262,10 +312,15 @@ window.AppStore = (() => {
       return row;
     },
     adjustWallet(id, delta, note) {
+      const amount = Number(delta);
+      if (!Number.isFinite(amount) || Math.abs(amount) > 1e7) {
+        if (window.UI?.notice) UI.notice('Invalid wallet amount (must be finite and within ±10,000,000)', 'error');
+        return null;
+      }
       const row = patchRow('customers', id, {});
-      if (row) row.wallet = Math.round((row.wallet + Number(delta)) * 100) / 100;
+      if (row) row.wallet = Math.round((row.wallet + amount) * 100) / 100;
       emit();
-      http('POST', `/admin/customers/${id}/wallet`, { delta: Number(delta), note: note || '' })
+      http('POST', `/admin/customers/${id}/wallet`, { delta: amount, note: note || '' })
         .then((server) => { mergeRow('customers', server); refresh(['activityLog']); })
         .catch((e) => fail(e, ['customers']));
       return row;
@@ -549,6 +604,12 @@ window.AppStore = (() => {
       return { ...(state.pricing[panel] || {}) };
     },
     savePricing(panel, values) {
+      for (const [key, val] of Object.entries(values)) {
+        if (typeof val === 'number' && !Number.isFinite(val)) {
+          if (window.UI?.notice) UI.notice(`Invalid pricing value for ${key}`, 'error');
+          return;
+        }
+      }
       state.pricing[panel] = { ...state.pricing[panel], ...values };
       emit();
       http('PUT', `/admin/pricing/${panel}`, { values })

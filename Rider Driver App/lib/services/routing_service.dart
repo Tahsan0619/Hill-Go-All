@@ -54,23 +54,30 @@ class NavRoute {
 }
 
 class RoutingService {
-  RoutingService({http.Client? client}) : _client = client ?? http.Client();
+  RoutingService({http.Client? client, String? apiBase})
+      : _client = client ?? http.Client(),
+        _apiBase = apiBase ??
+            const String.fromEnvironment(
+              'HILLGO_API_BASE',
+              defaultValue: 'http://127.0.0.1:8000/api',
+            );
 
   final http.Client _client;
-  static const _base = 'https://router.project-osrm.org';
+  final String _apiBase;
 
   Future<NavRoute?> getDrivingRoute(LatLng from, LatLng to) async {
-    final uri = Uri.parse(
-      '$_base/route/v1/driving/'
-      '${from.longitude},${from.latitude};'
-      '${to.longitude},${to.latitude}'
-      '?overview=full&geometries=geojson&steps=true&annotations=false',
-    );
+    // GPS goes to HillGo only — backend proxies provider routing.
+    final uri = Uri.parse('$_apiBase/public/route').replace(queryParameters: {
+      'from_lat': '${from.latitude}',
+      'from_lng': '${from.longitude}',
+      'to_lat': '${to.latitude}',
+      'to_lng': '${to.longitude}',
+    });
 
     try {
       final res = await _client.get(
         uri,
-        headers: const {'User-Agent': 'HillGoRider/1.0'},
+        headers: const {'User-Agent': 'HillGoRider/1.0', 'Accept': 'application/json'},
       );
       if (res.statusCode != 200) return null;
 

@@ -54,9 +54,23 @@ class _BrandingScreenState extends State<BrandingScreen> {
     super.dispose();
   }
 
+  static const _maxImageBytes = 5 * 1024 * 1024;
+
   Future<void> _pick(bool banner) async {
-    final file = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final file = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80,
+      maxWidth: 1600,
+    );
     if (file == null) return;
+    final length = await file.length();
+    if (length > _maxImageBytes) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Image must be 5 MB or smaller')),
+      );
+      return;
+    }
     setState(() {
       if (banner) {
         _bannerLocal = file.path;

@@ -12,7 +12,9 @@ class ApiParcelRepository implements ParcelRepository {
 
   @override
   Future<List<ParcelModel>> getAssignedParcels() async {
-    final data = await _api.get('/courier/parcels/assigned') as List<dynamic>;
+    final data = await _api.get('/courier/parcels/assigned', query: {
+      'per_page': '50',
+    }) as List<dynamic>;
     return data.map((row) => ParcelModel.fromJson(row as Map<String, dynamic>)).toList();
   }
 
@@ -26,13 +28,21 @@ class ApiParcelRepository implements ParcelRepository {
       if (query != null && query.trim().isNotEmpty) 'q': query.trim(),
       if (_periods.containsKey(period)) 'period': _periods[period]!,
       'page': '$page',
+      'per_page': '50',
     }) as Map<String, dynamic>;
     return ParcelHistoryPage(
       items: (data['data'] as List<dynamic>? ?? const [])
           .map((row) => ParcelModel.fromJson(row as Map<String, dynamic>))
           .toList(),
       total: (data['total'] as num?)?.toInt() ?? 0,
+      totalEarnings: _optionalDouble(data['total_earnings'] ?? data['payout_total']),
     );
+  }
+
+  static double? _optionalDouble(dynamic value) {
+    if (value == null) return null;
+    if (value is num) return value.toDouble();
+    return double.tryParse('$value');
   }
 
   @override

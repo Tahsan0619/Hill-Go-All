@@ -9,7 +9,9 @@ class ApiNotificationRepository implements NotificationRepository {
 
   @override
   Future<List<AppNotification>> getNotifications() async {
-    final data = await _api.get('/courier/notifications') as Map<String, dynamic>;
+    final data = await _api.get('/courier/notifications', query: {
+      'per_page': '50',
+    }) as Map<String, dynamic>;
     return (data['data'] as List<dynamic>? ?? const [])
         .map((row) => AppNotification.fromJson(row as Map<String, dynamic>))
         .toList();

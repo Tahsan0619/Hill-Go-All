@@ -28,7 +28,11 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   }
 
   Future<void> _upload(CourierDocument doc) async {
-    final image = await _picker.pickImage(source: ImageSource.gallery);
+    final image = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80,
+      maxWidth: 1600,
+    );
     if (image == null || !mounted) return;
     final provider = context.read<ProfileProvider>();
     final ok = await provider.uploadDocument(doc.key, image.path);

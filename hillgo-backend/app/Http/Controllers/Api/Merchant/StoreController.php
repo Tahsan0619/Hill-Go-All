@@ -66,7 +66,11 @@ class StoreController extends Controller
         $patch = [];
         foreach (['banner', 'logo'] as $field) {
             if ($request->hasFile($field)) {
-                $patch[$field] = '/storage/' . $request->file($field)->store("stores/{$store->id}", 'public');
+                $patch[$field] = \App\Support\StoredFiles::replacePublic(
+                    $store->{$field},
+                    $request->file($field),
+                    "stores/{$store->id}"
+                );
             }
         }
         $store->update($patch);

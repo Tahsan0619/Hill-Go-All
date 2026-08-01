@@ -9,6 +9,10 @@ window.UI = (() => {
     return root.querySelector(sel);
   }
 
+  function escapeHtml(s) {
+    return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
   function el(html) {
     const t = document.createElement('template');
     t.innerHTML = html.trim();
@@ -62,7 +66,7 @@ window.UI = (() => {
       scheduled: 'bg-slate-100 text-slate-700',
     };
     const cls = map[status] || 'bg-slate-100 text-slate-700';
-    const label = String(status || '').replace(/_/g, ' ');
+    const label = escapeHtml(String(status || '').replace(/_/g, ' '));
     return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold capitalize ${cls}">${label}</span>`;
   }
 
@@ -118,10 +122,10 @@ window.UI = (() => {
     return new Promise((resolve) => {
       openModal({
         title,
-        bodyHtml: `<p class="text-sm text-on-surface-variant leading-relaxed">${message}</p>`,
+        bodyHtml: `<p class="text-sm text-on-surface-variant leading-relaxed">${escapeHtml(message)}</p>`,
         footerHtml: `
           <button type="button" data-act="cancel" class="px-4 py-2 text-sm font-semibold text-outline hover:bg-surface-container-low rounded-lg">Cancel</button>
-          <button type="button" data-act="ok" class="px-4 py-2 text-sm font-semibold text-white rounded-lg ${danger ? 'bg-error hover:bg-red-700' : 'bg-primary-container hover:bg-primary'}">${confirmLabel}</button>
+          <button type="button" data-act="ok" class="px-4 py-2 text-sm font-semibold text-white rounded-lg ${danger ? 'bg-error hover:bg-red-700' : 'bg-primary-container hover:bg-primary'}">${escapeHtml(confirmLabel)}</button>
         `,
       });
       const footer = $('#modal-footer');
@@ -176,16 +180,16 @@ window.UI = (() => {
   function kpiCard(label, value, hint = '') {
     return `
       <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
-        <p class="text-[11px] font-semibold uppercase tracking-wider text-outline">${label}</p>
-        <p class="text-2xl font-bold text-on-surface mt-1">${value}</p>
-        ${hint ? `<p class="text-xs text-outline mt-1">${hint}</p>` : ''}
+        <p class="text-[11px] font-semibold uppercase tracking-wider text-outline">${escapeHtml(label)}</p>
+        <p class="text-2xl font-bold text-on-surface mt-1">${escapeHtml(value)}</p>
+        ${hint ? `<p class="text-xs text-outline mt-1">${escapeHtml(hint)}</p>` : ''}
       </div>`;
   }
 
   function breadcrumb(parts) {
     return parts.map((p, i) => {
-      if (i === parts.length - 1) return `<span class="text-primary">${p}</span>`;
-      return `<span>${p}</span><span class="material-symbols-outlined text-[14px]">chevron_right</span>`;
+      if (i === parts.length - 1) return `<span class="text-primary">${escapeHtml(p)}</span>`;
+      return `<span>${escapeHtml(p)}</span><span class="material-symbols-outlined text-[14px]">chevron_right</span>`;
     }).join('');
   }
 
@@ -207,7 +211,7 @@ window.UI = (() => {
   }
 
   return {
-    $, el, formatTk, formatDate, badge, notice, openModal, closeModal,
+    $, el, escapeHtml, formatTk, formatDate, badge, notice, openModal, closeModal,
     openDrawer, closeDrawer, confirmDialog, downloadCsv, paginate, pagerHtml,
     kpiCard, breadcrumb, bindShellChrome,
   };

@@ -58,8 +58,7 @@ class _RevenueScreenState extends State<RevenueScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-              DropdownButtonFormField<String>(
-                initialValue: method,
+              DropdownButtonFormField<String>(                value: method,
                 items: const [
                   DropdownMenuItem(value: 'bKash', child: Text('bKash')),
                   DropdownMenuItem(value: 'Nagad', child: Text('Nagad')),
@@ -85,7 +84,26 @@ class _RevenueScreenState extends State<RevenueScreen> {
     );
     if (confirmed != true || !mounted) return;
 
-    final amount = double.tryParse(amountCtrl.text.trim()) ?? 0;
+    final available =
+        (store.revenueSummary['pendingPayout'] as num?)?.toDouble() ?? 0;
+    final amount = double.tryParse(amountCtrl.text.trim());
+    if (amount == null || amount <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Enter an amount greater than 0')),
+      );
+      return;
+    }
+    if (amount > available) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Amount cannot exceed available balance of ৳${NumberFormat('#,##0.00').format(available)}',
+          ),
+        ),
+      );
+      return;
+    }
+
     final ok =
         await store.requestEarlyPayout(amount: amount, method: method);
     if (!mounted) return;
