@@ -29,6 +29,18 @@ class ApiAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<UserModel?> refreshToken() async {
+    if (!_api.hasToken) return null;
+    try {
+      final data = await _api.post('/courier/auth/refresh');
+      return _storeSession(data as Map<String, dynamic>);
+    } on ApiException catch (e) {
+      if (e.isUnauthorized) return null;
+      rethrow;
+    }
+  }
+
+  @override
   Future<UserModel> login({
     required String emailOrPhone,
     required String password,

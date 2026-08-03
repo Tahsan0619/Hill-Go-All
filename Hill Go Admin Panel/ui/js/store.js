@@ -10,8 +10,9 @@
  * Laravel Sanctum's SPA cookie-session mode (HttpOnly, not readable by
  * JS) — that requires a backend change (CSRF cookie endpoint + credentialed
  * requests) that is out of scope here and tracked as Blocked. Production
- * deployments should move to short-lived Sanctum tokens with rotation
- * when the backend supports it. As a partial mitigation, app.js clears
+ * deployments use short-lived Sanctum tokens with rotation via
+ * `POST /admin/auth/refresh` on bootstrap (`AppStore.init`). As a partial
+ * mitigation, app.js clears
  * the token after the tab has been hidden for an extended idle period
  * (see `visibilitychange` handling in app.js).
  */
@@ -179,15 +180,14 @@ window.AppStore = (() => {
   const LOADERS = {
     divisions: async () => (await get('/admin/regions/divisions')).map(sid),
     // Districts N+1 fix: prefer a single batched endpoint; fall back to the
-    // old per-division fan-out (once) if the backend hasn't shipped it yet.
-    // Blocked on Backend 7.4.23 for the batched endpoint itself.
+    // old per-division fan-out (once) only if the batched endpoint 404s.
     regionDistricts: async () => {
       try {
         const res = await get('/admin/regions/districts');
         return unwrap(res).map(sid);
       } catch (err) {
         if (!Helpers.isNotFoundError(err)) throw err;
-        console.warn('[AppStore] /admin/regions/districts is 404 — falling back to per-division fan-out (Backend 7.4.23 pending).');
+        console.warn('[AppStore] /admin/regions/districts is 404 — falling back to per-division fan-out.');
         const divisions = state.divisions.length ? state.divisions : (await get('/admin/regions/divisions')).map(sid);
         const lists = await Promise.all(divisions.map((d) => get(`/admin/regions/divisions/${d.id}/districts`)));
         return lists.flat().map(sid);
@@ -311,8 +311,15 @@ window.AppStore = (() => {
       window.dispatchEvent(new CustomEvent('hillgo:unauthenticated'));
     },
     async init() {
-      const me = await get('/admin/me');
-      state.user = me.user ?? me;
+      try {
+        const res = await http('POST', '/admin/auth/refresh');
+        tokenStore.setToken(res.token);
+        state.user = res.user;
+      } catch (err) {
+        if (err.status === 401) throw err;
+        const me = await get('/admin/me');
+        state.user = me.user ?? me;
+      }
       await refresh();
       if (refreshTimer) clearInterval(refreshTimer);
       refreshTimer = setInterval(() => {

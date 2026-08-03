@@ -111,7 +111,7 @@ class ApiClient {
   }
 
   /// Generates a client idempotency key (UUID v4-ish) for write endpoints.
-  /// Backend must honor `Idempotency-Key` for dedupe to take effect.
+  /// Backend `EnsureIdempotency` middleware (7.4.21) dedupes on this header.
   static String newIdempotencyKey() {
     final r = Random.secure();
     String hex(int n) => n.toRadixString(16).padLeft(2, '0');

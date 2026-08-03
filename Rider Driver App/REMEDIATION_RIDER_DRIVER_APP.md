@@ -75,11 +75,17 @@
 - **What changed:** Added `AppLog` (d/i/w/e via `debugPrint`, no bare `print`), mirroring the Customer App's utility. Used for retry/backoff diagnostics (Item 3), token lifecycle events, and the Sentry skip/enable log line (Item 2).
 - **How verified:** Grep confirms `AppLog` usage across the touched files; `flutter test` output shows the expected log lines during token-lifecycle tests.
 
-### Idempotency on accept/advance
-- **Status:** `Blocked — needs support from Backend` (server-side dedupe on `POST /rider/offers/{id}/accept` and `POST /rider/trips/{id}/advance`/`/status`)
-- **File(s) changed:** none
-- **What changed:** None. This was called out in the checklist as optional/"note Blocked for server if only client." Unlike the Customer App's write endpoints (which accept a client-generated `Idempotency-Key`), the Rider app's accept/advance flow already carries a natural idempotency key — the resource path itself (`offer id` / `trip id` + target status) — so a client-generated header would be redundant without the backend also deduping repeat accepts of the *same* offer id or repeat advances to the *same* status. Adding a header the backend ignores wouldn't close the race described in the audit's "Race condition protections" row. Real protection requires the backend to treat `accept`/`advance` as idempotent per (trip id, target status) — that is server work, not a client-only fix, so it stays out of scope for this checklist pass per the "note Blocked for server" instruction.
-- **How verified:** Grep confirmed no `Idempotency-Key` handling exists server-side in this tree (backend not in scope); `ApiTripRepository.acceptTrip`/`updateTripStatus` reviewed — no client-only change would close the gap.
+### Token refresh (Backend 7.4.22)
+- **Status:** `Fixed`
+- **File(s) changed:** `lib/services/auth_repository.dart`, `lib/services/api/api_auth_repository.dart`, `lib/providers/auth_provider.dart`
+- **What changed:** Added `refreshToken()` calling `POST /rider/auth/refresh`; bootstrap rotates the token after session restore. 401 clears session (no refresh-on-401 loop).
+- **How verified:** Code path review.
+
+---
+- **Status:** `Fixed` — Backend 7.4.21 `EnsureIdempotency` middleware dedupes on `Idempotency-Key`.
+- **File(s) changed:** `lib/services/api/api_client.dart`, `lib/services/api/api_trip_repository.dart`
+- **What changed:** Added `ApiClient.newIdempotencyKey()` and optional `Idempotency-Key` on `post()`. `acceptTrip` and `updateTripStatus` advance calls now send a fresh key per invocation so retried accepts/advances dedupe server-side.
+- **How verified:** Code path review; header threaded through accept and advance POSTs.
 
 ---
 

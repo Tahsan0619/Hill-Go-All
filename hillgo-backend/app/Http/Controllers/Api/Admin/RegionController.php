@@ -39,6 +39,21 @@ class RegionController extends Controller
         );
     }
 
+    /**
+     * Backend 7.4.23 — single batched endpoint for every district across all
+     * divisions (with divisionId on each row). Replaces the Admin Panel's
+     * per-division fan-out (one request per division) with one request.
+     * Cached briefly since region-lock changes are infrequent admin actions.
+     */
+    public function allDistricts()
+    {
+        $districts = Cache::remember('admin.regions.districts.v1', 60, fn () => District::with('division')
+            ->orderBy('division_id')->orderBy('name')->get()
+            ->map(fn ($d) => $this->shape($d))->values());
+
+        return response()->json($districts);
+    }
+
     public function show(string $id)
     {
         return response()->json($this->shape(District::with('division')->findOrFail($id)));
@@ -76,6 +91,7 @@ class RegionController extends Controller
 
         $district->update($patch);
         Cache::forget('public.districts.v1');
+        Cache::forget('admin.regions.districts.v1');
         Audit::log("{$district->name} ({$district->division->name}) → {$district->status}", $request->user()->name, 'region');
 
         return response()->json($this->shape($district->fresh()));
@@ -100,6 +116,7 @@ class RegionController extends Controller
         });
 
         Cache::forget('public.districts.v1');
+        Cache::forget('admin.regions.districts.v1');
         $division = Division::findOrFail($divisionId);
         Audit::log("{$division->name}: all districts {$data['status']}", $request->user()->name, 'region');
 

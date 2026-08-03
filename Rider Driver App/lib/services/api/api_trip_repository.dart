@@ -71,7 +71,10 @@ class ApiTripRepository implements TripRepository {
 
   @override
   Future<Trip> acceptTrip(String id) async {
-    final json = await _client.post('/rider/offers/$id/accept');
+    final json = await _client.post(
+      '/rider/offers/$id/accept',
+      idempotencyKey: ApiClient.newIdempotencyKey(),
+    );
     return _mapTrip(json as Map<String, dynamic>);
   }
 
@@ -89,12 +92,19 @@ class ApiTripRepository implements TripRepository {
       return _mapTrip(json as Map<String, dynamic>);
     }
 
-    var json = await _client.post('/rider/trips/$id/advance');
+    final advanceKey = ApiClient.newIdempotencyKey();
+    var json = await _client.post(
+      '/rider/trips/$id/advance',
+      idempotencyKey: advanceKey,
+    );
     var trip = _mapTrip(json as Map<String, dynamic>);
     // The app treats "arrived" as one tap after accepting a ride while the
     // backend machine has an intermediate "arriving" step — advance through it.
     if (status == TripStatus.arrived && trip.status == TripStatus.arriving) {
-      json = await _client.post('/rider/trips/$id/advance');
+      json = await _client.post(
+        '/rider/trips/$id/advance',
+        idempotencyKey: ApiClient.newIdempotencyKey(),
+      );
       trip = _mapTrip(json as Map<String, dynamic>);
     }
     return trip;

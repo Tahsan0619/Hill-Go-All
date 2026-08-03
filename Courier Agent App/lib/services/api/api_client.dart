@@ -70,10 +70,7 @@ class ApiClient {
   bool get hasToken => (_token ?? '').isNotEmpty;
 
   /// Generates a client idempotency key (UUID v4-ish) for write endpoints.
-  /// The backend does not yet implement request-level dedupe for this
-  /// header — see item 7 of `REMEDIATION_COURIER_AGENT_APP.md` — but the
-  /// client always sends one so dedupe can be turned on server-side later
-  /// without another client release.
+  /// Backend `EnsureIdempotency` middleware dedupes on `Idempotency-Key`.
   static String newIdempotencyKey() {
     final r = Random.secure();
     String hex(int n) => n.toRadixString(16).padLeft(2, '0');

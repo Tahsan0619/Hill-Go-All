@@ -23,6 +23,12 @@ class DemoUsersSeeder extends Seeder
 
     public function run(): void
     {
+        // Defense in depth: even if SEED_DEMO_USERS is accidentally left on in an
+        // env file, this seeder must never create demo/test accounts in production.
+        if (app()->environment('production')) {
+            throw new \RuntimeException('DemoUsersSeeder must never run with APP_ENV=production.');
+        }
+
         $password = env('SEED_DEMO_PASSWORD', 'HillGoDemo@2026!');
         $district = 'dhaka__dhaka';
 

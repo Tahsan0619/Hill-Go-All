@@ -28,6 +28,9 @@ class OnboardingStatus {
 abstract class AuthRepository {
   Future<UserModel?> getCurrentUser();
 
+  /// Rotates the Sanctum token. Returns null when the session is invalid (401).
+  Future<UserModel?> refreshToken();
+
   /// [identifier] may be an email address or a phone number.
   Future<UserModel> login(String identifier, String password);
 

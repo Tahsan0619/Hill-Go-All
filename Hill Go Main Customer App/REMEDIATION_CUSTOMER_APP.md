@@ -42,22 +42,22 @@
 - **How verified:** Manifest attribute present; debug vs main XML contents reviewed.
 
 ### Item 7 — Idempotency keys on write endpoints
-- **Status:** `Fixed` (client wiring) — **server dedupe:** `Blocked — needs support from Backend` (header `Idempotency-Key` must be accepted and deduped; Backend checklist 7.4.21)
+- **Status:** `Fixed` — Backend `EnsureIdempotency` middleware (7.4.21) now dedupes on `Idempotency-Key`.
 - **File(s) changed:** `lib/services/api/api_client.dart`, `rides_api.dart`, `food_api.dart`, `marketplace_api.dart`
 - **What changed:** Client generates UUID-like keys and sends `Idempotency-Key` on ride create and food/marketplace checkout POSTs.
-- **How verified:** Grep confirms header passed on the three write paths. Server-side dedupe pending Backend.
+- **How verified:** Grep confirms header passed on the three write paths; backend middleware accepts and dedupes duplicate keys.
 
 ### Item 8 — Pagination beyond fixed per_page=50
-- **Status:** `Fixed` (client) — full server enforcement of pagination defaults: `Blocked — needs support from Backend` (7.3.19) until list endpoints always paginate when `page` omitted
+- **Status:** `Fixed` — Backend list endpoints enforce pagination defaults (7.3.19).
 - **File(s) changed:** `lib/models/paged_result.dart` (new), `wallet_api.dart`, `rides_api.dart`, `food_api.dart`, `marketplace_api.dart`, `wallet_screen.dart`, `ride_history_screen.dart`
 - **What changed:** APIs accept `page`/`per_page`, return `PagedResult`; wallet and ride history screens load more when `hasMore`.
 - **How verified:** Code path review; callers updated for new return types.
 
 ### Item 9 — Token refresh flow
-- **Status:** `Blocked — needs support from Backend` (refresh endpoint / token rotation — Backend 7.4.22)
-- **File(s) changed:** none
-- **What changed:** None. Interim pattern remains: 401 → `clearToken()` → user re-login.
-- **How verified:** Backend grep found no refresh-token route.
+- **Status:** `Fixed` — Backend 7.4.22 `POST /customer/auth/refresh` rotates Sanctum tokens.
+- **File(s) changed:** `lib/services/auth_service.dart`, `lib/screens/splash_screen.dart`
+- **What changed:** Added `AuthService.refreshToken()` calling `POST /customer/auth/refresh`, then `ApiClient.setToken` + user update from `{token, user}`. Splash calls it after a successful `restoreSession`; 401 clears token and routes to onboarding (no refresh-on-401 loop).
+- **How verified:** Code path review; refresh invoked on splash bootstrap when session restored.
 
 ### Item 10 — Structured logging
 - **Status:** `Fixed`

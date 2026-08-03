@@ -7,6 +7,9 @@ import '../models/user_model.dart';
 abstract class AuthRepository {
   /// Returns the current user when a stored token is still valid, else null.
   Future<UserModel?> restoreSession();
+
+  /// Rotates the Sanctum token. Returns null when the session is invalid (401).
+  Future<UserModel?> refreshToken();
   Future<UserModel> login({
     required String emailOrPhone,
     required String password,

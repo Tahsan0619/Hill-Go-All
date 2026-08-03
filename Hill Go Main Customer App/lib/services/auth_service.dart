@@ -95,6 +95,25 @@ class AuthService {
     }
   }
 
+  /// Rotates the Sanctum token via POST /customer/auth/refresh and updates
+  /// the cached user. On 401 the token is cleared and the session ends.
+  /// Other failures leave the existing session intact.
+  static Future<bool> refreshToken() async {
+    if (!ApiClient.hasToken) return false;
+    try {
+      final data = await ApiClient.post('/customer/auth/refresh')
+          as Map<String, dynamic>;
+      await _adoptSession(data);
+      return true;
+    } on ApiException catch (e) {
+      if (e.isUnauthorized) {
+        _currentUser = null;
+        return false;
+      }
+      return true;
+    }
+  }
+
   /// Refreshes the cached user from GET /customer/me.
   static Future<AuthUser?> refreshUser() async {
     if (!ApiClient.hasToken) return null;

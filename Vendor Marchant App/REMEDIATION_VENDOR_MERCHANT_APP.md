@@ -203,7 +203,12 @@ Vendor Marchant App/test/product_validators_test.dart            (new)
 Vendor Marchant App/test/api_client_test.dart                    (new)
 ```
 
-## Verification
+## Token refresh (Backend 7.4.22)
+
+- **Status:** ✅ Done
+- **File(s) changed:** `lib/services/auth_repository.dart`, `lib/services/api/api_auth_repository.dart`, `lib/providers/auth_provider.dart`
+- **What changed:** Added `refreshToken()` calling `POST /merchant/auth/refresh`; bootstrap rotates the token after a successful session restore. 401 clears the session (no refresh loop).
+- **How verified:** Code path review.
 
 ```
 flutter pub get      # resolved cleanly (6 changed deps: +package_info_plus, +sentry(_flutter), +crypto direct, -uuid direct)

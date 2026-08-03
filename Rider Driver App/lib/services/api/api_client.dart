@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -62,6 +63,19 @@ class ApiClient {
   /// Max attempts for transient network failures (1 initial + retries).
   static const int maxAttempts = 3;
 
+  /// Generates a client idempotency key for write endpoints (Backend
+  /// `EnsureIdempotency` middleware dedupes on `Idempotency-Key`).
+  static String newIdempotencyKey() {
+    final r = Random.secure();
+    String hex(int n) => n.toRadixString(16).padLeft(2, '0');
+    final bytes = List<int>.generate(16, (_) => r.nextInt(256));
+    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+    final h = bytes.map(hex).join();
+    return '${h.substring(0, 8)}-${h.substring(8, 12)}-'
+        '${h.substring(12, 16)}-${h.substring(16, 20)}-${h.substring(20)}';
+  }
+
   final FlutterSecureStorage _secure;
   final http.Client _http;
 
@@ -109,11 +123,13 @@ class ApiClient {
         .replace(queryParameters: (query?.isEmpty ?? true) ? null : query);
   }
 
-  Map<String, String> _headers({bool json = true}) {
+  Map<String, String> _headers({bool json = true, String? idempotencyKey}) {
     return {
       'Accept': 'application/json',
       if (json) 'Content-Type': 'application/json',
       if (hasToken) 'Authorization': 'Bearer $token',
+      if (idempotencyKey != null && idempotencyKey.isNotEmpty)
+        'Idempotency-Key': idempotencyKey,
     };
   }
 
@@ -124,10 +140,10 @@ class ApiClient {
     return _decode(res);
   }
 
-  Future<dynamic> post(String path, {Object? body}) async {
+  Future<dynamic> post(String path, {Object? body, String? idempotencyKey}) async {
     final res = await _sendWithRetry(
       () => http.Request('POST', _uri(path))
-        ..headers.addAll(_headers())
+        ..headers.addAll(_headers(idempotencyKey: idempotencyKey))
         ..body = jsonEncode(body ?? const {}),
     );
     return _decode(res);

@@ -35,6 +35,20 @@ class ApiAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<DriverUser?> refreshToken() async {
+    if (!_client.hasToken) return null;
+    try {
+      final json = await _client.post('/rider/auth/refresh') as Map<String, dynamic>;
+      await _client.saveToken(json['token'] as String);
+      invalidateDistrictsCache();
+      return DriverUser.fromJson(json['user'] as Map<String, dynamic>);
+    } on ApiException catch (e) {
+      if (e.isUnauthorized) return null;
+      rethrow;
+    }
+  }
+
+  @override
   Future<DriverUser> login({required String email, required String password}) async {
     final identifier = email.trim();
     final json = await _client.post('/rider/auth/login', body: {

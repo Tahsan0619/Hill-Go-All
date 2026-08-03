@@ -188,6 +188,23 @@ class AuthController extends Controller
         return response()->json(['message' => 'Logged out.']);
     }
 
+    /**
+     * Backend 7.4.22 — token refresh/rotation. Issues a brand-new Sanctum
+     * token and revokes the one used to call this endpoint, so a client can
+     * silently rotate its session without forcing the user to log in again.
+     * Response shape mirrors login/register: {token, user}.
+     */
+    public function refresh(Request $request)
+    {
+        $user = $request->user();
+        $tokenName = $user->isAdmin() ? 'admin' : $user->role;
+
+        $request->user()->currentAccessToken()->delete();
+        $token = $user->createToken($tokenName)->plainTextToken;
+
+        return response()->json(['token' => $token, 'user' => $this->me($request, $user)->getData()]);
+    }
+
     public function me(Request $request, ?User $user = null)
     {
         $u = $user ?? $request->user();

@@ -2,6 +2,9 @@ import '../models/models.dart';
 
 abstract class AuthRepository {
   Future<DriverUser?> getCurrentSession();
+
+  /// Rotates the Sanctum token. Returns null when the session is invalid (401).
+  Future<DriverUser?> refreshToken();
   Future<DriverUser> login({required String email, required String password});
   Future<void> requestOtp({required String emailOrPhone});
   Future<DriverUser> verifyOtp({required String emailOrPhone, required String code});

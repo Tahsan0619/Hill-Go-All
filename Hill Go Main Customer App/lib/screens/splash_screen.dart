@@ -34,7 +34,11 @@ class _SplashScreenState extends State<SplashScreen> {
       Future<void>.delayed(const Duration(milliseconds: 2200)),
     ]);
     if (!mounted) return;
-    final loggedIn = results.first == true;
+    var loggedIn = results.first == true;
+    if (loggedIn) {
+      loggedIn = await AuthService.refreshToken();
+    }
+    if (!mounted) return;
     Navigator.of(context).pushReplacementNamed(
       loggedIn ? MainShellScreen.routeName : OnboardingScreen.routeName,
     );

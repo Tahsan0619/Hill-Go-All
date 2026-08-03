@@ -32,7 +32,13 @@ use App\Http\Controllers\Api\Rider\EarningsController as RiderEarnings;
 use App\Http\Controllers\Api\Rider\OnboardingController as RiderOnboarding;
 use App\Http\Controllers\Api\Rider\PresenceController;
 use App\Http\Controllers\Api\Rider\TripController;
+use App\Http\Controllers\HealthController;
 use Illuminate\Support\Facades\Route;
+
+// ------------------------------------------------------------------
+// Health (unauthenticated, outside all middleware groups)
+// ------------------------------------------------------------------
+Route::get('/health', [HealthController::class, 'check']);
 
 // ------------------------------------------------------------------
 // Public Web (rate limited, unauthenticated)
@@ -74,6 +80,9 @@ Route::prefix('courier')->group(fn () => $authRoutes('courier_agent'));
 // Shared session endpoints for every authenticated role
 $sessionRoutes = function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
+    // Backend 7.4.22 — rotate the current Sanctum token for a new one, same
+    // {token, user} shape as login/register. Mirrored across every role group.
+    Route::post('/auth/refresh', [AuthController::class, 'refresh']);
     Route::get('/me', [AuthController::class, 'me']);
     Route::patch('/me', [AuthController::class, 'updateMe']);
     Route::get('/notifications', [NotificationController::class, 'index']);
@@ -92,6 +101,8 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'role:admin'])->group(functi
     Route::get('/regions/divisions', [RegionController::class, 'divisions']);
     Route::get('/regions/divisions/{division}/districts', [RegionController::class, 'districts']);
     Route::post('/regions/divisions/{division}/bulk-status', [RegionController::class, 'bulkStatus']);
+    // Backend 7.4.23 — batched read of every district (all divisions) in one call.
+    Route::get('/regions/districts', [RegionController::class, 'allDistricts']);
     Route::get('/regions/districts/{district}', [RegionController::class, 'show']);
     Route::patch('/regions/districts/{district}', [RegionController::class, 'update']);
 
@@ -221,33 +232,33 @@ Route::prefix('customer')->middleware(['auth:sanctum', 'role:customer'])->group(
     Route::delete('/payment-methods/{paymentMethod}', [CustomerProfileCtl::class, 'deletePaymentMethod']);
     Route::patch('/preferences', [CustomerProfileCtl::class, 'preferences']);
 
-    // Rides
+    // Rides (create + status-transition are idempotency-key aware — 7.4.21)
     Route::post('/rides/quote', [RideController::class, 'quote']);
-    Route::post('/rides', [RideController::class, 'store']);
+    Route::post('/rides', [RideController::class, 'store'])->middleware('idempotent');
     Route::get('/rides', [RideController::class, 'index']);
     Route::get('/rides/{ride}', [RideController::class, 'show']);
-    Route::post('/rides/{ride}/cancel', [RideController::class, 'cancel']);
+    Route::post('/rides/{ride}/cancel', [RideController::class, 'cancel'])->middleware('idempotent');
     Route::post('/rides/{ride}/rate', [RideController::class, 'rate']);
 
     // Food
     Route::get('/food/restaurants', [FoodController::class, 'restaurants']);
     Route::get('/food/restaurants/{id}', [FoodController::class, 'restaurant']);
-    Route::post('/food/orders', [FoodController::class, 'checkout']);
+    Route::post('/food/orders', [FoodController::class, 'checkout'])->middleware('idempotent');
     Route::get('/food/orders', [FoodController::class, 'orders']);
     Route::get('/food/orders/{order}', [FoodController::class, 'order']);
 
-    // Parcels
+    // Parcels (create + status-transition are idempotency-key aware — 7.4.21)
     Route::post('/parcels/quote', [CustomerParcels::class, 'quote']);
-    Route::post('/parcels', [CustomerParcels::class, 'store']);
+    Route::post('/parcels', [CustomerParcels::class, 'store'])->middleware('idempotent');
     Route::get('/parcels', [CustomerParcels::class, 'index']);
     Route::get('/parcels/{parcel}', [CustomerParcels::class, 'show']);
-    Route::post('/parcels/{parcel}/cancel', [CustomerParcels::class, 'cancel']);
+    Route::post('/parcels/{parcel}/cancel', [CustomerParcels::class, 'cancel'])->middleware('idempotent');
 
     // Marketplace
     Route::get('/marketplace/categories', [MarketplaceController::class, 'categories']);
     Route::get('/marketplace/products', [MarketplaceController::class, 'products']);
     Route::get('/marketplace/products/{id}', [MarketplaceController::class, 'product']);
-    Route::post('/marketplace/orders', [MarketplaceController::class, 'checkout']);
+    Route::post('/marketplace/orders', [MarketplaceController::class, 'checkout'])->middleware('idempotent');
     Route::get('/marketplace/orders', [MarketplaceController::class, 'orders']);
 
     // Hotels & rentals
@@ -336,12 +347,13 @@ Route::prefix('merchant')->middleware(['auth:sanctum', 'role:merchant'])->group(
     Route::post('/products/{product}', [CatalogController::class, 'updateProduct']); // multipart-friendly
     Route::delete('/products/{product}', [CatalogController::class, 'deleteProduct']);
 
+    // Status-transition endpoints are idempotency-key aware — 7.4.21.
     Route::get('/orders', [MerchantOrders::class, 'index']);
     Route::get('/orders/{order}', [MerchantOrders::class, 'show']);
-    Route::post('/orders/{order}/accept', [MerchantOrders::class, 'accept']);
-    Route::post('/orders/{order}/ready', [MerchantOrders::class, 'ready']);
-    Route::post('/orders/{order}/deliver', [MerchantOrders::class, 'deliver']);
-    Route::post('/orders/{order}/reject', [MerchantOrders::class, 'reject']);
+    Route::post('/orders/{order}/accept', [MerchantOrders::class, 'accept'])->middleware('idempotent');
+    Route::post('/orders/{order}/ready', [MerchantOrders::class, 'ready'])->middleware('idempotent');
+    Route::post('/orders/{order}/deliver', [MerchantOrders::class, 'deliver'])->middleware('idempotent');
+    Route::post('/orders/{order}/reject', [MerchantOrders::class, 'reject'])->middleware('idempotent');
 
     Route::get('/revenue', [MerchantPayouts::class, 'revenue']);
     Route::get('/payouts', [MerchantPayouts::class, 'payouts']);
@@ -366,13 +378,14 @@ Route::prefix('courier')->middleware(['auth:sanctum', 'role:courier_agent'])->gr
     Route::post('/documents/{docKey}/upload', [CourierProfileCtl::class, 'upload']);
     Route::patch('/settings', [CourierProfileCtl::class, 'settings']);
 
+    // Status-transition endpoints are idempotency-key aware — 7.4.21.
     Route::get('/parcels/assigned', [CourierParcels::class, 'assigned']);
     Route::get('/parcels/history', [CourierParcels::class, 'history']);
     Route::get('/parcels/{parcel}', [CourierParcels::class, 'show']);
-    Route::post('/parcels/{parcel}/pickup-otp', [CourierParcels::class, 'pickupOtp'])->middleware('throttle:otp-verify');
-    Route::post('/parcels/{parcel}/start-transit', [CourierParcels::class, 'startTransit']);
-    Route::post('/parcels/{parcel}/delivery-otp', [CourierParcels::class, 'deliveryOtp'])->middleware('throttle:otp-verify');
-    Route::post('/parcels/{parcel}/fail', [CourierParcels::class, 'fail']);
+    Route::post('/parcels/{parcel}/pickup-otp', [CourierParcels::class, 'pickupOtp'])->middleware(['throttle:otp-verify', 'idempotent']);
+    Route::post('/parcels/{parcel}/start-transit', [CourierParcels::class, 'startTransit'])->middleware('idempotent');
+    Route::post('/parcels/{parcel}/delivery-otp', [CourierParcels::class, 'deliveryOtp'])->middleware(['throttle:otp-verify', 'idempotent']);
+    Route::post('/parcels/{parcel}/fail', [CourierParcels::class, 'fail'])->middleware('idempotent');
     Route::post('/parcels/{parcel}/proof', [CourierParcels::class, 'proof']);
 
     Route::get('/earnings/dashboard', [CourierEarnings::class, 'dashboard']);

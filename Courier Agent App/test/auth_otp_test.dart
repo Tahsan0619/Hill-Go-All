@@ -47,6 +47,8 @@ class _FakeAuthRepository implements AuthRepository {
   @override
   Future<UserModel?> restoreSession() => throw UnimplementedError();
   @override
+  Future<UserModel?> refreshToken() => throw UnimplementedError();
+  @override
   Future<UserModel> login({
     required String emailOrPhone,
     required String password,

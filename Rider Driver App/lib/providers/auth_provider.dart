@@ -24,6 +24,18 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
     try {
       user = await _repo.getCurrentSession();
+      if (user != null) {
+        try {
+          final refreshed = await _repo.refreshToken();
+          if (refreshed != null) {
+            user = refreshed;
+          } else {
+            user = null;
+          }
+        } on ApiException {
+          // Transient failure — keep the session from getCurrentSession.
+        }
+      }
       status = user == null ? AuthStatus.unauthenticated : AuthStatus.authenticated;
     } catch (_) {
       status = AuthStatus.unauthenticated;

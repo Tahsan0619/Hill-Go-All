@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class RentalBooking extends Model
 {
+    use SoftDeletes;
+
     protected $fillable = ['code', 'vehicle_id', 'customer_id', 'pickup_location', 'dropoff_location', 'start_date', 'end_date', 'days', 'with_driver', 'renter_name', 'renter_phone', 'vehicle_total', 'driver_fee', 'insurance_fee', 'total', 'status'];
 
     protected $casts = [

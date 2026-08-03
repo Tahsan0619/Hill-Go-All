@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import '../models/user_model.dart';
+import '../services/api/api_client.dart';
 import '../services/repositories.dart';
 
 enum AuthStatus { unknown, authenticated, unauthenticated }
@@ -34,6 +35,18 @@ class AuthProvider extends ChangeNotifier {
   Future<void> bootstrap() async {
     try {
       user = await _repo.restoreSession();
+      if (user != null) {
+        try {
+          final refreshed = await _repo.refreshToken();
+          if (refreshed != null) {
+            user = refreshed;
+          } else {
+            user = null;
+          }
+        } on ApiException {
+          // Transient failure — keep the session from restoreSession.
+        }
+      }
     } catch (_) {
       user = null;
     }

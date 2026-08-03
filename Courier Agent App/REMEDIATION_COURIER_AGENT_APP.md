@@ -207,7 +207,7 @@ Customer App's already-audited version.
 
 ## 7. Idempotency keys on parcel status-transition POSTs
 
-**Status:** ⚠️ Done (client-side) — **Blocked for server dedupe**
+**Status:** ✅ Done — Backend `EnsureIdempotency` middleware (7.4.21) dedupes on `Idempotency-Key`.
 
 **Files:**
 - `lib/services/api/api_client.dart` (`ApiClient.newIdempotencyKey()`; `post()`/`multipart()` accept an optional `idempotencyKey` → `Idempotency-Key` header)
@@ -223,19 +223,14 @@ Customer App's already-audited version.
   `uploadProof` — now calls `ApiClient.newIdempotencyKey()` per invocation
   and sends it.
 
-**Blocked:** grepped `hillgo-backend` (case-insensitive, whole repo) for
-`idempotency` — **no matches**. `App\Http\Controllers\Api\Courier\
-ParcelController` (`pickupOtp`, `startTransit`, `deliveryOtp`, `fail`,
-`proof`) has no header-based dedupe/middleware reading `Idempotency-Key`.
-So today the header is sent but **not enforced server-side** — a retried
-request (e.g. from item 3's backoff) can still double-apply if it actually
-reached the server before the client saw a timeout. Server-side dedupe
-(e.g. a `idempotency_keys` table + middleware keyed on
-`(user_id, route, Idempotency-Key)`) is out of scope for this app-only pass
-and needs a backend change.
+**Blocked:** ~~grepped `hillgo-backend` (case-insensitive, whole repo) for
+`idempotency` — **no matches**.~~ Backend 7.4.21 landed `EnsureIdempotency`
+middleware and `idempotency_keys` table — duplicate `Idempotency-Key` headers
+on the same route/user now return the cached response instead of re-applying
+the transition.
 
-**How verified:** `flutter analyze` clean. Confirmed via `Grep` across
-`hillgo-backend` that no idempotency middleware/model exists.
+**How verified:** `flutter analyze` clean. Backend `EnsureIdempotency`
+middleware and client header wiring confirmed.
 
 ---
 
@@ -303,6 +298,19 @@ in the app, so nothing needed to be removed from git tracking.
 
 ---
 
+## 10. Token refresh on bootstrap (Backend 7.4.22)
+
+**Status:** ✅ Done
+
+**Files:**
+- `lib/services/repositories.dart`
+- `lib/services/api/api_auth_repository.dart`
+- `lib/providers/auth_provider.dart`
+
+**What changed:** Added `AuthRepository.refreshToken()` calling `POST /courier/auth/refresh`, saving the rotated token and user. `AuthProvider.bootstrap()` invokes it after a successful `restoreSession`; 401 clears the session.
+
+---
+
 ## Summary of statuses
 
 | # | Item | Status |
@@ -313,7 +321,7 @@ in the app, so nothing needed to be removed from git tracking.
 | 4 | Live/periodic dashboard refresh | ✅ Done |
 | 5 | Pagination on notifications | ✅ Done |
 | 6 | Certificate pinning | ✅ Done |
-| 7 | Idempotency keys on parcel transitions | ⚠️ Done client-side — Blocked for server dedupe |
+| 7 | Idempotency keys on parcel transitions | ✅ Done |
 | 8 | Language preference → real localization | ⚠️ Partial — locale switching works; full string tables out of scope |
 | 9 | `.gitignore` excludes `.env` | ✅ Done |
 

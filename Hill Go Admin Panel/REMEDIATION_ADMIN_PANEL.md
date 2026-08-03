@@ -9,7 +9,7 @@
 | **Scope rule** | Fix ONLY the 10 checklist items below. Anything else observed during the pass is logged in `../NEW_FINDINGS.md`, not fixed here. |
 | **Stack** | Vanilla HTML/JS SPA (no build step, no prior `package.json`) · Tailwind CDN · Leaflet · consumes external Laravel `/admin/*` API |
 
-9 of 10 checklist items are **✅ Done**. Item 4 (districts N+1) and item 10 (health check) are **✅ Done client-side, ⏳ Blocked on backend** — both now call the correct forward-looking endpoint and degrade safely (404 → fallback / "API unreachable") until the backend ships them (tracked as Backend 7.4.23 and 7.4.24 respectively, per the checklist). `npm test` (Node's built-in test runner, zero dependencies) passes 42/42.
+9 of 10 checklist items are **✅ Done**. Item 4 (districts N+1) and item 10 (health check) are **✅ Fixed** — Backend 7.4.23 (`GET /admin/regions/districts`) and 7.4.24 (`GET /api/health`) landed; the client calls them directly with safe 404 fallbacks retained. `npm test` (Node's built-in test runner, zero dependencies) passes 42/42.
 
 ---
 
@@ -20,13 +20,13 @@
 | 1 | Test runner + smoke tests for store.js core | ✅ Done |
 | 2 | `HillGoTelemetry.captureError(err, context)` | ✅ Done |
 | 3 | Retry-with-backoff around `http()` | ✅ Done |
-| 4 | Districts N+1 → batched endpoint with fallback | ✅ Done (client) — ⏳ Blocked on Backend 7.4.23 |
+| 4 | Districts N+1 → batched endpoint with fallback | ✅ Fixed (Backend 7.4.23) |
 | 5 | Token storage risk documentation + idle mitigation | ✅ Done |
 | 6 | Tighten CSP — extract inline scripts, drop `'unsafe-inline'` from script-src | ✅ Done |
 | 7 | Pagination — server `per_page`/`page` + "load more from server" | ✅ Done |
 | 8 | Update `ui/README.md` + `STITCH_ADMIN_SCREENS.md` header | ✅ Done |
 | 9 | Deduplicate `escapeHtml` (maps.js → `UI.escapeHtml`) | ✅ Done |
-| 10 | Real health check replacing static "System Active" | ✅ Done (client) — ⏳ Blocked on Backend 7.4.24 |
+| 10 | Real health check replacing static "System Active" | ✅ Fixed (Backend 7.4.24) |
 
 ---
 
@@ -115,7 +115,7 @@ regionDistricts: async () => {
 },
 ```
 
-**Status: Blocked on Backend 7.4.23** — the batched endpoint doesn't exist yet, so in production today every load will 404 once and use the fan-out fallback (functionally identical to before, just with one extra failed request first). This is intentional per the checklist ("switch to batched and mark Blocked… fall back to fan-out once and log. Backend will add endpoint later.") — once Backend 7.4.23 ships `/admin/regions/districts`, the fallback path stops firing automatically with no further client change needed.
+**Status: Fixed — Backend 7.4.23** — `GET /admin/regions/districts` is available. The loader calls it first; the per-division fan-out fallback remains for older deployments that still return 404.
 
 Verified in `test/store-integration.test.js`: one test confirms the 404→fan-out fallback path (and that districts from *all* divisions still come back), and a second confirms that when the batched endpoint *does* respond successfully, **zero** fan-out calls are made.
 
@@ -220,7 +220,7 @@ const escapeHtml = (s) => UI.escapeHtml(s);
 - The sidebar markup (`index.html`) now has `id="health-dot"` / `id="health-label"` in place of the old hardcoded green dot + "System Active" text.
 - A health-probe failure is itself reported through `HillGoTelemetry.captureError` (item 2), so a persistently-unreachable backend shows up in Sentry (if configured) in addition to the visible amber indicator.
 
-**Status: Blocked on Backend 7.4.24** — until the backend ships `/api/health`, every poll will 404 and the sidebar will correctly show "API unreachable" in amber instead of a misleading static green "System Active". This is the intended, honest behavior per the checklist rather than a regression — the old static markup always claimed "Active" even when the backend was down.
+**Status: Fixed — Backend 7.4.24** — `GET /api/health` is available. The sidebar shows Active on 2xx; 404/network failure still shows "API unreachable" in amber (honest fallback for unreachable backends).
 
 ---
 
@@ -266,9 +266,11 @@ $ npm test
 
 ## Blocked items (backend-dependent)
 
-| # | Item | Blocked on | Client-side behavior until unblocked |
-|---|------|-----------|----------------------------------------|
-| 4 | Districts batched endpoint | Backend 7.4.23 — `GET /admin/regions/districts` | Tries the batched endpoint first every load; 404 → falls back to the original per-division fan-out once, logs a warning. No functional regression. |
-| 10 | Health check endpoint | Backend 7.4.24 — `GET /api/health` | Polls every 30s; 404/network failure → sidebar shows "API unreachable" in amber (honest, not a false "Active"). |
+All previously backend-blocked items in this checklist are now **Fixed** (Backend 7.4.21–7.4.24). Token refresh on bootstrap uses `POST /admin/auth/refresh` (Backend 7.4.22).
+
+| # | Item | Status |
+|---|------|--------|
+| 4 | Districts batched endpoint | ✅ Fixed — `GET /admin/regions/districts` (7.4.23); 404 fallback retained |
+| 10 | Health check endpoint | ✅ Fixed — `GET /api/health` (7.4.24) |
 
 See `../NEW_FINDINGS.md` → "Admin Panel" for additional out-of-scope observations made during this pass (unpaginated queue/payout screens, uncapped activity/pricing-audit loaders, idempotency-key gap on retried POST mutations, Sentry CDN version pinning, CSRF).

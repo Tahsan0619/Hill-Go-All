@@ -28,6 +28,25 @@ class ApiAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<UserModel?> refreshToken() async {
+    if (!_api.hasToken) return null;
+    try {
+      final response =
+          await _api.post('/merchant/auth/refresh') as Map<String, dynamic>;
+      await _api.saveToken(response['token'] as String);
+      final onboarding = await getOnboardingStatus();
+      return UserModel.fromApi(
+        response['user'] as Map<String, dynamic>,
+        onboardingComplete: onboarding.submitted,
+        avatarBase: ApiClient.origin,
+      );
+    } on ApiException catch (e) {
+      if (e.isUnauthorized) return null;
+      rethrow;
+    }
+  }
+
+  @override
   Future<UserModel> login(String identifier, String password) async {
     final isEmail = identifier.contains('@');
     final response = await _api.post('/merchant/auth/login', {
