@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../models/catalog_models.dart';
 import '../../services/api/rides_api.dart';
 import '../../theme/app_theme.dart';
+import '../../utils/user_facing_error.dart';
 import '../../widgets/hillgo_app_bar.dart';
 import '../../widgets/load_state_views.dart';
 import '../../widgets/status_badge.dart';
@@ -18,16 +19,57 @@ class RideHistoryScreen extends StatefulWidget {
 }
 
 class _RideHistoryScreenState extends State<RideHistoryScreen> {
-  late Future<List<RideEntry>> _future;
+  bool _loading = true;
+  bool _loadingMore = false;
+  String? _error;
+  List<RideEntry> _rides = [];
+  int _page = 1;
+  bool _hasMore = false;
 
   @override
   void initState() {
     super.initState();
-    _future = RidesApi.list();
+    _load(reset: true);
   }
 
-  void _reload() {
-    setState(() => _future = RidesApi.list());
+  Future<void> _load({bool reset = false}) async {
+    if (reset) {
+      setState(() {
+        _loading = true;
+        _error = null;
+        _page = 1;
+      });
+    } else {
+      setState(() => _loadingMore = true);
+    }
+    try {
+      final page = reset ? 1 : _page + 1;
+      final result = await RidesApi.list(page: page);
+      if (!mounted) return;
+      setState(() {
+        if (reset) {
+          _rides = result.items;
+        } else {
+          _rides = [..._rides, ...result.items];
+        }
+        _page = result.page;
+        _hasMore = result.hasMore;
+        _loading = false;
+        _loadingMore = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = userFacingError(e);
+        _loading = false;
+        _loadingMore = false;
+      });
+    }
+  }
+
+  Future<void> _loadMore() async {
+    if (_loadingMore || !_hasMore) return;
+    await _load(reset: false);
   }
 
   @override
@@ -35,45 +77,54 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: const HillgoAppBar(title: 'Ride history'),
-      body: FutureBuilder<List<RideEntry>>(
-        future: _future,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const LoadingView();
-          }
-          if (snapshot.hasError) {
-            return LoadErrorView(
-              message: snapshot.error.toString(),
-              onRetry: _reload,
-            );
-          }
-          final rides = snapshot.data ?? const <RideEntry>[];
-          if (rides.isEmpty) {
-            return const EmptyView(
-              icon: Icons.directions_car_outlined,
-              message: 'No rides yet. Book your first ride from the home screen.',
-            );
-          }
-          return RefreshIndicator(
-            onRefresh: () async => _reload(),
-            child: ListView.separated(
-              padding: const EdgeInsets.all(20),
-              itemCount: rides.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                final ride = rides[index];
-                return _RideHistoryTile(
-                  ride: ride,
-                  onTap: () => Navigator.of(context).pushNamed(
-                    RideDetailsScreen.routeName,
-                    arguments: ride,
-                  ),
-                );
-              },
-            ),
-          );
-        },
-      ),
+      body: _loading
+          ? const LoadingView()
+          : _error != null
+              ? LoadErrorView(
+                  message: _error!,
+                  onRetry: () => _load(reset: true),
+                )
+              : _rides.isEmpty
+                  ? const EmptyView(
+                      icon: Icons.directions_car_outlined,
+                      message:
+                          'No rides yet. Book your first ride from the home screen.',
+                    )
+                  : RefreshIndicator(
+                      onRefresh: () => _load(reset: true),
+                      child: ListView.separated(
+                        padding: const EdgeInsets.all(20),
+                        itemCount: _rides.length + (_hasMore ? 1 : 0),
+                        separatorBuilder: (_, __) => const SizedBox(height: 12),
+                        itemBuilder: (context, index) {
+                          if (index >= _rides.length) {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              child: Center(
+                                child: _loadingMore
+                                    ? const SizedBox(
+                                        width: 24,
+                                        height: 24,
+                                        child: CircularProgressIndicator(strokeWidth: 2),
+                                      )
+                                    : TextButton(
+                                        onPressed: _loadMore,
+                                        child: const Text('Load more'),
+                                      ),
+                              ),
+                            );
+                          }
+                          final ride = _rides[index];
+                          return _RideHistoryTile(
+                            ride: ride,
+                            onTap: () => Navigator.of(context).pushNamed(
+                              RideDetailsScreen.routeName,
+                              arguments: ride,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
     );
   }
 }

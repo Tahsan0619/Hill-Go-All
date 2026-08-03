@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../models/catalog_models.dart';
+import '../../models/paged_result.dart';
 import '../../services/api/api_client.dart';
 import '../../services/api/wallet_api.dart';
 import '../../services/auth_service.dart';
@@ -24,40 +25,70 @@ class WalletScreen extends StatefulWidget {
 
 class _WalletScreenState extends State<WalletScreen> {
   bool _loading = true;
+  bool _loadingMore = false;
   String? _error;
   WalletSummary? _summary;
   List<WalletTransaction> _transactions = [];
+  int _page = 1;
+  bool _hasMore = false;
 
   @override
   void initState() {
     super.initState();
-    _load();
+    _load(reset: true);
   }
 
-  Future<void> _load() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
-    try {
-      final results = await Future.wait([
-        WalletApi.summary(),
-        WalletApi.transactions(),
-      ]);
-      if (!mounted) return;
+  Future<void> _load({bool reset = false}) async {
+    if (reset) {
       setState(() {
-        _summary = results[0] as WalletSummary;
-        _transactions = results[1] as List<WalletTransaction>;
-        _loading = false;
+        _loading = true;
+        _error = null;
+        _page = 1;
       });
+    } else {
+      setState(() => _loadingMore = true);
+    }
+    try {
+      final page = reset ? 1 : _page + 1;
+      if (reset) {
+        final results = await Future.wait([
+          WalletApi.summary(),
+          WalletApi.transactions(page: 1),
+        ]);
+        if (!mounted) return;
+        final txPage = results[1] as PagedResult<WalletTransaction>;
+        setState(() {
+          _summary = results[0] as WalletSummary;
+          _transactions = txPage.items;
+          _page = txPage.page;
+          _hasMore = txPage.hasMore;
+          _loading = false;
+          _loadingMore = false;
+        });
+      } else {
+        final txPage = await WalletApi.transactions(page: page);
+        if (!mounted) return;
+        setState(() {
+          _transactions = [..._transactions, ...txPage.items];
+          _page = txPage.page;
+          _hasMore = txPage.hasMore;
+          _loadingMore = false;
+        });
+      }
       await AuthService.refreshUser();
     } catch (e) {
       if (!mounted) return;
       setState(() {
         _error = userFacingError(e);
         _loading = false;
+        _loadingMore = false;
       });
     }
+  }
+
+  Future<void> _loadMore() async {
+    if (_loadingMore || !_hasMore) return;
+    await _load(reset: false);
   }
 
   Future<void> _topUp() async {
@@ -101,7 +132,7 @@ class _WalletScreenState extends State<WalletScreen> {
           await WalletApi.topUp(amount: amount, method: 'bkash');
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
-      _load();
+      _load(reset: true);
     } on ApiException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
@@ -174,7 +205,7 @@ class _WalletScreenState extends State<WalletScreen> {
               if (_loading)
                 const Expanded(child: LoadingView())
               else if (_error != null)
-                Expanded(child: LoadErrorView(message: _error!, onRetry: _load))
+                Expanded(child: LoadErrorView(message: _error!, onRetry: () => _load(reset: true)))
               else ...[
                 Container(
                   width: double.infinity,
@@ -248,15 +279,32 @@ class _WalletScreenState extends State<WalletScreen> {
                           message: 'No transactions yet.',
                         )
                       : RefreshIndicator(
-                          onRefresh: _load,
+                          onRefresh: () => _load(reset: true),
                           child: ListView.separated(
                             physics: const AlwaysScrollableScrollPhysics(
                               parent: BouncingScrollPhysics(),
                             ),
-                            itemCount: _transactions.length,
+                            itemCount: _transactions.length + (_hasMore ? 1 : 0),
                             separatorBuilder: (_, __) => const Divider(
                                 height: 1, color: AppColors.cardBorder),
                             itemBuilder: (context, index) {
+                              if (index >= _transactions.length) {
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                  child: Center(
+                                    child: _loadingMore
+                                        ? const SizedBox(
+                                            width: 24,
+                                            height: 24,
+                                            child: CircularProgressIndicator(strokeWidth: 2),
+                                          )
+                                        : TextButton(
+                                            onPressed: _loadMore,
+                                            child: const Text('Load more'),
+                                          ),
+                                  ),
+                                );
+                              }
                               final transaction = _transactions[index];
                               return TransactionTile(
                                 title: transaction.title,

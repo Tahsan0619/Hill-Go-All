@@ -1,4 +1,5 @@
 import '../../models/catalog_models.dart';
+import '../../models/paged_result.dart';
 import 'api_client.dart';
 
 /// Customer ride endpoints.
@@ -33,7 +34,9 @@ class RidesApi {
     required double durationMin,
     required String paymentMethod,
   }) async {
-    final data = await ApiClient.post('/customer/rides', body: {
+    final data = await ApiClient.post(
+      '/customer/rides',
+      body: {
       'vehicle_type': vehicleType,
       'pickup': pickup,
       'drop': drop,
@@ -44,19 +47,21 @@ class RidesApi {
       'distance_km': _clampDistance(distanceKm),
       'duration_min': _clampDuration(durationMin),
       'payment_method': paymentMethod,
-    });
+    },
+      idempotencyKey: ApiClient.newIdempotencyKey(),
+    );
     return RideEntry.fromJson(data as Map<String, dynamic>);
   }
 
-  static Future<List<RideEntry>> list() async {
+  static Future<PagedResult<RideEntry>> list({int page = 1}) async {
     final data = await ApiClient.get('/customer/rides', query: {
+      'page': '$page',
       'per_page': '50',
     });
-    final rows = (data as Map<String, dynamic>)['data'] as List? ?? [];
-    return rows
-        .whereType<Map<String, dynamic>>()
-        .map(RideEntry.fromJson)
-        .toList();
+    return PagedResult.parse(
+      data as Map<String, dynamic>,
+      RideEntry.fromJson,
+    );
   }
 
   static Future<RideEntry> show(int id) async {

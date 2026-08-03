@@ -1,4 +1,5 @@
 import '../../models/catalog_models.dart';
+import '../../models/paged_result.dart';
 import 'api_client.dart';
 
 /// Customer wallet, loyalty and promo endpoints.
@@ -10,15 +11,18 @@ class WalletApi {
     return WalletSummary.fromJson(data as Map<String, dynamic>);
   }
 
-  static Future<List<WalletTransaction>> transactions() async {
+  static Future<PagedResult<WalletTransaction>> transactions({
+    int page = 1,
+    int perPage = 50,
+  }) async {
     final data = await ApiClient.get('/customer/wallet/transactions', query: {
-      'per_page': '50',
+      'page': '$page',
+      'per_page': '$perPage',
     });
-    final rows = (data as Map<String, dynamic>)['data'] as List? ?? [];
-    return rows
-        .whereType<Map<String, dynamic>>()
-        .map(WalletTransaction.fromJson)
-        .toList();
+    return PagedResult.parse(
+      data as Map<String, dynamic>,
+      WalletTransaction.fromJson,
+    );
   }
 
   /// Requests a top-up (completes after payment confirmation server-side).

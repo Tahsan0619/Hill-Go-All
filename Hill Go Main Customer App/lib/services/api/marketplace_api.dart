@@ -1,4 +1,5 @@
 import '../../models/catalog_models.dart';
+import '../../models/paged_result.dart';
 import 'api_client.dart';
 
 /// Customer marketplace endpoints.
@@ -38,24 +39,30 @@ class MarketplaceApi {
     required String deliveryAddress,
     required String paymentMethod,
   }) async {
-    final data = await ApiClient.post('/customer/marketplace/orders', body: {
+    final data = await ApiClient.post(
+      '/customer/marketplace/orders',
+      body: {
       'items': [
         for (final line in lines)
           {'product_id': line.product.id, 'qty': line.quantity},
       ],
       'delivery_address': deliveryAddress,
       'payment_method': paymentMethod,
-    });
+    },
+      idempotencyKey: ApiClient.newIdempotencyKey(),
+    );
     final orders = (data as Map<String, dynamic>)['orders'] as List? ?? [];
     return orders.whereType<Map<String, dynamic>>().toList();
   }
 
-  static Future<List<MarketplaceOrderEntry>> orders() async {
-    final data = await ApiClient.get('/customer/marketplace/orders');
-    final rows = (data as Map<String, dynamic>)['data'] as List? ?? [];
-    return rows
-        .whereType<Map<String, dynamic>>()
-        .map(MarketplaceOrderEntry.fromJson)
-        .toList();
+  static Future<PagedResult<MarketplaceOrderEntry>> orders({int page = 1}) async {
+    final data = await ApiClient.get('/customer/marketplace/orders', query: {
+      'page': '$page',
+      'per_page': '50',
+    });
+    return PagedResult.parse(
+      data as Map<String, dynamic>,
+      MarketplaceOrderEntry.fromJson,
+    );
   }
 }

@@ -1,4 +1,5 @@
 import '../../models/catalog_models.dart';
+import '../../models/paged_result.dart';
 import 'api_client.dart';
 
 /// Customer food delivery endpoints.
@@ -33,7 +34,9 @@ class FoodApi {
     String? customerNote,
     String? promoCode,
   }) async {
-    final data = await ApiClient.post('/customer/food/orders', body: {
+    final data = await ApiClient.post(
+      '/customer/food/orders',
+      body: {
       'store_id': storeId,
       'items': [
         for (final line in lines)
@@ -44,17 +47,21 @@ class FoodApi {
       if (customerNote != null && customerNote.isNotEmpty)
         'customer_note': customerNote,
       if (promoCode != null && promoCode.isNotEmpty) 'promo_code': promoCode,
-    });
+    },
+      idempotencyKey: ApiClient.newIdempotencyKey(),
+    );
     return FoodOrder.fromJson(data as Map<String, dynamic>);
   }
 
-  static Future<List<FoodOrder>> orders() async {
-    final data = await ApiClient.get('/customer/food/orders');
-    final rows = (data as Map<String, dynamic>)['data'] as List? ?? [];
-    return rows
-        .whereType<Map<String, dynamic>>()
-        .map(FoodOrder.fromJson)
-        .toList();
+  static Future<PagedResult<FoodOrder>> orders({int page = 1}) async {
+    final data = await ApiClient.get('/customer/food/orders', query: {
+      'page': '$page',
+      'per_page': '50',
+    });
+    return PagedResult.parse(
+      data as Map<String, dynamic>,
+      FoodOrder.fromJson,
+    );
   }
 
   static Future<FoodOrder> order(int id) async {

@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../theme/app_theme.dart';
+import '../utils/app_log.dart';
 
 // ---------------------------------------------------------------------------
 // JSON parsing helpers
@@ -135,6 +139,18 @@ class Product {
       imageUrl: json['image'] as String?,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'category': category,
+        'price': price,
+        'rating': rating,
+        'description': description,
+        if (storeName != null) 'store': storeName,
+        'in_stock': inStock,
+        if (imageUrl != null) 'image': imageUrl,
+      };
 }
 
 /// Marketplace category tile from GET /customer/marketplace/categories.
@@ -180,6 +196,8 @@ class CartLine {
 class MarketplaceCartStore {
   MarketplaceCartStore._();
 
+  static const String _prefsKey = 'hillgo_market_cart';
+
   static final List<CartLine> _lines = [];
 
   /// Bumps whenever cart contents change so UI can rebuild.
@@ -192,7 +210,49 @@ class MarketplaceCartStore {
   static int get itemCount =>
       _lines.fold(0, (sum, line) => sum + line.quantity);
 
-  static void _notify() => revision.value++;
+  static void _notify() {
+    revision.value++;
+    _persist();
+  }
+
+  static Future<void> restore() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString(_prefsKey);
+      if (raw == null || raw.isEmpty) return;
+      final decoded = jsonDecode(raw);
+      if (decoded is! List) return;
+      _lines.clear();
+      for (final row in decoded) {
+        if (row is! Map<String, dynamic>) continue;
+        final productJson = row['product'];
+        if (productJson is! Map<String, dynamic>) continue;
+        _lines.add(CartLine(
+          product: Product.fromJson(productJson),
+          quantity: asInt(row['quantity'], 1),
+        ));
+      }
+      if (_lines.isNotEmpty) revision.value++;
+      AppLog.d('Restored ${_lines.length} marketplace cart line(s)', tag: 'Cart');
+    } catch (e) {
+      AppLog.w('Failed to restore marketplace cart', tag: 'Cart', error: e);
+    }
+  }
+
+  static void _persist() {
+    final payload = jsonEncode([
+      for (final line in _lines)
+        {
+          'product': line.product.toJson(),
+          'quantity': line.quantity,
+        },
+    ]);
+    SharedPreferences.getInstance()
+        .then((prefs) => prefs.setString(_prefsKey, payload))
+        .catchError((Object e) {
+      AppLog.w('Failed to persist marketplace cart', tag: 'Cart', error: e);
+    });
+  }
 
   static void add(Product product, {int quantity = 1}) {
     final index = _lines.indexWhere((l) => l.product.id == product.id);
@@ -820,6 +880,14 @@ class FoodMenuItem {
       imageUrl: json['image'] as String?,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'description': description,
+        'price': price,
+        if (imageUrl != null) 'image': imageUrl,
+      };
 }
 
 class FoodMenuCategory {
@@ -914,6 +982,8 @@ class FoodCartLine {
 class FoodCartStore {
   FoodCartStore._();
 
+  static const String _prefsKey = 'hillgo_food_cart';
+
   static final List<FoodCartLine> _lines = [];
 
   /// Bumps whenever cart contents change so UI can rebuild.
@@ -931,7 +1001,53 @@ class FoodCartStore {
   static String? get restaurantName =>
       _lines.isEmpty ? null : _lines.first.restaurantName;
 
-  static void _notify() => revision.value++;
+  static void _notify() {
+    revision.value++;
+    _persist();
+  }
+
+  static Future<void> restore() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString(_prefsKey);
+      if (raw == null || raw.isEmpty) return;
+      final decoded = jsonDecode(raw);
+      if (decoded is! List) return;
+      _lines.clear();
+      for (final row in decoded) {
+        if (row is! Map<String, dynamic>) continue;
+        final itemJson = row['item'];
+        if (itemJson is! Map<String, dynamic>) continue;
+        _lines.add(FoodCartLine(
+          item: FoodMenuItem.fromJson(itemJson),
+          restaurantId: asInt(row['restaurant_id']),
+          restaurantName: (row['restaurant_name'] as String?) ?? '',
+          quantity: asInt(row['quantity'], 1),
+        ));
+      }
+      if (_lines.isNotEmpty) revision.value++;
+      AppLog.d('Restored ${_lines.length} food cart line(s)', tag: 'Cart');
+    } catch (e) {
+      AppLog.w('Failed to restore food cart', tag: 'Cart', error: e);
+    }
+  }
+
+  static void _persist() {
+    final payload = jsonEncode([
+      for (final line in _lines)
+        {
+          'item': line.item.toJson(),
+          'restaurant_id': line.restaurantId,
+          'restaurant_name': line.restaurantName,
+          'quantity': line.quantity,
+        },
+    ]);
+    SharedPreferences.getInstance()
+        .then((prefs) => prefs.setString(_prefsKey, payload))
+        .catchError((Object e) {
+      AppLog.w('Failed to persist food cart', tag: 'Cart', error: e);
+    });
+  }
 
   static void add(
     FoodMenuItem item,
