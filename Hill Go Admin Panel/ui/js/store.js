@@ -3,7 +3,7 @@
  * Reads are synchronous against the cache; mutations update the cache
  * optimistically, call the API, then reconcile with the server response.
  *
- * Token storage (accepted risk — see REMEDIATION_ADMIN_PANEL.md #5):
+ * Token storage (accepted risk — see docs/remediation/REMEDIATION_ADMIN_PANEL.md #5):
  * the Bearer token is kept in sessionStorage (not localStorage) so it
  * does not survive the browser session/tab close. It is still
  * XSS-readable synchronous JS storage. The hardened alternative is
@@ -26,7 +26,7 @@ window.AppStore = (() => {
   const tokenStore = Helpers.createTokenStore(sessionStorage, localStorage, TOKEN_KEY);
 
   // Collections backed by a Laravel paginator; the UI can request more
-  // pages beyond the first via loadMore() (see REMEDIATION_ADMIN_PANEL.md #7).
+  // pages beyond the first via loadMore() (see docs/remediation/REMEDIATION_ADMIN_PANEL.md #7).
   const PAGED_COLLECTIONS = new Set([
     'customers', 'rides', 'foodOrders', 'customerParcels',
     'riders', 'riderKyc', 'trips', 'riderPayouts',
@@ -105,7 +105,7 @@ window.AppStore = (() => {
    * transient network failures (fetch() throwing — DNS/connection/timeout).
    * A response that came back with a 4xx/5xx status is a definitive server
    * answer, not a transient failure, and is surfaced immediately without
-   * retrying (see REMEDIATION_ADMIN_PANEL.md #3).
+   * retrying (see docs/remediation/REMEDIATION_ADMIN_PANEL.md #3).
    */
   async function http(method, path, body) {
     const maxAttempts = 3;

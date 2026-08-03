@@ -144,7 +144,7 @@
   });
 
   // Partial mitigation for sessionStorage token risk (see
-  // REMEDIATION_ADMIN_PANEL.md #5): if the tab sits hidden for a long
+  // docs/remediation/REMEDIATION_ADMIN_PANEL.md #5): if the tab sits hidden for a long
   // idle stretch, sign the admin out so a token left in a backgrounded
   // tab doesn't stay live indefinitely. Cancelled the moment the tab is
   // visible again — never fires while the admin is actively using it.

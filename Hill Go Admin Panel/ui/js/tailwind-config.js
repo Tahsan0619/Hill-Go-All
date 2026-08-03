@@ -1,7 +1,7 @@
 /**
  * Tailwind Play CDN theme config. Extracted out of index.html so the
  * page's CSP script-src can drop 'unsafe-inline' (see
- * REMEDIATION_ADMIN_PANEL.md #6). Must load AFTER the Tailwind CDN
+ * docs/remediation/REMEDIATION_ADMIN_PANEL.md #6). Must load AFTER the Tailwind CDN
  * <script> tag and BEFORE any markup that relies on these classes.
  */
 tailwind.config = {

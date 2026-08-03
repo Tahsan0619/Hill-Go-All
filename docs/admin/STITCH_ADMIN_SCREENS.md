@@ -1,10 +1,10 @@
 # HillGo Super Admin — Stitch Screen Spec
 
-> **Runtime note (updated in REMEDIATION_ADMIN_PANEL.md):** the live admin
-> panel (`ui/`) runs against the real Laravel API via `js/store.js` — it is
+> **Runtime note (updated in `docs/remediation/REMEDIATION_ADMIN_PANEL.md`):** the live admin
+> panel (`Hill Go Admin Panel/ui/`) runs against the real Laravel API via `js/store.js` — it is
 > **not** frontend-only / mock data. The "frontend-only" / "mock data"
 > language below describes the **design-only Stitch mock HTML** in
-> `stitch_hillgo_super_admin_panel/` (used purely to generate visual specs
+> `Hill Go Admin Panel/stitch_hillgo_super_admin_panel/` (used purely to generate visual specs
 > for new screens), not the shipped runtime. When implementing any screen
 > from this spec, wire it to `AppStore`/`store.js` exactly like the existing
 > screens — do not reintroduce `seed.js` or `localStorage` mock storage.

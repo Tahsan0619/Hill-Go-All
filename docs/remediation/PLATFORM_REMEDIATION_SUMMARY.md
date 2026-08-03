@@ -9,15 +9,17 @@
 
 | # | Component | Remediation file |
 |---|-----------|------------------|
-| 1 | Customer App | [`Hill Go Main Customer App/REMEDIATION_CUSTOMER_APP.md`](Hill%20Go%20Main%20Customer%20App/REMEDIATION_CUSTOMER_APP.md) |
-| 2 | Courier Agent App | [`Courier Agent App/REMEDIATION_COURIER_AGENT_APP.md`](Courier%20Agent%20App/REMEDIATION_COURIER_AGENT_APP.md) |
-| 3 | Rider/Driver App | [`Rider Driver App/REMEDIATION_RIDER_DRIVER_APP.md`](Rider%20Driver%20App/REMEDIATION_RIDER_DRIVER_APP.md) |
-| 4 | Vendor/Merchant App | [`Vendor Marchant App/REMEDIATION_VENDOR_MERCHANT_APP.md`](Vendor%20Marchant%20App/REMEDIATION_VENDOR_MERCHANT_APP.md) |
-| 5 | Admin Panel | [`Hill Go Admin Panel/REMEDIATION_ADMIN_PANEL.md`](Hill%20Go%20Admin%20Panel/REMEDIATION_ADMIN_PANEL.md) |
-| 6 | Public Web | [`Hill Go Public Web/REMEDIATION_PUBLIC_WEB.md`](Hill%20Go%20Public%20Web/REMEDIATION_PUBLIC_WEB.md) |
-| 7 | Backend + Database | [`hillgo-backend/REMEDIATION_BACKEND.md`](hillgo-backend/REMEDIATION_BACKEND.md) |
+| 1 | Customer App | [`REMEDIATION_CUSTOMER_APP.md`](REMEDIATION_CUSTOMER_APP.md) |
+| 2 | Courier Agent App | [`REMEDIATION_COURIER_AGENT_APP.md`](REMEDIATION_COURIER_AGENT_APP.md) |
+| 3 | Rider/Driver App | [`REMEDIATION_RIDER_DRIVER_APP.md`](REMEDIATION_RIDER_DRIVER_APP.md) |
+| 4 | Vendor/Merchant App | [`REMEDIATION_VENDOR_MERCHANT_APP.md`](REMEDIATION_VENDOR_MERCHANT_APP.md) |
+| 5 | Admin Panel | [`REMEDIATION_ADMIN_PANEL.md`](REMEDIATION_ADMIN_PANEL.md) |
+| 6 | Public Web | [`REMEDIATION_PUBLIC_WEB.md`](REMEDIATION_PUBLIC_WEB.md) |
+| 7 | Backend + Database | [`REMEDIATION_BACKEND.md`](REMEDIATION_BACKEND.md) |
 
 Out-of-checklist discoveries: [`NEW_FINDINGS.md`](NEW_FINDINGS.md)
+
+Technical audits (pre-remediation): [`../audits/technical/`](../audits/technical/)
 
 ---
 
@@ -64,7 +66,8 @@ Soft deletes extended; NID casts confirmed; wallet transactional ledger confirme
 1. `083b897` — Customer App checklist  
 2. `9d5da77` — Courier, Rider, Vendor Flutter apps  
 3. `f734901` — Admin Panel + Public Web  
-4. `efcb373` — Backend 7.1–7.4 + client unblocking (refresh / remediation doc updates)
+4. `efcb373` — Backend 7.1–7.4 + client unblocking  
+5. `452633a` — `PLATFORM_REMEDIATION_SUMMARY.md`
 
 ---
 

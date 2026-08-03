@@ -71,7 +71,7 @@ Build folders, platform scaffolding, `node_modules`, Composer vendor, and genera
 | **Hill Go Admin Panel** | Super-admin web SPA (`ui/`): live Laravel API client. Region Lock, KYC, pricing, payouts. |
 | **Hill Go Public Web** | Public marketing / web frontend for HillGo (Laravel `/api/public/*`). |
 | **Dist Apks** | Prebuilt **release APKs** for the four Flutter apps (also published on the GitHub **Releases** page). |
-| **frontend-security-audits** | Evidence-based frontend security audits + fix results (4 apps + 2 webs, storage E2E). |
+| **docs/** | All project documentation: technical audits, frontend-security audits, remediation reports, prompts, backend/production runbooks, architecture. See [`docs/README.md`](docs/README.md). |
 | **HillGo-Last.sql** / **hillgo-final.sql** | Database dumps for local restore. |
 
 ---
@@ -103,7 +103,7 @@ php artisan storage:link   # required so /storage/... media works
 php artisan serve --host=0.0.0.0 --port=8000
 ```
 
-See `PRODUCTION.md` for the full runbook. Storage E2E: `php scripts/e2e_storage_verify.php`.
+See [`docs/backend/PRODUCTION.md`](docs/backend/PRODUCTION.md) for the full runbook. Storage E2E: `php scripts/e2e_storage_verify.php`.
 
 ### Flutter apps
 
@@ -155,7 +155,7 @@ OTP demo flows often accept `1234` when configured for local demo phones.
 - Currency / ops framing is **Bangladesh (৳ BDT)**.
 - Do not commit `.env` — use `.env.example` / `.env.production.example`.
 - After clone, always run `php artisan storage:link` so public media URLs resolve.
-- Frontend security fix evidence: `frontend-security-audits/fix-results/`.
+- Docs index: [`docs/README.md`](docs/README.md). Frontend security evidence: [`docs/audits/frontend-security/fix-results/`](docs/audits/frontend-security/fix-results/).
 
 ---
 

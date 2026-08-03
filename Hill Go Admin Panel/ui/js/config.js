@@ -1,6 +1,6 @@
 /**
  * Runtime configuration. Extracted out of index.html so the page's CSP
- * script-src can drop 'unsafe-inline' (see REMEDIATION_ADMIN_PANEL.md #6).
+ * script-src can drop 'unsafe-inline' (see docs/remediation/REMEDIATION_ADMIN_PANEL.md #6).
  *
  * Production deployments should set these via a server-templated value
  * (or replace this file at deploy time) BEFORE store.js loads:
