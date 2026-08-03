@@ -50,8 +50,9 @@ Thumbs.db
 **/storage/framework/views/
 **/storage/pail/
 
-# Local DB dumps / backups (do not publish)
-hillgo_backup_before_fixes.sql
+# Local DB dumps / backups at repo root (tracked copies live under sql/)
+/hillgo_backup_before_fixes.sql
+!sql/hillgo_backup_before_fixes.sql
 **/bootstrap/cache/*.php
 
 # Logs / temp
