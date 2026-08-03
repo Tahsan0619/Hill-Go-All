@@ -108,9 +108,26 @@ class _ActivityScreenState extends State<ActivityScreen> {
                             onRefresh: driver.refreshHistory,
                             child: ListView.separated(
                               padding: const EdgeInsets.all(16),
-                              itemCount: driver.history.length,
+                              itemCount: driver.history.length + (driver.historyHasMore ? 1 : 0),
                               separatorBuilder: (_, __) => const SizedBox(height: 10),
                               itemBuilder: (_, i) {
+                                if (i >= driver.history.length) {
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 8),
+                                    child: Center(
+                                      child: driver.isLoadingMoreHistory
+                                          ? const SizedBox(
+                                              width: 24,
+                                              height: 24,
+                                              child: CircularProgressIndicator(strokeWidth: 2),
+                                            )
+                                          : TextButton(
+                                              onPressed: driver.loadMoreHistory,
+                                              child: const Text('Load more'),
+                                            ),
+                                    ),
+                                  );
+                                }
                                 final trip = driver.history[i];
                                 return _HistoryCard(trip: trip);
                               },

@@ -4,6 +4,7 @@ import '../../providers/earnings_provider.dart';
 import '../../theme/colors.dart';
 import '../../theme/spacing.dart';
 import '../../theme/text_styles.dart';
+import '../../utils/withdrawal_validator.dart';
 import '../../widgets/common_widgets.dart';
 
 class WithdrawScreen extends StatefulWidget {
@@ -42,34 +43,9 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
       messenger.showSnackBar(const SnackBar(content: Text('Balance is not available yet.')));
       return;
     }
-    if (entered <= 0) {
-      messenger.showSnackBar(const SnackBar(content: Text('Enter a valid amount.')));
-      return;
-    }
-    if (!payout.isVerified) {
-      messenger.showSnackBar(
-        const SnackBar(content: Text('Bank verification is required before withdrawing.')),
-      );
-      return;
-    }
-    if (entered < payout.withdrawalMin) {
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text(
-            'Minimum withdrawal is ৳${payout.withdrawalMin.toStringAsFixed(0)}.',
-          ),
-        ),
-      );
-      return;
-    }
-    if (entered > payout.balance) {
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text(
-            'Amount exceeds your available balance of ৳${payout.balance.toStringAsFixed(2)}.',
-          ),
-        ),
-      );
+    final validationError = validateWithdrawal(amount: entered, payout: payout);
+    if (validationError != null) {
+      messenger.showSnackBar(SnackBar(content: Text(validationError)));
       return;
     }
     final ok = await earnings.withdraw(amount: entered, method: _method);

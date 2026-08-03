@@ -1,9 +1,12 @@
 import '../models/order_model.dart';
+import '../models/paged_result.dart';
 import '../models/product_model.dart';
 import '../models/store_model.dart';
 
 abstract class OrderRepository {
-  Future<List<OrderModel>> getOrders();
+  /// Server-paginated order list (newest first). Callers accumulate pages
+  /// client-side via [PagedResult.hasMore] / [PagedResult.page].
+  Future<PagedResult<OrderModel>> getOrders({int page = 1});
   Future<OrderModel> getOrder(String id);
   Future<OrderModel> updateStatus(String id, OrderStatus status);
   Future<void> rejectOrder(String id, {String? reason});

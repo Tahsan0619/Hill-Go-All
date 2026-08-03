@@ -1,4 +1,5 @@
 import '../../models/order_model.dart';
+import '../../models/paged_result.dart';
 import '../repositories.dart';
 import 'api_client.dart';
 
@@ -8,14 +9,12 @@ class ApiOrderRepository implements OrderRepository {
   final ApiClient _api;
 
   @override
-  Future<List<OrderModel>> getOrders() async {
+  Future<PagedResult<OrderModel>> getOrders({int page = 1}) async {
     final response = await _api.get(
       '/merchant/orders',
-      query: {'per_page': '50'},
+      query: {'page': '$page', 'per_page': '50'},
     ) as Map<String, dynamic>;
-    return ((response['data'] as List?) ?? const [])
-        .map((o) => OrderModel.fromJson(o as Map<String, dynamic>))
-        .toList();
+    return PagedResult.parse(response, OrderModel.fromJson);
   }
 
   @override

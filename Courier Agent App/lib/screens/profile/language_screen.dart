@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/profile_provider.dart';
+import '../../services/locale_controller.dart';
 import '../../theme/colors.dart';
 import '../../theme/spacing.dart';
 import '../../widgets/common_widgets.dart';
@@ -30,7 +31,12 @@ class LanguageScreen extends StatelessWidget {
                     selected ? Icons.check_circle : Icons.circle_outlined,
                     color: selected ? AppColors.primary : AppColors.textMuted,
                   ),
-                  onTap: () => profile.updateLanguage(language.$1),
+                  onTap: () {
+                    profile.updateLanguage(language.$1);
+                    // Actually switches the app locale — not just a stored
+                    // preference — via MaterialApp.router's `locale`.
+                    context.read<LocaleController>().setFromLanguageCode(language.$1);
+                  },
                 );
               }).toList(),
             ),

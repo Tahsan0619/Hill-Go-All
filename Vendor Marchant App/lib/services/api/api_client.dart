@@ -1,9 +1,14 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart' show kIsWeb, kReleaseMode;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../utils/app_log.dart';
+import 'pinned_http.dart';
 
 /// Error thrown for any non-2xx API response, carrying the server message.
 class ApiException implements Exception {
@@ -25,11 +30,19 @@ class ApiException implements Exception {
 /// Persists the Sanctum bearer token in [FlutterSecureStorage] (with a
 /// one-time migration from SharedPreferences) and clears it automatically
 /// when the server responds with 401.
+///
+/// Transient network failures (timeouts, socket errors, client-level HTTP
+/// errors) are retried with exponential backoff, and requests are sent
+/// through [PinnedHttp] so release builds can pin the server's TLS
+/// certificate via `--dart-define=HILLGO_SSL_PINS`.
 class ApiClient {
   ApiClient({FlutterSecureStorage? secureStorage})
       : _secure = secureStorage ?? const FlutterSecureStorage();
 
   static const _tokenKey = 'hillgo_merchant_token';
+
+  /// Max attempts for transient network failures (1 initial + retries).
+  static const int maxAttempts = 3;
 
   static String get baseUrl {
     const fromEnv = String.fromEnvironment('HILLGO_API_BASE');
@@ -60,6 +73,7 @@ class ApiClient {
         await _secure.write(key: _tokenKey, value: legacy);
         await prefs.remove(_tokenKey);
         value = legacy;
+        AppLog.i('Migrated legacy token into secure storage', tag: 'ApiClient');
       }
     }
     _token = value;
@@ -68,6 +82,7 @@ class ApiClient {
   Future<void> saveToken(String token) async {
     _token = token;
     await _secure.write(key: _tokenKey, value: token);
+    AppLog.d('Token saved', tag: 'ApiClient');
   }
 
   Future<void> clearToken() async {
@@ -76,6 +91,7 @@ class ApiClient {
     // Also clear any leftover prefs copy from older builds.
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_tokenKey);
+    AppLog.i('Token cleared', tag: 'ApiClient');
   }
 
   /// Origin of the API server (base URL without the `/api` suffix), used to
@@ -105,32 +121,37 @@ class ApiClient {
         if (hasToken) 'Authorization': 'Bearer $token',
       };
 
-  Future<dynamic> get(String path, {Map<String, String>? query}) =>
-      _send(() => http.get(_uri(path, query), headers: _headers(json: false)));
+  Future<dynamic> get(String path, {Map<String, String>? query}) => _send(
+        () => PinnedHttp.client()
+            .get(_uri(path, query), headers: _headers(json: false)),
+      );
 
-  Future<dynamic> post(String path, [Map<String, dynamic>? body]) =>
-      _send(() => http.post(
-            _uri(path),
-            headers: _headers(),
-            body: jsonEncode(body ?? const {}),
-          ));
+  Future<dynamic> post(String path, [Map<String, dynamic>? body]) => _send(
+        () => PinnedHttp.client().post(
+          _uri(path),
+          headers: _headers(),
+          body: jsonEncode(body ?? const {}),
+        ),
+      );
 
-  Future<dynamic> patch(String path, [Map<String, dynamic>? body]) =>
-      _send(() => http.patch(
-            _uri(path),
-            headers: _headers(),
-            body: jsonEncode(body ?? const {}),
-          ));
+  Future<dynamic> patch(String path, [Map<String, dynamic>? body]) => _send(
+        () => PinnedHttp.client().patch(
+          _uri(path),
+          headers: _headers(),
+          body: jsonEncode(body ?? const {}),
+        ),
+      );
 
-  Future<dynamic> put(String path, [Map<String, dynamic>? body]) =>
-      _send(() => http.put(
-            _uri(path),
-            headers: _headers(),
-            body: jsonEncode(body ?? const {}),
-          ));
+  Future<dynamic> put(String path, [Map<String, dynamic>? body]) => _send(
+        () => PinnedHttp.client().put(
+          _uri(path),
+          headers: _headers(),
+          body: jsonEncode(body ?? const {}),
+        ),
+      );
 
   Future<dynamic> delete(String path) =>
-      _send(() => http.delete(_uri(path), headers: _headers()));
+      _send(() => PinnedHttp.client().delete(_uri(path), headers: _headers()));
 
   /// Sends a multipart request (default POST) with text [fields] and local
   /// [files] keyed by their form field name.
@@ -167,22 +188,58 @@ class ApiClient {
           await http.MultipartFile.fromPath(entry.key, entry.value),
         );
       }
-      final streamed = await request.send();
+      final streamed = await PinnedHttp.client().send(request);
       return http.Response.fromStream(streamed);
     });
   }
 
+  /// Executes [request], retrying transient network failures (timeouts,
+  /// socket errors, low-level HTTP client errors) with exponential backoff
+  /// before giving up. Non-2xx HTTP responses are not retried — they are
+  /// decoded and surfaced immediately via [ApiException].
   Future<dynamic> _send(Future<http.Response> Function() request) async {
-    http.Response response;
-    try {
-      response = await request();
-    } on http.ClientException catch (e) {
-      throw ApiException(0, 'Network error: ${e.message}');
-    } catch (e) {
-      if (e is ApiException) rethrow;
-      throw ApiException(0, 'Cannot reach the HillGo server. Check your connection.');
+    Object? lastError;
+    for (var attempt = 1; attempt <= maxAttempts; attempt++) {
+      http.Response response;
+      try {
+        response = await request().timeout(const Duration(seconds: 25));
+      } on TimeoutException catch (e) {
+        lastError = e;
+        AppLog.w('Timeout attempt $attempt/$maxAttempts', tag: 'ApiClient');
+        await _backoffIfNeeded(attempt);
+        continue;
+      } on SocketException catch (e) {
+        lastError = e;
+        AppLog.w('Socket error attempt $attempt/$maxAttempts',
+            tag: 'ApiClient', error: e);
+        await _backoffIfNeeded(attempt);
+        continue;
+      } on http.ClientException catch (e) {
+        lastError = e;
+        AppLog.w('Client error attempt $attempt/$maxAttempts',
+            tag: 'ApiClient', error: e);
+        await _backoffIfNeeded(attempt);
+        continue;
+      }
+      return _decodeResponse(response);
     }
 
+    AppLog.e('Giving up after $maxAttempts attempts',
+        tag: 'ApiClient', error: lastError);
+    if (lastError is TimeoutException) {
+      throw ApiException(0, 'Request timed out. Please try again.');
+    }
+    throw ApiException(
+        0, 'Cannot reach the HillGo server. Check your connection.');
+  }
+
+  Future<void> _backoffIfNeeded(int attempt) async {
+    if (attempt >= maxAttempts) return;
+    final delayMs = 300 * (1 << (attempt - 1)); // 300, 600
+    await Future<void>.delayed(Duration(milliseconds: delayMs));
+  }
+
+  Future<dynamic> _decodeResponse(http.Response response) async {
     dynamic body;
     if (response.body.isNotEmpty) {
       try {
@@ -197,6 +254,7 @@ class ApiClient {
     }
 
     if (response.statusCode == 401) {
+      AppLog.w('401 received — clearing token', tag: 'ApiClient');
       await clearToken();
     }
 

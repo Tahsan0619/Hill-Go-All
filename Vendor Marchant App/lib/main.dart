@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'providers/auth_provider.dart';
@@ -14,9 +15,27 @@ import 'services/api/api_order_repository.dart';
 import 'services/api/api_product_repository.dart';
 import 'services/api/api_store_repository.dart';
 import 'theme/app_theme.dart';
+import 'utils/app_log.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  const sentryDsn = String.fromEnvironment('SENTRY_DSN');
+  if (sentryDsn.isEmpty) {
+    AppLog.i('Sentry skipped — SENTRY_DSN not set', tag: 'Sentry');
+    await _bootstrap();
+    return;
+  }
+
+  await SentryFlutter.init(
+    (options) {
+      options.dsn = sentryDsn;
+    },
+    appRunner: _bootstrap,
+  );
+}
+
+Future<void> _bootstrap() async {
   final prefs = await SharedPreferences.getInstance();
 
   final api = ApiClient();

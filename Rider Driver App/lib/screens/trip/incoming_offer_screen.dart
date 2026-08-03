@@ -28,6 +28,11 @@ class _IncomingOfferScreenState extends State<IncomingOfferScreen> {
   int _remaining = _acceptSeconds;
   String? _offerId;
 
+  /// Client-side guard against double-accept/double-decline from rapid
+  /// repeat taps — disables both buttons the instant one is pressed, ahead
+  /// of the provider's own `isLoading` rebuild.
+  bool _isResponding = false;
+
   @override
   void initState() {
     super.initState();
@@ -356,11 +361,14 @@ class _IncomingOfferScreenState extends State<IncomingOfferScreen> {
                           child: SizedBox(
                             height: 52,
                             child: ElevatedButton(
-                              onPressed: driver.isLoading
+                              onPressed: (driver.isLoading || _isResponding)
                                   ? null
                                   : () async {
+                                      setState(() => _isResponding = true);
                                       _timer?.cancel();
                                       await driver.declineOffer();
+                                      if (!mounted) return;
+                                      setState(() => _isResponding = false);
                                       if (context.mounted) context.go('/home');
                                     },
                               style: ElevatedButton.styleFrom(
@@ -388,19 +396,24 @@ class _IncomingOfferScreenState extends State<IncomingOfferScreen> {
                           child: AccentButton(
                             label: 'ACCEPT',
                             icon: Icons.check,
-                            loading: driver.isLoading,
-                            onPressed: () async {
-                              _timer?.cancel();
-                              final ok = await driver.acceptOffer();
-                              if (!context.mounted) return;
-                              if (ok) {
-                                context.go('/trip/navigation');
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text(driver.error ?? 'Could not accept')),
-                                );
-                              }
-                            },
+                            loading: driver.isLoading || _isResponding,
+                            onPressed: (driver.isLoading || _isResponding)
+                                ? null
+                                : () async {
+                                    setState(() => _isResponding = true);
+                                    _timer?.cancel();
+                                    final ok = await driver.acceptOffer();
+                                    if (!mounted) return;
+                                    setState(() => _isResponding = false);
+                                    if (!context.mounted) return;
+                                    if (ok) {
+                                      context.go('/trip/navigation');
+                                    } else {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text(driver.error ?? 'Could not accept')),
+                                      );
+                                    }
+                                  },
                           ),
                         ),
                       ],

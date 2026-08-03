@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -10,6 +12,9 @@ import '../../theme/spacing.dart';
 import '../../theme/text_styles.dart';
 import '../../widgets/common_widgets.dart';
 
+/// How often the orders tab silently re-polls for live updates while open.
+const _liveOrdersPollInterval = Duration(seconds: 8);
+
 class OrdersScreen extends StatefulWidget {
   const OrdersScreen({super.key});
 
@@ -20,6 +25,7 @@ class OrdersScreen extends StatefulWidget {
 class _OrdersScreenState extends State<OrdersScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabs;
+  Timer? _pollTimer;
 
   @override
   void initState() {
@@ -28,10 +34,17 @@ class _OrdersScreenState extends State<OrdersScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<OrdersProvider>().load();
     });
+    // Live order updates while this screen is open; pull-to-refresh still
+    // works independently. Cancelled in dispose to avoid leaking timers.
+    _pollTimer = Timer.periodic(_liveOrdersPollInterval, (_) {
+      if (!mounted) return;
+      context.read<OrdersProvider>().refreshSilently();
+    });
   }
 
   @override
   void dispose() {
+    _pollTimer?.cancel();
     _tabs.dispose();
     super.dispose();
   }
@@ -523,7 +536,6 @@ class _HistoryTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<OrdersProvider>();
-    final visible = provider.visibleHistory;
     final all = provider.deliveredOrders;
     final rated = all.where((o) => o.rating != null).toList();
     final avgRating = rated.isEmpty
@@ -585,21 +597,27 @@ class _HistoryTab extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        if (visible.isEmpty)
+        if (all.isEmpty)
           const EmptyView(message: 'No delivered orders found.')
         else
-          ...visible.map((o) => _HistoryCard(order: o)),
-        if (visible.length < all.length) ...[
+          ...all.map((o) => _HistoryCard(order: o)),
+        if (provider.hasMoreHistory) ...[
           const SizedBox(height: 8),
           OutlinedButton(
-            onPressed: provider.loadMoreHistory,
+            onPressed: provider.isLoadingMore ? null : provider.loadMoreHistory,
             style: OutlinedButton.styleFrom(
               side: const BorderSide(
                 color: AppColors.cardBorder,
                 style: BorderStyle.solid,
               ),
             ),
-            child: const Text('Load Older Orders'),
+            child: provider.isLoadingMore
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Text('Load Older Orders'),
           ),
         ],
       ],

@@ -81,8 +81,18 @@ abstract class ProfileRepository {
   Future<bool> setPresence(bool online);
 }
 
+/// A page of notification results, mirroring [ParcelHistoryPage] so
+/// `GET /courier/notifications` can be paginated the same way as
+/// `GET /courier/parcels/history`.
+class NotificationPage {
+  const NotificationPage({required this.items, required this.total});
+
+  final List<AppNotification> items;
+  final int total;
+}
+
 abstract class NotificationRepository {
-  Future<List<AppNotification>> getNotifications();
+  Future<NotificationPage> getNotifications({int page = 1});
   Future<void> markRead(String id);
   Future<void> markAllRead();
 }

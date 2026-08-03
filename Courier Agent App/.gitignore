@@ -1,3 +1,7 @@
+# Environment variables (API base URL, SSL pins, Sentry DSN, etc.)
+.env
+.env.*
+
 # Miscellaneous
 *.class
 *.log

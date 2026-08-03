@@ -1,4 +1,5 @@
 import '../../models/models.dart';
+import '../../models/paged_result.dart';
 import '../trip_repository.dart';
 import 'api_client.dart';
 
@@ -29,15 +30,18 @@ class ApiTripRepository implements TripRepository {
   }
 
   @override
-  Future<List<Trip>> getTripHistory({String query = '', String filter = 'all'}) async {
+  Future<PagedResult<Trip>> getTripHistory({
+    String query = '',
+    String filter = 'all',
+    int page = 1,
+  }) async {
     final json = await _client.get('/rider/trips', query: {
       'filter': filter,
       'per_page': '50',
+      'page': '$page',
       if (query.trim().isNotEmpty) 'q': query.trim(),
     }) as Map<String, dynamic>;
-    return (json['data'] as List<dynamic>)
-        .map((t) => _mapTrip(t as Map<String, dynamic>))
-        .toList();
+    return PagedResult.parse(json, (t) => _mapTrip(t));
   }
 
   @override

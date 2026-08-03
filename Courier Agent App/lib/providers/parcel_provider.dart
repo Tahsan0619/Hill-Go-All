@@ -3,6 +3,7 @@ import '../models/earnings_model.dart';
 import '../models/parcel_model.dart';
 import '../services/api/api_client.dart';
 import '../services/repositories.dart';
+import '../utils/parcel_transitions.dart';
 
 enum LoadState { idle, loading, error, success }
 
@@ -47,6 +48,24 @@ class ParcelProvider extends ChangeNotifier {
       assignedState = LoadState.error;
     }
     notifyListeners();
+  }
+
+  /// Re-fetches assigned parcels + dashboard stats without flipping
+  /// [assignedState] to `loading`, so the periodic dashboard poll
+  /// (`DashboardScreen`'s `Timer.periodic`) doesn't flash a loading state
+  /// over content the courier is already viewing. Failures are swallowed —
+  /// the existing data stays on screen and the next tick tries again.
+  Future<void> refreshDashboardSilently() async {
+    try {
+      final newAssigned = await _parcelRepo.getAssignedParcels();
+      final newStats = await _earningsRepo.getDashboardStats();
+      assigned = newAssigned;
+      dashboardStats = newStats;
+      notifyListeners();
+    } catch (_) {
+      // Silent by design; the manual retry / pull-to-refresh path still
+      // surfaces errors via loadDashboard().
+    }
   }
 
   /// Seeds the presence toggle from the server-side profile state.
@@ -160,21 +179,30 @@ class ParcelProvider extends ChangeNotifier {
   }
 
   Future<bool> confirmPickup(String otp) => _transition(() async {
+    if (!ParcelTransitions.canConfirmPickup(selected!.status)) {
+      throw Exception('This parcel is not awaiting pickup.');
+    }
     selected = await _parcelRepo.confirmPickupOtp(selected!.id, otp);
   });
 
   Future<bool> confirmDelivery(String otp) => _transition(() async {
+    if (!ParcelTransitions.canConfirmDelivery(selected!.status)) {
+      throw Exception('This parcel is not out for delivery.');
+    }
     selected = await _parcelRepo.confirmDeliveryOtp(selected!.id, otp);
   });
 
   Future<bool> markFailed(String reason) => _transition(() async {
+    if (!ParcelTransitions.canMarkFailed(selected!.status)) {
+      throw Exception('This parcel is already finished.');
+    }
     selected = await _parcelRepo.markFailed(selected!.id, reason);
   });
 
   /// Moves a picked-up parcel to in-transit; a no-op for other statuses.
   Future<void> startTransitIfNeeded() async {
     final parcel = selected;
-    if (parcel == null || parcel.status != ParcelStatus.pickedUp) return;
+    if (parcel == null || !ParcelTransitions.canStartTransit(parcel.status)) return;
     if (!canAccessParcel(parcel.id)) {
       error = _accessDeniedMessage;
       notifyListeners();

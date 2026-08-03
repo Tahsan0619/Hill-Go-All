@@ -49,27 +49,53 @@ class ApiParcelRepository implements ParcelRepository {
   Future<ParcelModel> getParcelById(String id) async =>
       ParcelModel.fromJson(await _api.get('/courier/parcels/$id') as Map<String, dynamic>);
 
+  // Every status-transition write below sends a client-generated
+  // `Idempotency-Key` so a duplicate submit (e.g. a retried request from
+  // ApiClient's backoff, or a double-tap) can be deduped once the backend
+  // implements it. See item 7 of REMEDIATION_COURIER_AGENT_APP.md — the
+  // backend does not yet honor this header, so this is client wiring only.
+
   @override
   Future<ParcelModel> confirmPickupOtp(String parcelId, String otp) async => ParcelModel.fromJson(
-    await _api.post('/courier/parcels/$parcelId/pickup-otp', body: {'otp': otp}) as Map<String, dynamic>,
+    await _api.post(
+      '/courier/parcels/$parcelId/pickup-otp',
+      body: {'otp': otp},
+      idempotencyKey: ApiClient.newIdempotencyKey(),
+    ) as Map<String, dynamic>,
   );
 
   @override
   Future<ParcelModel> startTransit(String parcelId) async => ParcelModel.fromJson(
-    await _api.post('/courier/parcels/$parcelId/start-transit') as Map<String, dynamic>,
+    await _api.post(
+      '/courier/parcels/$parcelId/start-transit',
+      idempotencyKey: ApiClient.newIdempotencyKey(),
+    ) as Map<String, dynamic>,
   );
 
   @override
   Future<ParcelModel> confirmDeliveryOtp(String parcelId, String otp) async => ParcelModel.fromJson(
-    await _api.post('/courier/parcels/$parcelId/delivery-otp', body: {'otp': otp}) as Map<String, dynamic>,
+    await _api.post(
+      '/courier/parcels/$parcelId/delivery-otp',
+      body: {'otp': otp},
+      idempotencyKey: ApiClient.newIdempotencyKey(),
+    ) as Map<String, dynamic>,
   );
 
   @override
   Future<ParcelModel> markFailed(String parcelId, String reason) async => ParcelModel.fromJson(
-    await _api.post('/courier/parcels/$parcelId/fail', body: {'reason': reason}) as Map<String, dynamic>,
+    await _api.post(
+      '/courier/parcels/$parcelId/fail',
+      body: {'reason': reason},
+      idempotencyKey: ApiClient.newIdempotencyKey(),
+    ) as Map<String, dynamic>,
   );
 
   @override
   Future<void> uploadProof(String parcelId, {required String type, required String filePath}) =>
-      _api.multipart('/courier/parcels/$parcelId/proof', filePath: filePath, fields: {'type': type});
+      _api.multipart(
+        '/courier/parcels/$parcelId/proof',
+        filePath: filePath,
+        fields: {'type': type},
+        idempotencyKey: ApiClient.newIdempotencyKey(),
+      );
 }

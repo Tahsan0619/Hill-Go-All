@@ -26,6 +26,12 @@ class ProfileProvider extends ChangeNotifier {
   double todayEarnings = 0;
   double balance = 0;
 
+  int _notificationsPage = 1;
+  int notificationsTotal = 0;
+  bool loadingMoreNotifications = false;
+
+  bool get hasMoreNotifications => notifications.length < notificationsTotal;
+
   Future<void> load() async {
     loading = true;
     error = null;
@@ -48,15 +54,37 @@ class ProfileProvider extends ChangeNotifier {
   Future<void> loadNotifications() async {
     loading = true;
     error = null;
+    _notificationsPage = 1;
     notifyListeners();
     try {
-      notifications = await _notifRepo.getNotifications();
+      final page = await _notifRepo.getNotifications(page: _notificationsPage);
+      notifications = page.items;
+      notificationsTotal = page.total;
       loading = false;
     } catch (e) {
       error = e.toString().replaceFirst('Exception: ', '');
       loading = false;
     }
     notifyListeners();
+  }
+
+  /// Appends the next page of notifications (`GET /courier/notifications`),
+  /// matching the load-more pattern used for parcel history.
+  Future<void> loadMoreNotifications() async {
+    if (loadingMoreNotifications || !hasMoreNotifications) return;
+    loadingMoreNotifications = true;
+    notifyListeners();
+    try {
+      final page = await _notifRepo.getNotifications(page: _notificationsPage + 1);
+      _notificationsPage += 1;
+      notifications = [...notifications, ...page.items];
+      notificationsTotal = page.total;
+    } catch (e) {
+      error = e.toString().replaceFirst('Exception: ', '');
+    } finally {
+      loadingMoreNotifications = false;
+      notifyListeners();
+    }
   }
 
   Future<void> loadDocuments() async {

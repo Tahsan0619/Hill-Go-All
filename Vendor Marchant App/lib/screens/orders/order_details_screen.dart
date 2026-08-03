@@ -19,12 +19,34 @@ class OrderDetailsScreen extends StatefulWidget {
 }
 
 class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
+  bool _fetchingSingle = false;
+  String? _fetchError;
+
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final p = context.read<OrdersProvider>();
-      if (p.orders.isEmpty) p.load();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _ensureOrderLoaded());
+  }
+
+  /// Loads the order list if empty, then — if the requested order still
+  /// isn't present (e.g. a deep link or cold app start straight into order
+  /// details, where the order may be on a page not yet fetched) — fetches
+  /// it directly via [OrdersProvider.fetchOrder] instead of relying solely
+  /// on the in-memory list.
+  Future<void> _ensureOrderLoaded() async {
+    final p = context.read<OrdersProvider>();
+    if (p.orders.isEmpty) {
+      await p.load();
+    }
+    if (!mounted) return;
+    if (p.findById(widget.orderId) != null) return;
+
+    setState(() => _fetchingSingle = true);
+    final order = await p.fetchOrder(widget.orderId);
+    if (!mounted) return;
+    setState(() {
+      _fetchingSingle = false;
+      _fetchError = order == null ? (p.error ?? 'Order not found') : null;
     });
   }
 
@@ -48,14 +70,14 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     final provider = context.watch<OrdersProvider>();
     final order = provider.findById(widget.orderId);
 
-    if (provider.isLoading && order == null) {
+    if ((provider.isLoading || _fetchingSingle) && order == null) {
       return const Scaffold(body: LoadingView());
     }
     if (order == null) {
       return Scaffold(
         appBar: AppBar(title: const Text('Order')),
         body: ErrorView(
-          message: 'Order not found',
+          message: _fetchError ?? 'Order not found',
           onRetry: () => context.pop(),
         ),
       );

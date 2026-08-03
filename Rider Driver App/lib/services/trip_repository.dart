@@ -1,8 +1,16 @@
 import '../models/models.dart';
+import '../models/paged_result.dart';
 
 abstract class TripRepository {
   Future<EarningsSummary> getEarnings();
-  Future<List<Trip>> getTripHistory({String query = '', String filter = 'all'});
+
+  /// [page] is 1-indexed. Callers accumulate [PagedResult.items] across
+  /// pages while [PagedResult.hasMore] is true to implement load-more.
+  Future<PagedResult<Trip>> getTripHistory({
+    String query = '',
+    String filter = 'all',
+    int page = 1,
+  });
   Future<Trip?> getTripById(String id);
   Future<Trip?> getActiveTrip();
   Future<Trip?> getIncomingOffer();

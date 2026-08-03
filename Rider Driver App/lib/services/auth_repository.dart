@@ -28,6 +28,11 @@ abstract class AuthRepository {
     required String nid,
   });
   Future<List<DistrictOption>> getDistricts();
+
+  /// Forces the next [getDistricts] call to re-fetch instead of serving the
+  /// cached list (e.g. on pull-to-refresh or once the TTL should be
+  /// bypassed, such as right after a fresh login).
+  void invalidateDistrictsCache();
   Future<void> completeOnboarding();
   Future<void> setOnboardingStep(OnboardingStep step);
 }

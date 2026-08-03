@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -23,17 +25,39 @@ class _DashboardScreenState extends State<DashboardScreen> {
   // Rangamati, the heart of HillGo's coverage area — used until a parcel
   // provides real coordinates.
   static const _fallbackCenter = LatLng(22.6533, 92.1789);
+  static const _refreshInterval = Duration(seconds: 5);
+
+  Timer? _refreshTimer;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
       final user = context.read<AuthProvider>().user;
       final provider = context.read<ParcelProvider>();
       if (user != null) provider.syncOnline(user.online);
-      provider.loadDashboard();
+      await provider.loadDashboard();
+      if (!mounted) return;
+      _startAutoRefresh();
     });
+  }
+
+  /// Keeps assigned parcels + stats fresh while the dashboard is on screen,
+  /// matching the Rider Driver App's offer-polling pattern
+  /// (`HomeDashboardScreen`'s `Timer.periodic`, ~5s). Cancelled in [dispose].
+  void _startAutoRefresh() {
+    _refreshTimer?.cancel();
+    _refreshTimer = Timer.periodic(_refreshInterval, (_) {
+      if (!mounted) return;
+      context.read<ParcelProvider>().refreshDashboardSilently();
+    });
+  }
+
+  @override
+  void dispose() {
+    _refreshTimer?.cancel();
+    super.dispose();
   }
 
   Future<void> _toggleOnline(bool value) async {

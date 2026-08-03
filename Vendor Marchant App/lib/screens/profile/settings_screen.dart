@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/auth_provider.dart';
@@ -224,9 +225,15 @@ class SettingsScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Center(
-            child: Text(
-              'Version 2.4.1 (HillGo-Production)',
-              style: AppTextStyles.caption,
+            child: FutureBuilder<PackageInfo>(
+              future: PackageInfo.fromPlatform(),
+              builder: (context, snapshot) {
+                final info = snapshot.data;
+                final label = info != null
+                    ? 'Version ${info.version} (${info.buildNumber})'
+                    : 'Version —';
+                return Text(label, style: AppTextStyles.caption);
+              },
             ),
           ),
         ],

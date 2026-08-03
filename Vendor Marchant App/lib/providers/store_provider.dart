@@ -87,10 +87,21 @@ class StoreProvider extends ChangeNotifier {
     }
 
     try {
-      reviews = await _repo.getReviews();
-      payouts = await _repo.getPayouts();
-      transactions = await _repo.getTransactions();
-      revenueSummary = await _repo.getRevenueSummary();
+      // These four calls are independent of one another, so fetch them
+      // concurrently instead of chaining sequential awaits. getRevenueTrend
+      // depends on the trend cache populated by getRevenueSummary, so it
+      // stays after the batch resolves (avoids both a race and an extra
+      // network round-trip inside the repository).
+      final results = await Future.wait([
+        _repo.getReviews(),
+        _repo.getPayouts(),
+        _repo.getTransactions(),
+        _repo.getRevenueSummary(),
+      ]);
+      reviews = results[0] as List<ReviewModel>;
+      payouts = results[1] as List<PayoutModel>;
+      transactions = results[2] as List<TransactionModel>;
+      revenueSummary = results[3] as Map<String, dynamic>;
       revenueTrend = await _repo.getRevenueTrend(trendPeriod);
     } catch (e) {
       error = e.toString();

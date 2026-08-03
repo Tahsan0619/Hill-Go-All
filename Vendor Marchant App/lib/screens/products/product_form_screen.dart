@@ -10,6 +10,7 @@ import '../../providers/products_provider.dart';
 import '../../services/api/api_client.dart';
 import '../../theme/colors.dart';
 import '../../theme/text_styles.dart';
+import '../../utils/product_validators.dart';
 import '../../widgets/common_widgets.dart';
 
 class _PickedImage {
@@ -286,8 +287,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                   TextFormField(
                     controller: _name,
                     decoration: const InputDecoration(),
-                    validator: (v) =>
-                        (v == null || v.trim().isEmpty) ? 'Required' : null,
+                    validator: ProductValidators.required,
                   ),
                   const SizedBox(height: 12),
                   Text('Description',
@@ -298,8 +298,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                     controller: _desc,
                     maxLines: 3,
                     decoration: const InputDecoration(),
-                    validator: (v) =>
-                        (v == null || v.trim().isEmpty) ? 'Required' : null,
+                    validator: ProductValidators.required,
                   ),
                   const SizedBox(height: 12),
                   Text('Category', style: AppTextStyles.label),
@@ -319,15 +318,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                     keyboardType:
                         const TextInputType.numberWithOptions(decimal: true),
                     decoration: const InputDecoration(prefixText: '৳ '),
-                    validator: (v) {
-                      if (v == null || v.trim().isEmpty) return 'Required';
-                      final price = double.tryParse(v.trim());
-                      if (price == null) return 'Invalid price';
-                      if (price < 0 || price > 1e7) {
-                        return 'Price must be between 0 and 10,000,000';
-                      }
-                      return null;
-                    },
+                    validator: ProductValidators.price,
                   ),
                 ],
               ),
@@ -349,8 +340,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                   TextFormField(
                     controller: _sku,
                     decoration: const InputDecoration(),
-                    validator: (v) =>
-                        (v == null || v.trim().isEmpty) ? 'Required' : null,
+                    validator: ProductValidators.required,
                   ),
                   const SizedBox(height: 12),
                   Text('Current Stock', style: AppTextStyles.label),

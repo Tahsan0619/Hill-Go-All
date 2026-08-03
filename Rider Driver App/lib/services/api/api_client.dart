@@ -1,14 +1,23 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../utils/app_log.dart';
+import 'pinned_http.dart';
+
 /// Error thrown for any non-2xx HillGo API response.
 ///
 /// [message] carries the server `message` (or the first validation error),
 /// [errors] the flattened Laravel validation errors keyed by field.
+///
+/// [statusCode] is `0` for transport-level failures (timeout / no
+/// connection) that exhausted all retry attempts before a response was ever
+/// received.
 class ApiException implements Exception {
   ApiException(this.statusCode, this.message, {this.errors});
 
@@ -24,12 +33,17 @@ class ApiException implements Exception {
 
 /// Thin JSON + multipart HTTP client for the HillGo Laravel backend.
 ///
-/// Persists the Sanctum bearer token in [FlutterSecureStorage] (with a one-time
-/// migration from legacy SharedPreferences) and clears it automatically when
-/// the server responds 401.
+/// - Persists the Sanctum bearer token in [FlutterSecureStorage] (with a
+///   one-time migration from legacy SharedPreferences) and clears it
+///   automatically when the server responds 401.
+/// - Routes every request through [PinnedHttp] so release builds can pin the
+///   backend's TLS certificate via `--dart-define=HILLGO_SSL_PINS`.
+/// - Retries transient network failures (timeout / socket / client errors)
+///   up to [maxAttempts] times with exponential backoff before surfacing an
+///   [ApiException] to the caller (e.g. before an `ErrorView` is shown).
 class ApiClient {
   ApiClient({http.Client? httpClient, FlutterSecureStorage? secureStorage})
-      : _http = httpClient ?? http.Client(),
+      : _http = httpClient ?? PinnedHttp.client(),
         _secure = secureStorage ?? const FlutterSecureStorage();
 
   /// Release builds require `--dart-define=HILLGO_API_BASE=...`.
@@ -44,6 +58,9 @@ class ApiClient {
   }
 
   static const String _tokenKey = 'hillgo_rider_token';
+
+  /// Max attempts for transient network failures (1 initial + retries).
+  static const int maxAttempts = 3;
 
   final FlutterSecureStorage _secure;
   final http.Client _http;
@@ -66,6 +83,7 @@ class ApiClient {
         await _secure.write(key: _tokenKey, value: legacy);
         await prefs.remove(_tokenKey);
         value = legacy;
+        AppLog.i('Migrated legacy token into secure storage', tag: 'ApiClient');
       }
     }
     _token = (value != null && value.isNotEmpty) ? value : null;
@@ -74,6 +92,7 @@ class ApiClient {
   Future<void> saveToken(String value) async {
     _token = value;
     await _secure.write(key: _tokenKey, value: value);
+    AppLog.d('Token saved', tag: 'ApiClient');
   }
 
   Future<void> clearToken() async {
@@ -81,6 +100,7 @@ class ApiClient {
     await _secure.delete(key: _tokenKey);
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_tokenKey);
+    AppLog.i('Token cleared', tag: 'ApiClient');
   }
 
   Uri _uri(String path, [Map<String, String>? query]) {
@@ -98,42 +118,35 @@ class ApiClient {
   }
 
   Future<dynamic> get(String path, {Map<String, String>? query}) async {
-    final res = await _http.get(_uri(path, query), headers: _headers(json: false));
+    final res = await _sendWithRetry(
+      () => http.Request('GET', _uri(path, query))..headers.addAll(_headers(json: false)),
+    );
     return _decode(res);
   }
 
   Future<dynamic> post(String path, {Object? body}) async {
-    final res = await _http.post(
-      _uri(path),
-      headers: _headers(),
-      body: jsonEncode(body ?? const {}),
+    final res = await _sendWithRetry(
+      () => http.Request('POST', _uri(path))
+        ..headers.addAll(_headers())
+        ..body = jsonEncode(body ?? const {}),
     );
     return _decode(res);
   }
 
   Future<dynamic> patch(String path, {Object? body}) async {
-    final res = await _http.patch(
-      _uri(path),
-      headers: _headers(),
-      body: jsonEncode(body ?? const {}),
+    final res = await _sendWithRetry(
+      () => http.Request('PATCH', _uri(path))
+        ..headers.addAll(_headers())
+        ..body = jsonEncode(body ?? const {}),
     );
     return _decode(res);
   }
 
   Future<dynamic> put(String path, {Object? body}) async {
-    final res = await _http.put(
-      _uri(path),
-      headers: _headers(),
-      body: jsonEncode(body ?? const {}),
-    );
-    return _decode(res);
-  }
-
-  Future<dynamic> delete(String path, {Object? body}) async {
-    final res = await _http.delete(
-      _uri(path),
-      headers: _headers(),
-      body: jsonEncode(body ?? const {}),
+    final res = await _sendWithRetry(
+      () => http.Request('PUT', _uri(path))
+        ..headers.addAll(_headers())
+        ..body = jsonEncode(body ?? const {}),
     );
     return _decode(res);
   }
@@ -144,15 +157,62 @@ class ApiClient {
     Map<String, String> fields = const {},
     Map<String, String> files = const {},
   }) async {
-    final request = http.MultipartRequest('POST', _uri(path))
-      ..headers.addAll(_headers(json: false))
-      ..fields.addAll(fields);
-    for (final entry in files.entries) {
-      request.files.add(await http.MultipartFile.fromPath(entry.key, entry.value));
-    }
-    final streamed = await _http.send(request);
-    final res = await http.Response.fromStream(streamed);
+    final res = await _sendWithRetry(() async {
+      final request = http.MultipartRequest('POST', _uri(path))
+        ..headers.addAll(_headers(json: false))
+        ..fields.addAll(fields);
+      for (final entry in files.entries) {
+        request.files.add(await http.MultipartFile.fromPath(entry.key, entry.value));
+      }
+      return request;
+    });
     return _decode(res);
+  }
+
+  /// Sends the request built by [buildRequest], retrying transient network
+  /// failures (timeout / socket / client errors) up to [maxAttempts] times
+  /// with exponential backoff (300ms, 600ms, …) before giving up.
+  ///
+  /// [buildRequest] is invoked fresh on every attempt so multipart file
+  /// streams (which can only be read once) are rebuilt for each retry.
+  Future<http.Response> _sendWithRetry(
+    FutureOr<http.BaseRequest> Function() buildRequest,
+  ) async {
+    Object? lastError;
+    String method = 'REQUEST';
+    String path = '';
+    for (var attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        final request = await buildRequest();
+        method = request.method;
+        path = request.url.path;
+        final streamed = await _http.send(request).timeout(const Duration(seconds: 25));
+        return await http.Response.fromStream(streamed);
+      } on TimeoutException catch (e) {
+        lastError = e;
+        AppLog.w('Timeout attempt $attempt/$maxAttempts for $method $path', tag: 'ApiClient');
+      } on SocketException catch (e) {
+        lastError = e;
+        AppLog.w('Socket error attempt $attempt/$maxAttempts for $method $path',
+            tag: 'ApiClient', error: e);
+      } on http.ClientException catch (e) {
+        lastError = e;
+        AppLog.w('Client error attempt $attempt/$maxAttempts for $method $path',
+            tag: 'ApiClient', error: e);
+      }
+
+      if (attempt < maxAttempts) {
+        final delayMs = 300 * (1 << (attempt - 1)); // 300, 600
+        await Future<void>.delayed(Duration(milliseconds: delayMs));
+      }
+    }
+
+    AppLog.e('Giving up after $maxAttempts attempts for $method $path',
+        tag: 'ApiClient', error: lastError);
+    if (lastError is TimeoutException) {
+      throw ApiException(0, 'Request timed out. Please try again.');
+    }
+    throw ApiException(0, 'Could not reach the server. Check your connection.');
   }
 
   Future<dynamic> _decode(http.Response res) async {
@@ -170,6 +230,7 @@ class ApiClient {
     }
 
     if (res.statusCode == 401) {
+      AppLog.w('401 received — clearing token', tag: 'ApiClient');
       await clearToken();
     }
 

@@ -8,6 +8,10 @@ class ApiAuthRepository implements AuthRepository {
 
   final ApiClient _client;
   List<DistrictOption>? _districtsCache;
+  DateTime? _districtsCachedAt;
+
+  /// Districts change rarely (region-lock rollout); refetch at most hourly.
+  static const Duration _districtsTtl = Duration(hours: 1);
 
   /// Normalizes any user-entered BD number to the +880XXXXXXXXXX form so
   /// registration and OTP login always address the same account.
@@ -41,6 +45,7 @@ class ApiAuthRepository implements AuthRepository {
       'password': password,
     }) as Map<String, dynamic>;
     await _client.saveToken(json['token'] as String);
+    invalidateDistrictsCache();
     return DriverUser.fromJson(json['user'] as Map<String, dynamic>);
   }
 
@@ -58,6 +63,7 @@ class ApiAuthRepository implements AuthRepository {
       'otp': code.trim(),
     }) as Map<String, dynamic>;
     await _client.saveToken(json['token'] as String);
+    invalidateDistrictsCache();
     return DriverUser.fromJson(json['user'] as Map<String, dynamic>);
   }
 
@@ -75,6 +81,7 @@ class ApiAuthRepository implements AuthRepository {
       'password': password,
     }) as Map<String, dynamic>;
     await _client.saveToken(json['token'] as String);
+    invalidateDistrictsCache();
     return DriverUser.fromJson(json['user'] as Map<String, dynamic>);
   }
 
@@ -148,12 +155,25 @@ class ApiAuthRepository implements AuthRepository {
 
   @override
   Future<List<DistrictOption>> getDistricts() async {
-    if (_districtsCache != null) return _districtsCache!;
+    final cache = _districtsCache;
+    final cachedAt = _districtsCachedAt;
+    final isFresh = cache != null &&
+        cachedAt != null &&
+        DateTime.now().difference(cachedAt) < _districtsTtl;
+    if (isFresh) return cache;
+
     final json = await _client.get('/public/districts') as List<dynamic>;
     _districtsCache = json
         .map((d) => DistrictOption.fromJson(d as Map<String, dynamic>))
         .toList();
+    _districtsCachedAt = DateTime.now();
     return _districtsCache!;
+  }
+
+  @override
+  void invalidateDistrictsCache() {
+    _districtsCache = null;
+    _districtsCachedAt = null;
   }
 
   @override

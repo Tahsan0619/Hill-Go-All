@@ -11,20 +11,26 @@ class OrdersProvider extends ChangeNotifier {
 
   List<OrderModel> orders = [];
   bool isLoading = false;
+  bool isLoadingMore = false;
   bool isActing = false;
   String? error;
   String searchQuery = '';
   String newFilter = 'All New'; // All New | Priority | Express
   DateTime? historyFrom;
   DateTime? historyTo;
-  int historyVisible = 3;
+
+  int _page = 1;
+  bool hasMoreHistory = false;
 
   Future<void> load() async {
     isLoading = true;
     error = null;
     notifyListeners();
     try {
-      orders = await _repo.getOrders();
+      final result = await _repo.getOrders(page: 1);
+      orders = result.items;
+      _page = result.page;
+      hasMoreHistory = result.hasMore;
       isLoading = false;
       notifyListeners();
     } catch (e) {
@@ -32,6 +38,63 @@ class OrdersProvider extends ChangeNotifier {
       isLoading = false;
       notifyListeners();
     }
+  }
+
+  /// Reloads page 1 in the background (e.g. for live-update polling) without
+  /// toggling [isLoading], so it doesn't disrupt whatever the user is doing.
+  /// Failures are swallowed — pull-to-refresh / manual [load] remain available.
+  Future<void> refreshSilently() async {
+    try {
+      final result = await _repo.getOrders(page: 1);
+      orders = result.items;
+      _page = result.page;
+      hasMoreHistory = result.hasMore;
+      error = null;
+      notifyListeners();
+    } catch (_) {
+      // Silent: a background poll failing shouldn't surface an error banner.
+    }
+  }
+
+  /// Fetches a single order from the server (used when opening an order
+  /// that isn't in the currently loaded [orders] page, e.g. a deep link or
+  /// cold app start straight into order details).
+  Future<OrderModel?> fetchOrder(String id) async {
+    try {
+      final order = await _repo.getOrder(id);
+      final idx = orders.indexWhere((o) => o.id == order.id);
+      if (idx >= 0) {
+        orders[idx] = order;
+      } else {
+        orders = [...orders, order];
+      }
+      notifyListeners();
+      return order;
+    } catch (e) {
+      error = e is ApiException ? e.message : e.toString();
+      notifyListeners();
+      return null;
+    }
+  }
+
+  /// Loads the next server page and appends any not-yet-seen orders.
+  /// Replaces the old client-side `historyVisible` slicing.
+  Future<void> loadMoreHistory() async {
+    if (isLoadingMore || !hasMoreHistory) return;
+    isLoadingMore = true;
+    notifyListeners();
+    try {
+      final result = await _repo.getOrders(page: _page + 1);
+      final existingIds = orders.map((o) => o.id).toSet();
+      final newOnes = result.items.where((o) => !existingIds.contains(o.id));
+      orders = [...orders, ...newOnes];
+      _page = result.page;
+      hasMoreHistory = result.hasMore;
+    } catch (e) {
+      error = e is ApiException ? e.message : e.toString();
+    }
+    isLoadingMore = false;
+    notifyListeners();
   }
 
   List<OrderModel> byStatus(OrderStatus status) {
@@ -85,11 +148,6 @@ class OrdersProvider extends ChangeNotifier {
     return list;
   }
 
-  List<OrderModel> get visibleHistory {
-    final all = deliveredOrders;
-    return all.take(historyVisible).toList();
-  }
-
   OrderModel? findById(String id) {
     final clean = id.replaceAll('#', '');
     try {
@@ -114,11 +172,6 @@ class OrdersProvider extends ChangeNotifier {
   void setHistoryDateRange(DateTime? from, DateTime? to) {
     historyFrom = from;
     historyTo = to;
-    notifyListeners();
-  }
-
-  void loadMoreHistory() {
-    historyVisible += 5;
     notifyListeners();
   }
 

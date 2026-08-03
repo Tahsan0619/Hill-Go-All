@@ -25,26 +25,35 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     body: Consumer<ProfileProvider>(builder: (context, profile, _) {
       if (profile.loading) return const LoadingView(message: 'Loading notifications...');
       if (profile.notifications.isEmpty) return const EmptyView(message: 'You are all caught up!', icon: Icons.notifications_off_outlined);
-      return ListView.separated(
+      return ListView(
         padding: const EdgeInsets.all(AppSpacing.screenPadding),
-        itemCount: profile.notifications.length, separatorBuilder: (_, __) => const SizedBox(height: 8),
-        itemBuilder: (_, index) {
-          final note = profile.notifications[index];
-          return AppCard(
-            color: note.isRead ? null : const Color(0xFFF0F6FE),
-            onTap: () => profile.markRead(note.id),
-            child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              CircleAvatar(backgroundColor: _color(note.type).withValues(alpha: .14), child: Icon(_icon(note.type), color: _color(note.type))),
-              const SizedBox(width: 12),
-              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(note.title, style: AppTextStyles.h3),
-                const SizedBox(height: 3), Text(note.body, style: AppTextStyles.bodySecondary),
-                const SizedBox(height: 6), Text(DateFormat('MMM d, h:mm a').format(note.createdAt), style: AppTextStyles.caption),
-              ])),
-              if (!note.isRead) const Icon(Icons.circle, size: 9, color: AppColors.accent),
-            ]),
-          );
-        },
+        children: [
+          for (final note in profile.notifications)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: AppCard(
+                color: note.isRead ? null : const Color(0xFFF0F6FE),
+                onTap: () => profile.markRead(note.id),
+                child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  CircleAvatar(backgroundColor: _color(note.type).withValues(alpha: .14), child: Icon(_icon(note.type), color: _color(note.type))),
+                  const SizedBox(width: 12),
+                  Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text(note.title, style: AppTextStyles.h3),
+                    const SizedBox(height: 3), Text(note.body, style: AppTextStyles.bodySecondary),
+                    const SizedBox(height: 6), Text(DateFormat('MMM d, h:mm a').format(note.createdAt), style: AppTextStyles.caption),
+                  ])),
+                  if (!note.isRead) const Icon(Icons.circle, size: 9, color: AppColors.accent),
+                ]),
+              ),
+            ),
+          if (profile.hasMoreNotifications)
+            PrimaryButton(
+              label: 'Load More',
+              loading: profile.loadingMoreNotifications,
+              onPressed: profile.loadingMoreNotifications ? null : profile.loadMoreNotifications,
+              icon: Icons.expand_more_rounded,
+            ),
+        ],
       );
     }),
   );

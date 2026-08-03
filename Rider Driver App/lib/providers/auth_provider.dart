@@ -159,15 +159,26 @@ class AuthProvider extends ChangeNotifier {
     });
   }
 
+  /// Delegates to the repository on every call — [ApiAuthRepository] caches
+  /// the result with a TTL internally, so repeated calls within the TTL are
+  /// served from memory without a network hit, while calls after the TTL
+  /// (or after [refreshDistricts]) pick up backend changes.
   Future<void> loadDistricts() async {
-    if (districts.isNotEmpty) return;
     try {
       districts = await _repo.getDistricts();
       notifyListeners();
     } on ApiException catch (e) {
-      error = e.message;
-      notifyListeners();
+      if (districts.isEmpty) {
+        error = e.message;
+        notifyListeners();
+      }
     }
+  }
+
+  /// Forces a fresh districts fetch — call on pull-to-refresh.
+  Future<void> refreshDistricts() async {
+    _repo.invalidateDistrictsCache();
+    await loadDistricts();
   }
 
   Future<void> advanceOnboarding(OnboardingStep step) async {

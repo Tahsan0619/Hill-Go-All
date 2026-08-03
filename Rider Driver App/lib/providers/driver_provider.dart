@@ -22,13 +22,20 @@ class DriverProvider extends ChangeNotifier {
   int selectedWeekDay = DateTime.now().weekday % 7;
   DateTime? _lastLocationSentAt;
 
+  int _historyPage = 1;
+  bool historyHasMore = false;
+  bool isLoadingMoreHistory = false;
+
   Future<void> loadDashboard() async {
     isLoading = true;
     error = null;
     notifyListeners();
     try {
       earnings = await _repo.getEarnings();
-      history = await _repo.getTripHistory(query: historyQuery, filter: historyFilter);
+      final page = await _repo.getTripHistory(query: historyQuery, filter: historyFilter, page: 1);
+      history = page.items;
+      _historyPage = page.page;
+      historyHasMore = page.hasMore;
       payouts = await _repo.getPayouts();
       // Always re-sync from server — a bot/other client may have accepted work
       // while this UI still thought the rider was idle.
@@ -60,7 +67,10 @@ class DriverProvider extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
     try {
-      history = await _repo.getTripHistory(query: historyQuery, filter: historyFilter);
+      final page = await _repo.getTripHistory(query: historyQuery, filter: historyFilter, page: 1);
+      history = page.items;
+      _historyPage = page.page;
+      historyHasMore = page.hasMore;
       error = null;
     } on ApiException catch (e) {
       error = e.message;
@@ -68,6 +78,30 @@ class DriverProvider extends ChangeNotifier {
       error = e.toString();
     } finally {
       isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  /// Appends the next page to [history]. No-op while already loading or
+  /// when the server reports no further pages.
+  Future<void> loadMoreHistory() async {
+    if (isLoadingMoreHistory || !historyHasMore) return;
+    isLoadingMoreHistory = true;
+    notifyListeners();
+    try {
+      final page = await _repo.getTripHistory(
+        query: historyQuery,
+        filter: historyFilter,
+        page: _historyPage + 1,
+      );
+      history = [...history, ...page.items];
+      _historyPage = page.page;
+      historyHasMore = page.hasMore;
+    } catch (_) {
+      // Keep the current list on transient failure; the Load more control
+      // simply remains available for the rider to retry.
+    } finally {
+      isLoadingMoreHistory = false;
       notifyListeners();
     }
   }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -13,6 +15,9 @@ import '../../theme/spacing.dart';
 import '../../theme/text_styles.dart';
 import '../../widgets/common_widgets.dart';
 
+/// How often the dashboard silently re-polls orders for live updates.
+const _liveOrdersPollInterval = Duration(seconds: 8);
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -22,6 +27,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   DateTime _selectedDate = DateTime.now();
+  Timer? _pollTimer;
 
   @override
   void initState() {
@@ -32,6 +38,20 @@ class _HomeScreenState extends State<HomeScreen> {
         context.read<OrdersProvider>().load();
       }
     });
+    // Live order updates while the dashboard is open; pull-to-refresh still
+    // works independently. Cancelled in dispose to avoid leaking timers.
+    _pollTimer = Timer.periodic(_liveOrdersPollInterval, (_) {
+      if (!mounted) return;
+      if (!context.read<StoreProvider>().storePending) {
+        context.read<OrdersProvider>().refreshSilently();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _pollTimer?.cancel();
+    super.dispose();
   }
 
   String _greeting() {
