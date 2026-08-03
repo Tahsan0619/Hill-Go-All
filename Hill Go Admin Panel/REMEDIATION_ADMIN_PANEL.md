@@ -94,7 +94,7 @@ Verified end-to-end in `test/store-integration.test.js`:
 
 ---
 
-## 4. Districts N+1 → batched endpoint (client done, backend Blocked)
+## 4. Districts N+1 → batched endpoint
 
 **Before:** `regionDistricts` fetched **one HTTP request per division** via `Promise.all(divisions.map((d) => get(...districts)))` (audit: "N+1 queries — ⚠️ Partially implemented … one districts GET per division", `../AUDIT_ADMIN_PANEL.md:44`; "Districts N+1" in Additional findings, `../AUDIT_ADMIN_PANEL.md:161`).
 
@@ -206,7 +206,7 @@ const escapeHtml = (s) => UI.escapeHtml(s);
 
 ---
 
-## 10. Real health check replacing static "System Active" (client done, backend Blocked)
+## 10. Real health check replacing static "System Active"
 
 **Before:** The sidebar's "System Active" indicator was static markup with a hardcoded green dot — never actually probed anything (audit: "Health check endpoints — ❌ Not implemented … Sidebar 'System Active' is static markup, not a probe", `../AUDIT_ADMIN_PANEL.md:101`).
 
