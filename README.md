@@ -72,7 +72,7 @@ Build folders, platform scaffolding, `node_modules`, Composer vendor, and genera
 | **Hill Go Public Web** | Public marketing / web frontend for HillGo (Laravel `/api/public/*`). |
 | **Dist Apks** | Prebuilt **release APKs** for the four Flutter apps (also published on the GitHub **Releases** page). |
 | **docs/** | All project documentation: technical audits, frontend-security audits, remediation reports, prompts, backend/production runbooks, architecture. See [`docs/README.md`](docs/README.md). |
-| **HillGo-Last.sql** / **hillgo-final.sql** | Database dumps for local restore. |
+| **sql/** | MySQL/MariaDB dumps for local restore. **Latest:** [`sql/HillGo-Last.sql`](sql/HillGo-Last.sql). See [`sql/README.md`](sql/README.md). |
 
 ---
 
@@ -101,6 +101,12 @@ php artisan key:generate
 php artisan migrate --seed
 php artisan storage:link   # required so /storage/... media works
 php artisan serve --host=0.0.0.0 --port=8000
+```
+
+Optional: restore a DB dump before migrate (latest is [`sql/HillGo-Last.sql`](sql/HillGo-Last.sql)):
+
+```bash
+mysql -u root -p hillgo < sql/HillGo-Last.sql
 ```
 
 See [`docs/backend/PRODUCTION.md`](docs/backend/PRODUCTION.md) for the full runbook. Storage E2E: `php scripts/e2e_storage_verify.php`.

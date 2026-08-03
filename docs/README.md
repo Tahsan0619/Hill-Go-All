@@ -2,7 +2,7 @@
 
 Central documentation for the [Hill-Go-All](https://github.com/Tahsan0619/Hill-Go-All) monorepo.
 
-The repository root keeps only [`README.md`](../README.md) for GitHub landing. Everything else lives here.
+The repository root keeps [`README.md`](../README.md) for GitHub landing, plus app/backend code folders and [`sql/`](../sql/) for database dumps. Project docs live here.
 
 ---
 
@@ -17,6 +17,8 @@ The repository root keeps only [`README.md`](../README.md) for GitHub landing. E
 | [`backend/`](backend/) | Backend progress notes and production runbook |
 | [`architecture/`](architecture/) | Platform architecture deliverables (PDF/DOCX) |
 | [`admin/`](admin/) | Admin Panel design/stitch notes |
+
+Database dumps (not under `docs/`): [`../sql/`](../sql/) — **latest:** [`../sql/HillGo-Last.sql`](../sql/HillGo-Last.sql).
 
 ---
 
@@ -40,6 +42,7 @@ The repository root keeps only [`README.md`](../README.md) for GitHub landing. E
 ### Backend & ops
 - [Production runbook](backend/PRODUCTION.md)
 - [Backend progress](backend/BACKEND_PROGRESS.md)
+- [SQL dumps (latest: HillGo-Last.sql)](../sql/README.md)
 
 ### Prompts & architecture
 - [Laravel backend prompt](prompts/LARAVEL_BACKEND_PROMPT.md)
