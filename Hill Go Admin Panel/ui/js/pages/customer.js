@@ -163,7 +163,7 @@ window.Pages = window.Pages || {};
                 </tr>`).join('') || '<tr><td colspan="6" class="px-4 py-8 text-center text-outline">No customers match</td></tr>'}
             </tbody>
           </table>
-          ${U().pagerHtml(pg.page, pg.pages, pg.total)}
+          ${U().pagerHtml(pg.page, pg.pages, pg.total, { collection: 'customers', hasMore: S().getPageMeta('customers').hasMore })}
         </div>`;
       root.querySelector('#cu-apply')?.addEventListener('click', () => {
         filter.q = root.querySelector('#cu-q').value.trim();
@@ -176,6 +176,7 @@ window.Pages = window.Pages || {};
       root.querySelector('#cu-export')?.addEventListener('click', () => U().downloadCsv('customers.csv', all));
       root.querySelector('[data-page-btn="prev"]')?.addEventListener('click', () => { page -= 1; render(); });
       root.querySelector('[data-page-btn="next"]')?.addEventListener('click', () => { page += 1; render(); });
+      U().bindServerMore(root, () => { page += 1; render(); });
     };
     render();
     Router.onStore(() => { if (location.hash.includes('/customer/customers')) render(); });
@@ -201,7 +202,7 @@ window.Pages = window.Pages || {};
         <div class="bg-white rounded-xl border shadow-sm overflow-hidden">
           <table class="w-full text-sm"><thead class="bg-slate-50 text-xs uppercase text-outline text-left"><tr>${opts.headers.map((h) => `<th class="px-4 py-3">${h}</th>`).join('')}</tr></thead>
           <tbody class="divide-y">${pg.rows.map(opts.row).join('') || `<tr><td colspan="${opts.headers.length}" class="px-4 py-8 text-center text-outline">No rows</td></tr>`}</tbody></table>
-          ${U().pagerHtml(pg.page, pg.pages, pg.total)}
+          ${U().pagerHtml(pg.page, pg.pages, pg.total, opts.collection ? { collection: opts.collection, hasMore: S().getPageMeta(opts.collection).hasMore } : null)}
         </div>`;
       root.querySelector('#apply')?.addEventListener('click', () => {
         filter.q = root.querySelector('#q').value.trim();
@@ -211,6 +212,7 @@ window.Pages = window.Pages || {};
       root.querySelector('#ex')?.addEventListener('click', () => U().downloadCsv(opts.file, all));
       root.querySelector('[data-page-btn="prev"]')?.addEventListener('click', () => { page -= 1; render(); });
       root.querySelector('[data-page-btn="next"]')?.addEventListener('click', () => { page += 1; render(); });
+      U().bindServerMore(root, () => { page += 1; render(); });
     };
     render();
   }
@@ -243,7 +245,7 @@ window.Pages = window.Pages || {};
             <th class="px-4 py-3">Order</th><th class="px-4 py-3">Restaurant</th><th class="px-4 py-3">Customer</th><th class="px-4 py-3">Total</th><th class="px-4 py-3">Fee</th><th class="px-4 py-3">Status</th>
           </tr></thead>
           <tbody class="divide-y">${pg.rows.map((r) => `<tr><td class="px-4 py-3 font-medium">${esc(r.id)}</td><td class="px-4 py-3">${esc(r.restaurant)}</td><td class="px-4 py-3">${esc(r.customer)}</td><td class="px-4 py-3">${U().formatTk(r.total)}</td><td class="px-4 py-3">${U().formatTk(r.deliveryFee)}</td><td class="px-4 py-3">${U().badge(r.status)}</td></tr>`).join('') || '<tr><td colspan="6" class="px-4 py-8 text-center text-outline">No rows</td></tr>'}</tbody></table>
-          ${U().pagerHtml(pg.page, pg.pages, pg.total)}
+          ${U().pagerHtml(pg.page, pg.pages, pg.total, { collection: 'foodOrders', hasMore: S().getPageMeta('foodOrders').hasMore })}
         </div>
         ${HillGoMaps.mapShell({
           id: 'map-food',
@@ -271,6 +273,7 @@ window.Pages = window.Pages || {};
       root.querySelector('#ex')?.addEventListener('click', () => U().downloadCsv('food-orders.csv', all));
       root.querySelector('[data-page-btn="prev"]')?.addEventListener('click', () => { page -= 1; render(); });
       root.querySelector('[data-page-btn="next"]')?.addEventListener('click', () => { page += 1; render(); });
+      U().bindServerMore(root, () => { page += 1; render(); });
       HillGoMaps.mount('map-food', {
         height: '300px',
         markers: HillGoMaps.markersFromOrders(all, 'restaurant'),
@@ -311,7 +314,7 @@ window.Pages = window.Pages || {};
             <th class="px-4 py-3">Tracking</th><th class="px-4 py-3">Type</th><th class="px-4 py-3">Route</th><th class="px-4 py-3">Fare</th><th class="px-4 py-3">Status</th><th class="px-4 py-3">Customer</th>
           </tr></thead>
           <tbody class="divide-y">${pg.rows.map((r) => `<tr><td class="px-4 py-3 font-medium">${esc(r.id)}</td><td class="px-4 py-3">${esc(r.type)}</td><td class="px-4 py-3">${esc(r.pickup)} → ${esc(r.destination)}</td><td class="px-4 py-3">${U().formatTk(r.fare)}</td><td class="px-4 py-3">${U().badge(r.status)}</td><td class="px-4 py-3">${esc(r.customer)}</td></tr>`).join('') || '<tr><td colspan="6" class="px-4 py-8 text-center text-outline">No rows</td></tr>'}</tbody></table>
-          ${U().pagerHtml(pg.page, pg.pages, pg.total)}
+          ${U().pagerHtml(pg.page, pg.pages, pg.total, { collection: 'customerParcels', hasMore: S().getPageMeta('customerParcels').hasMore })}
         </div>
         ${HillGoMaps.mapShell({
           id: 'map-cparcels',
@@ -337,6 +340,7 @@ window.Pages = window.Pages || {};
       root.querySelector('#ex')?.addEventListener('click', () => U().downloadCsv('customer-parcels.csv', all));
       root.querySelector('[data-page-btn="prev"]')?.addEventListener('click', () => { page -= 1; render(); });
       root.querySelector('[data-page-btn="next"]')?.addEventListener('click', () => { page += 1; render(); });
+      U().bindServerMore(root, () => { page += 1; render(); });
       root.querySelector('#expand-map')?.addEventListener('click', () => {
         const map = document.getElementById('map-cparcels');
         if (!map) return;
@@ -363,7 +367,7 @@ window.Pages = window.Pages || {};
 
   // keep simple rides table helper
   window.Pages.customerRides = async (root) => simpleTablePage(root, {
-    title: 'Rides', crumbs: ['Customer Panel', 'Rides'], file: 'rides.csv',
+    title: 'Rides', crumbs: ['Customer Panel', 'Rides'], file: 'rides.csv', collection: 'rides',
     statuses: ['completed', 'in_progress', 'cancelled'],
     list: (f) => S().listRides(f),
     headers: ['Ride', 'Customer', 'Route', 'Fare', 'Status', 'Date'],

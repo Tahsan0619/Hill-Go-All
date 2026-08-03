@@ -73,7 +73,7 @@ window.Pages = window.Pages || {};
                 </tr>`).join('')}
             </tbody>
           </table>
-          ${U().pagerHtml(pg.page, pg.pages, pg.total)}
+          ${U().pagerHtml(pg.page, pg.pages, pg.total, { collection: 'riders', hasMore: S().getPageMeta('riders').hasMore })}
         </div>
         ${HillGoMaps.mapShell({
           id: 'map-riders',
@@ -98,6 +98,7 @@ window.Pages = window.Pages || {};
       }));
       root.querySelector('[data-page-btn="prev"]')?.addEventListener('click', () => { page -= 1; render(); });
       root.querySelector('[data-page-btn="next"]')?.addEventListener('click', () => { page += 1; render(); });
+      U().bindServerMore(root, () => { page += 1; render(); });
       HillGoMaps.mount('map-riders', {
         height: '320px',
         markers: HillGoMaps.markersFromRiders(all),
@@ -262,13 +263,14 @@ window.Pages = window.Pages || {};
                 <td class="px-4 py-3">${U().badge(t.status)}</td>
               </tr>`).join('')}</tbody>
           </table>
-          ${U().pagerHtml(pg.page, pg.pages, pg.total)}
+          ${U().pagerHtml(pg.page, pg.pages, pg.total, { collection: 'trips', hasMore: S().getPageMeta('trips').hasMore })}
         </div>`;
       root.querySelectorAll('[data-type]').forEach((b) => b.addEventListener('click', () => { type = b.getAttribute('data-type'); page = 1; render(); }));
       root.querySelector('#apply')?.addEventListener('click', () => { q = root.querySelector('#q').value.trim(); page = 1; render(); });
       root.querySelector('#ex')?.addEventListener('click', () => U().downloadCsv('trips.csv', all));
       root.querySelector('[data-page-btn="prev"]')?.addEventListener('click', () => { page -= 1; render(); });
       root.querySelector('[data-page-btn="next"]')?.addEventListener('click', () => { page += 1; render(); });
+      U().bindServerMore(root, () => { page += 1; render(); });
     };
     render();
   };
@@ -399,7 +401,7 @@ window.Pages = window.Pages || {};
                 <td class="px-4 py-3">${U().badge(p.status)}</td>
               </tr>`).join('')}</tbody>
           </table>
-          ${U().pagerHtml(pg.page, pg.pages, pg.total)}
+          ${U().pagerHtml(pg.page, pg.pages, pg.total, { collection: 'riderPayouts', hasMore: S().getPageMeta('riderPayouts').hasMore })}
         </div>`;
       root.querySelector('#apply')?.addEventListener('click', () => {
         filter = { q: root.querySelector('#q').value.trim(), method: root.querySelector('#method').value, status: root.querySelector('#status').value };
@@ -408,6 +410,7 @@ window.Pages = window.Pages || {};
       root.querySelector('#ex')?.addEventListener('click', () => U().downloadCsv('rider-payouts.csv', all));
       root.querySelector('[data-page-btn="prev"]')?.addEventListener('click', () => { page -= 1; render(); });
       root.querySelector('[data-page-btn="next"]')?.addEventListener('click', () => { page += 1; render(); });
+      U().bindServerMore(root, () => { page += 1; render(); });
     };
     render();
     Router.onStore(() => { if (location.hash.includes('/rider/payouts')) render(); });

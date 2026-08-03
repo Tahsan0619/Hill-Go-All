@@ -53,9 +53,8 @@ window.HillGoMaps = (() => {
     return [lat + a - 0.01, lng + b - 0.01];
   }
 
-  function escapeHtml(s) {
-    return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-  }
+  // De-duplicated: uses UI.escapeHtml (ui.js loads before maps.js in index.html).
+  const escapeHtml = (s) => UI.escapeHtml(s);
 
   function divIcon(color, label) {
     const safeLabel = escapeHtml(label);

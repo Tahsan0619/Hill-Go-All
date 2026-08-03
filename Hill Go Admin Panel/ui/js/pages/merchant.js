@@ -116,7 +116,7 @@ window.Pages = window.Pages || {};
                 <td class="px-4 py-3 text-right"><button type="button" data-sus="${esc(m.id)}" class="text-xs font-semibold text-error">${m.status === 'suspended' ? 'Activate' : 'Suspend'}</button></td>
               </tr>`).join('')}</tbody>
           </table>
-          ${U().pagerHtml(pg.page, pg.pages, pg.total)}
+          ${U().pagerHtml(pg.page, pg.pages, pg.total, { collection: 'merchants', hasMore: S().getPageMeta('merchants').hasMore })}
         </div>`;
       root.querySelector('#apply')?.addEventListener('click', () => {
         filter = { q: root.querySelector('#q').value.trim(), status: root.querySelector('#st').value };
@@ -143,6 +143,7 @@ window.Pages = window.Pages || {};
       }));
       root.querySelector('[data-page-btn="prev"]')?.addEventListener('click', () => { page -= 1; render(); });
       root.querySelector('[data-page-btn="next"]')?.addEventListener('click', () => { page += 1; render(); });
+      U().bindServerMore(root, () => { page += 1; render(); });
     };
     render();
     Router.onStore(() => { if (location.hash.includes('/merchant/stores')) render(); });
@@ -205,7 +206,7 @@ window.Pages = window.Pages || {};
                 <td class="px-4 py-3">${U().badge(o.status)}</td>
               </tr>`).join('')}</tbody>
           </table>
-          ${U().pagerHtml(pg.page, pg.pages, pg.total)}
+          ${U().pagerHtml(pg.page, pg.pages, pg.total, { collection: 'merchantOrders', hasMore: S().getPageMeta('merchantOrders').hasMore })}
         </div>
         ${HillGoMaps.mapShell({
           id: 'map-merchant-orders',
@@ -227,6 +228,7 @@ window.Pages = window.Pages || {};
       root.querySelector('#ex')?.addEventListener('click', () => U().downloadCsv('merchant-orders.csv', all));
       root.querySelector('[data-page-btn="prev"]')?.addEventListener('click', () => { page -= 1; render(); });
       root.querySelector('[data-page-btn="next"]')?.addEventListener('click', () => { page += 1; render(); });
+      U().bindServerMore(root, () => { page += 1; render(); });
       HillGoMaps.mount('map-merchant-orders', {
         height: '300px',
         markers: HillGoMaps.markersFromOrders(all, 'store'),

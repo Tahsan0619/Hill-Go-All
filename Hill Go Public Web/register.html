@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' http://127.0.0.1:8000 http://localhost:8000 https:; base-uri 'self'; form-action 'self';">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
   <title>Partner Registration - HillGo</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -22,7 +24,7 @@
       <p style="color:var(--gray-500);margin-bottom:28px;">Turn your spare time into earnings. Join a community of professionals delivering rides, food, and parcels.</p>
       <div class="hero-btns">
         <a href="#form" class="btn btn-primary btn-lg">Get Started →</a>
-        <a href="contact.html" class="btn btn-outline btn-lg">Login to Portal</a>
+        <a href="contact.html" class="btn btn-outline btn-lg">Contact us</a>
       </div>
       <div class="avatar-stack">
         <div class="avatars"><span>R</span><span>S</span><span>T</span></div>
@@ -106,6 +108,8 @@
     <a href="#" style="text-align:center;font-size:0.75rem;font-weight:600;color:var(--gray-500);"><div style="background:var(--gray-100);width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 4px;">🛡️</div>Status</a>
   </div>
 
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

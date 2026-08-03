@@ -166,15 +166,40 @@ window.UI = (() => {
     return { page: p, pages, total, rows: items.slice(start, start + pageSize), pageSize };
   }
 
-  function pagerHtml(page, pages, total) {
+  /**
+   * `serverMore` (optional): { collection, hasMore } — when the client has
+   * paged to the end of what's loaded AND the server has more rows (per_page
+   * capped collections), render a "Load more from server" button so pages
+   * aren't stuck at whatever the first server page returned.
+   */
+  function pagerHtml(page, pages, total, serverMore) {
+    const showServerMore = serverMore && serverMore.hasMore && page >= pages;
     return `
-      <div class="flex items-center justify-between px-4 py-3 border-t border-slate-100">
-        <p class="text-xs text-outline">${total} records · Page ${page} of ${pages}</p>
+      <div class="flex items-center justify-between px-4 py-3 border-t border-slate-100 flex-wrap gap-2">
+        <p class="text-xs text-outline">${total} records loaded · Page ${page} of ${pages}</p>
         <div class="flex gap-2">
+          ${showServerMore ? `<button type="button" data-server-more="${escapeHtml(serverMore.collection)}" class="px-3 py-1.5 text-xs font-semibold rounded-lg border border-primary-container text-primary-container hover:bg-blue-50">Load more from server</button>` : ''}
           <button type="button" data-page-btn="prev" class="px-3 py-1.5 text-xs font-semibold rounded-lg border border-slate-200 hover:bg-slate-50 disabled:opacity-40" ${page <= 1 ? 'disabled' : ''}>Previous</button>
           <button type="button" data-page-btn="next" class="px-3 py-1.5 text-xs font-semibold rounded-lg border border-slate-200 hover:bg-slate-50 disabled:opacity-40" ${page >= pages ? 'disabled' : ''}>Next</button>
         </div>
       </div>`;
+  }
+
+  /** Wires the `[data-server-more]` button rendered by pagerHtml() to AppStore.loadMore(). */
+  function bindServerMore(root, onLoaded) {
+    const btn = root.querySelector('[data-server-more]');
+    if (!btn) return;
+    btn.addEventListener('click', async () => {
+      const collection = btn.getAttribute('data-server-more');
+      btn.disabled = true;
+      btn.textContent = 'Loading…';
+      try {
+        await AppStore.loadMore(collection);
+      } catch (e) {
+        notice(e.message || 'Could not load more rows', 'error');
+      }
+      onLoaded?.();
+    });
   }
 
   function kpiCard(label, value, hint = '') {
@@ -212,7 +237,7 @@ window.UI = (() => {
 
   return {
     $, el, escapeHtml, formatTk, formatDate, badge, notice, openModal, closeModal,
-    openDrawer, closeDrawer, confirmDialog, downloadCsv, paginate, pagerHtml,
+    openDrawer, closeDrawer, confirmDialog, downloadCsv, paginate, pagerHtml, bindServerMore,
     kpiCard, breadcrumb, bindShellChrome,
   };
 })();

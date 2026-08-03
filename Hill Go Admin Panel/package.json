@@ -1,0 +1,12 @@
+{
+  "name": "hillgo-admin-panel",
+  "version": "1.0.0",
+  "private": true,
+  "description": "HillGo Super Admin — static SPA (ui/) that talks to the Laravel /admin/* API. Test suite covers the pure helpers store.js is built on (js/lib/store-helpers.js).",
+  "scripts": {
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

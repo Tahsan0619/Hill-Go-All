@@ -110,7 +110,7 @@ window.Pages = window.Pages || {};
                 <td class="px-4 py-3 text-right"><button type="button" data-tog="${esc(a.id)}" class="text-xs font-semibold text-primary-container">${a.status === 'active' ? 'Suspend' : 'Activate'}</button></td>
               </tr>`).join('')}</tbody>
           </table>
-          ${U().pagerHtml(pg.page, pg.pages, pg.total)}
+          ${U().pagerHtml(pg.page, pg.pages, pg.total, { collection: 'courierAgents', hasMore: S().getPageMeta('courierAgents').hasMore })}
         </div>`;
       root.querySelector('#apply')?.addEventListener('click', () => {
         filter = { q: root.querySelector('#q').value.trim(), status: root.querySelector('#st').value };
@@ -128,6 +128,7 @@ window.Pages = window.Pages || {};
       }));
       root.querySelector('[data-page-btn="prev"]')?.addEventListener('click', () => { page -= 1; render(); });
       root.querySelector('[data-page-btn="next"]')?.addEventListener('click', () => { page += 1; render(); });
+      U().bindServerMore(root, () => { page += 1; render(); });
     };
     render();
     Router.onStore(() => { if (location.hash.includes('/courier/agents')) render(); });
@@ -190,7 +191,7 @@ window.Pages = window.Pages || {};
                 <td class="px-4 py-3">${U().badge(p.status)}</td>
               </tr>`).join('')}</tbody>
           </table>
-          ${U().pagerHtml(pg.page, pg.pages, pg.total)}
+          ${U().pagerHtml(pg.page, pg.pages, pg.total, { collection: 'courierParcels', hasMore: S().getPageMeta('courierParcels').hasMore })}
         </div>
         ${HillGoMaps.mapShell({
           id: 'map-courier-parcels',
@@ -227,6 +228,7 @@ window.Pages = window.Pages || {};
       root.querySelector('#ex')?.addEventListener('click', () => U().downloadCsv('courier-parcels.csv', all));
       root.querySelector('[data-page-btn="prev"]')?.addEventListener('click', () => { page -= 1; render(); });
       root.querySelector('[data-page-btn="next"]')?.addEventListener('click', () => { page += 1; render(); });
+      U().bindServerMore(root, () => { page += 1; render(); });
       HillGoMaps.mount('map-courier-parcels', {
         height: '360px',
         markers: [

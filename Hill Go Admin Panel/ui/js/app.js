@@ -136,6 +136,33 @@
 
   window.addEventListener('hillgo:unauthenticated', () => showLogin());
 
+  window.addEventListener('error', (e) => {
+    window.HillGoTelemetry?.captureError(e.error || e.message, { source: 'window.onerror' });
+  });
+  window.addEventListener('unhandledrejection', (e) => {
+    window.HillGoTelemetry?.captureError(e.reason, { source: 'unhandledrejection' });
+  });
+
+  // Partial mitigation for sessionStorage token risk (see
+  // REMEDIATION_ADMIN_PANEL.md #5): if the tab sits hidden for a long
+  // idle stretch, sign the admin out so a token left in a backgrounded
+  // tab doesn't stay live indefinitely. Cancelled the moment the tab is
+  // visible again — never fires while the admin is actively using it.
+  const HIDDEN_IDLE_LOGOUT_MS = 15 * 60 * 1000;
+  let hiddenIdleTimer = null;
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      hiddenIdleTimer = setTimeout(() => {
+        if (document.hidden && AppStore.isAuthed()) {
+          AppStore.logout().then(() => showLogin());
+        }
+      }, HIDDEN_IDLE_LOGOUT_MS);
+    } else if (hiddenIdleTimer) {
+      clearTimeout(hiddenIdleTimer);
+      hiddenIdleTimer = null;
+    }
+  });
+
   document.addEventListener('DOMContentLoaded', () => {
     UI.bindShellChrome();
 

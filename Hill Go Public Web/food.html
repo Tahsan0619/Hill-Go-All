@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' http://127.0.0.1:8000 http://localhost:8000 https:; base-uri 'self'; form-action 'self';">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
   <title>Food Delivery - HillGo</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -17,7 +19,7 @@
           <a href="about.html">About</a>
         </div>
         <div class="nav-actions">
-          <a href="contact.html" class="btn btn-outline btn-sm">Log In</a>
+          <a href="contact.html" class="btn btn-outline btn-sm">Contact us</a>
           <a href="merchant.html" class="btn btn-primary btn-sm">Get Started</a>
         </div>
       </nav>
@@ -127,6 +129,8 @@
       <div class="footer-bottom"><span>© 2026 HillGo Inc. All rights reserved.</span><span>English (US)</span></div>
     </div>
   </footer>
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

@@ -1,12 +1,15 @@
 // HillGo Public Website - Main JavaScript
-// Production: set window.HILLGO_API_BASE to your API origin before this script loads.
-const HG_API = window.HILLGO_API_BASE || 'http://127.0.0.1:8000/api';
+// API base is resolved by js/api.js from window.HILLGO_API_BASE, which js/config.js
+// sets (empty by default) and which deploys should override — see deploy/README.md.
+// Load order on every page: config.js -> api.js -> main.js.
+const HG_API = window.HillGoApi.resolveApiBase(window);
 
-function escapeHtml(s) {
-  return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-}
+// XSS strategy: all dynamic/user/API-sourced content is inserted via textContent or
+// createElement (see initTrackForm, initQuoteCalculator, showToast, etc.) — never via
+// innerHTML — so no HTML-escaping helper is needed in this file.
 
 function assertApiReachableConfig() {
+  if (!HG_API) return null;
   try {
     const api = new URL(HG_API, window.location.href);
     // Same-site or explicitly configured cross-origin — both OK; warn on file:// pages.
@@ -20,25 +23,23 @@ function assertApiReachableConfig() {
 }
 assertApiReachableConfig();
 
-async function hgApi(method, path, body) {
-  const res = await fetch(HG_API + path, {
-    method,
-    mode: 'cors',
-    credentials: 'omit',
-    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-    body: body !== undefined ? JSON.stringify(body) : undefined,
-  });
-  let json = null;
-  try { json = await res.json(); } catch (_) { /* empty */ }
-  if (!res.ok) {
-    const msg = json?.message
-      || (json?.errors ? Object.values(json.errors).flat().join(' ') : `Request failed (${res.status})`);
-    throw new Error(msg);
+function hgApi(method, path, body) {
+  return window.HillGoApi.hgApi(HG_API, method, path, body);
+}
+
+/** Retries up to 3 times with backoff, but only on network failures (see js/api.js). */
+function hgApiRetry(method, path, body) {
+  return window.HillGoApi.hgApiWithRetry(HG_API, method, path, body);
+}
+
+function warnIfApiBaseUnset() {
+  if (!HG_API) {
+    showToast('This deployment has no API configured yet — some features are unavailable.');
   }
-  return json;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  warnIfApiBaseUnset();
   initHeader();
   initMobileNav();
   initFaq();
@@ -223,7 +224,7 @@ function initQuoteCalculator() {
     try {
       const payload = { type, origin, destination: dest };
       if (type === 'parcel') payload.weight_kg = weight;
-      const res = await hgApi('POST', '/public/quotes', payload);
+      const res = await hgApiRetry('POST', '/public/quotes', payload);
       const q = res.quote;
       if (resultEl) {
         resultEl.style.display = '';
@@ -277,7 +278,7 @@ function initNewsletterForms() {
       const email = form.querySelector('input[type="email"]').value.trim();
       if (!email) return;
       try {
-        const res = await hgApi('POST', '/public/newsletter', { email });
+        const res = await hgApiRetry('POST', '/public/newsletter', { email });
         showToast(res.already ? 'You are already subscribed — thanks!' : 'Thanks for subscribing!');
         form.reset();
       } catch (err) {
@@ -301,7 +302,7 @@ function initContactForm() {
 
     try {
       if (isContact) {
-        const res = await hgApi('POST', '/public/contact', {
+        const res = await hgApiRetry('POST', '/public/contact', {
           first_name: form.querySelector('#firstName').value.trim(),
           last_name: form.querySelector('#lastName').value.trim(),
           email: form.querySelector('#email').value.trim(),
@@ -316,7 +317,7 @@ function initContactForm() {
         const email = form.elements.email || form.querySelector('[name="email"]');
         const vehicle = form.elements.vehicle_type || form.querySelector('[name="vehicle_type"]');
         const city = form.elements.city || form.querySelector('[name="city"]');
-        const res = await hgApi('POST', '/public/partner-applications', {
+        const res = await hgApiRetry('POST', '/public/partner-applications', {
           full_name: fullName.value.trim(),
           phone: phone.value.trim(),
           email: email.value.trim(),

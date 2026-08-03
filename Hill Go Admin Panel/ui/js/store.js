@@ -3,13 +3,35 @@
  * Reads are synchronous against the cache; mutations update the cache
  * optimistically, call the API, then reconcile with the server response.
  *
- * Token is kept in sessionStorage (not localStorage) so it does not survive
- * the browser session. Still XSS-readable; production should prefer HttpOnly cookies.
+ * Token storage (accepted risk — see REMEDIATION_ADMIN_PANEL.md #5):
+ * the Bearer token is kept in sessionStorage (not localStorage) so it
+ * does not survive the browser session/tab close. It is still
+ * XSS-readable synchronous JS storage. The hardened alternative is
+ * Laravel Sanctum's SPA cookie-session mode (HttpOnly, not readable by
+ * JS) — that requires a backend change (CSRF cookie endpoint + credentialed
+ * requests) that is out of scope here and tracked as Blocked. Production
+ * deployments should move to short-lived Sanctum tokens with rotation
+ * when the backend supports it. As a partial mitigation, app.js clears
+ * the token after the tab has been hidden for an extended idle period
+ * (see `visibilitychange` handling in app.js).
  */
 window.AppStore = (() => {
+  const Helpers = window.HillGoStoreHelpers;
   const API_BASE = window.HILLGO_API_BASE || 'http://127.0.0.1:8000/api';
   const TOKEN_KEY = 'hillgo-admin-token';
+  const PAGE_SIZE = 50;
   const listeners = new Set();
+
+  const tokenStore = Helpers.createTokenStore(sessionStorage, localStorage, TOKEN_KEY);
+
+  // Collections backed by a Laravel paginator; the UI can request more
+  // pages beyond the first via loadMore() (see REMEDIATION_ADMIN_PANEL.md #7).
+  const PAGED_COLLECTIONS = new Set([
+    'customers', 'rides', 'foodOrders', 'customerParcels',
+    'riders', 'riderKyc', 'trips', 'riderPayouts',
+    'merchants', 'merchantOnboarding', 'merchantOrders', 'merchantPayouts',
+    'courierAgents', 'courierKyc', 'courierParcels', 'courierWithdrawals',
+  ]);
 
   let state = emptyState();
   let refreshTimer = null;
@@ -41,42 +63,24 @@ window.AppStore = (() => {
       settings: {},
       activityLog: [],
       kpis: null,
+      pageMeta: {},
     };
   }
 
   // —— HTTP ——
 
-  function token() {
-    // Prefer sessionStorage; migrate any legacy localStorage token once.
-    let t = sessionStorage.getItem(TOKEN_KEY) || '';
-    if (!t) {
-      t = localStorage.getItem(TOKEN_KEY) || '';
-      if (t) {
-        sessionStorage.setItem(TOKEN_KEY, t);
-        localStorage.removeItem(TOKEN_KEY);
-      }
-    }
-    return t;
-  }
-
-  function setToken(value) {
-    sessionStorage.setItem(TOKEN_KEY, value);
-    localStorage.removeItem(TOKEN_KEY);
-  }
-
-  function clearToken() {
-    sessionStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(TOKEN_KEY);
+  function sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   /** Fetch a private storage URL with the admin Bearer token and open it. */
   async function openAuthenticatedFile(fileUrl, fallbackName = 'document') {
     if (!fileUrl) throw new Error('No file URL');
     const res = await fetch(fileUrl, {
-      headers: { Authorization: `Bearer ${token()}`, Accept: '*/*' },
+      headers: { Authorization: `Bearer ${tokenStore.token()}`, Accept: '*/*' },
     });
     if (res.status === 401) {
-      clearToken();
+      tokenStore.clearToken();
       window.dispatchEvent(new CustomEvent('hillgo:unauthenticated'));
       throw new Error('Session expired. Please sign in again.');
     }
@@ -95,76 +99,126 @@ window.AppStore = (() => {
     setTimeout(() => URL.revokeObjectURL(obj), 120000);
   }
 
+  /**
+   * Retry-with-backoff: up to 3 attempts, exponential backoff, but ONLY for
+   * transient network failures (fetch() throwing — DNS/connection/timeout).
+   * A response that came back with a 4xx/5xx status is a definitive server
+   * answer, not a transient failure, and is surfaced immediately without
+   * retrying (see REMEDIATION_ADMIN_PANEL.md #3).
+   */
   async function http(method, path, body) {
-    const res = await fetch(API_BASE + path, {
-      method,
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token()}`,
-      },
-      body: body !== undefined ? JSON.stringify(body) : undefined,
-    });
-    if (res.status === 401) {
-      clearToken();
-      window.dispatchEvent(new CustomEvent('hillgo:unauthenticated'));
-      throw new Error('Session expired. Please sign in again.');
+    const maxAttempts = 3;
+    let lastNetworkErr;
+    for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+      let res;
+      try {
+        // eslint-disable-next-line no-await-in-loop
+        res = await fetch(API_BASE + path, {
+          method,
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${tokenStore.token()}`,
+          },
+          body: body !== undefined ? JSON.stringify(body) : undefined,
+        });
+      } catch (err) {
+        lastNetworkErr = err;
+        if (attempt < maxAttempts && Helpers.isRetryableFetchError(err)) {
+          console.warn(`[AppStore] network error on ${method} ${path} (attempt ${attempt}/${maxAttempts}); retrying…`, err);
+          // eslint-disable-next-line no-await-in-loop
+          await sleep(Helpers.computeBackoffDelay(attempt));
+          continue;
+        }
+        window.HillGoTelemetry?.captureError(err, { source: 'AppStore.http', method, path, attempt });
+        throw err;
+      }
+
+      if (res.status === 401) {
+        tokenStore.clearToken();
+        window.dispatchEvent(new CustomEvent('hillgo:unauthenticated'));
+        throw new Helpers.HttpError('Session expired. Please sign in again.', 401);
+      }
+      let json = null;
+      try { json = await res.json(); } catch (_) { /* empty body */ }
+      if (!res.ok) {
+        const msg = json?.message
+          || (json?.errors ? Object.values(json.errors).flat().join(' ') : `Request failed (${res.status})`);
+        const httpErr = new Helpers.HttpError(msg, res.status);
+        if (res.status >= 500) window.HillGoTelemetry?.captureError(httpErr, { source: 'AppStore.http', method, path });
+        throw httpErr;
+      }
+      return json;
     }
-    let json = null;
-    try { json = await res.json(); } catch (_) { /* empty body */ }
-    if (!res.ok) {
-      const msg = json?.message
-        || (json?.errors ? Object.values(json.errors).flat().join(' ') : `Request failed (${res.status})`);
-      throw new Error(msg);
-    }
-    return json;
+    // Exhausted retries without a response — surface the last network error.
+    window.HillGoTelemetry?.captureError(lastNetworkErr, { source: 'AppStore.http', method, path, attempt: maxAttempts });
+    throw lastNetworkErr;
   }
 
   const get = (path) => http('GET', path);
-  const unwrap = (res) => (Array.isArray(res) ? res : (res?.data ?? []));
-  const sid = (row) => ({ ...row, id: String(row.id) });
+  const { unwrap, sid } = Helpers;
 
   function fail(err, reloadKeys) {
     console.error(err);
+    window.HillGoTelemetry?.captureError(err, { source: 'AppStore.fail', reloadKeys });
     if (window.UI?.notice) UI.notice(err.message || 'Request failed', 'error');
     if (reloadKeys) refresh(reloadKeys);
   }
 
-  // —— Collection loaders (cap per_page at 50) ——
+  /** Build a loader for a Laravel-paginated collection; returns {rows, meta}. */
+  function pagedLoader(path, mapRow = sid) {
+    return async (page = 1) => {
+      const sep = path.includes('?') ? '&' : '?';
+      const res = await get(`${path}${sep}per_page=${PAGE_SIZE}&page=${page}`);
+      return { rows: unwrap(res).map(mapRow), meta: Helpers.computePageMeta(res, page) };
+    };
+  }
+
+  // —— Collection loaders ——
 
   const LOADERS = {
     divisions: async () => (await get('/admin/regions/divisions')).map(sid),
+    // Districts N+1 fix: prefer a single batched endpoint; fall back to the
+    // old per-division fan-out (once) if the backend hasn't shipped it yet.
+    // Blocked on Backend 7.4.23 for the batched endpoint itself.
     regionDistricts: async () => {
-      const divisions = state.divisions.length ? state.divisions : (await get('/admin/regions/divisions')).map(sid);
-      const lists = await Promise.all(divisions.map((d) => get(`/admin/regions/divisions/${d.id}/districts`)));
-      return lists.flat().map(sid);
+      try {
+        const res = await get('/admin/regions/districts');
+        return unwrap(res).map(sid);
+      } catch (err) {
+        if (!Helpers.isNotFoundError(err)) throw err;
+        console.warn('[AppStore] /admin/regions/districts is 404 — falling back to per-division fan-out (Backend 7.4.23 pending).');
+        const divisions = state.divisions.length ? state.divisions : (await get('/admin/regions/divisions')).map(sid);
+        const lists = await Promise.all(divisions.map((d) => get(`/admin/regions/divisions/${d.id}/districts`)));
+        return lists.flat().map(sid);
+      }
     },
-    customers: async () => unwrap(await get('/admin/customers?per_page=50')).map(sid),
-    rides: async () => unwrap(await get('/admin/rides?per_page=50')).map(sid),
-    foodOrders: async () => unwrap(await get('/admin/food-orders?per_page=50')).map(sid),
-    customerParcels: async () => unwrap(await get('/admin/customer-parcels?per_page=50')).map(sid),
-    riders: async () => unwrap(await get('/admin/riders?per_page=50')).map(sid),
-    riderKyc: async () => unwrap(await get('/admin/riders/kyc?per_page=50')).map((k) => ({
+    customers: pagedLoader('/admin/customers'),
+    rides: pagedLoader('/admin/rides'),
+    foodOrders: pagedLoader('/admin/food-orders'),
+    customerParcels: pagedLoader('/admin/customer-parcels'),
+    riders: pagedLoader('/admin/riders'),
+    riderKyc: pagedLoader('/admin/riders/kyc', (k) => ({
       ...sid(k),
       riderId: String(k.riderId ?? ''),
       docs: (k.docs || []).map((d) => d.title || d.key),
       docDetails: k.docs || [],
     })),
-    trips: async () => unwrap(await get('/admin/trips?per_page=50')).map(sid),
-    riderPayouts: async () => unwrap(await get('/admin/rider-payouts?per_page=50')).map(sid),
-    merchants: async () => unwrap(await get('/admin/merchants?per_page=50')).map(sid),
-    merchantOnboarding: async () => unwrap(await get('/admin/merchant-onboarding?per_page=50')).map(sid),
-    merchantOrders: async () => unwrap(await get('/admin/merchant-orders?per_page=50')).map(sid),
-    merchantPayouts: async () => unwrap(await get('/admin/merchant-payouts?per_page=50')).map(sid),
-    courierAgents: async () => unwrap(await get('/admin/courier/agents?per_page=50')).map(sid),
-    courierKyc: async () => unwrap(await get('/admin/courier/kyc?per_page=50')).map((k) => ({
+    trips: pagedLoader('/admin/trips'),
+    riderPayouts: pagedLoader('/admin/rider-payouts'),
+    merchants: pagedLoader('/admin/merchants'),
+    merchantOnboarding: pagedLoader('/admin/merchant-onboarding'),
+    merchantOrders: pagedLoader('/admin/merchant-orders'),
+    merchantPayouts: pagedLoader('/admin/merchant-payouts'),
+    courierAgents: pagedLoader('/admin/courier/agents'),
+    courierKyc: pagedLoader('/admin/courier/kyc', (k) => ({
       ...sid(k),
       agentId: String(k.agentId ?? ''),
       docs: (k.docs || []).map((d) => d.title || d.key),
       docDetails: k.docs || [],
     })),
-    courierParcels: async () => unwrap(await get('/admin/courier/parcels?per_page=50')).map(sid),
-    courierWithdrawals: async () => unwrap(await get('/admin/courier/withdrawals?per_page=50')).map(sid),
+    courierParcels: pagedLoader('/admin/courier/parcels'),
+    courierWithdrawals: pagedLoader('/admin/courier/withdrawals'),
     incentives: async () => (await get('/admin/courier/incentives')).map(sid),
     pricing: async () => {
       const [customer, rider, merchant, courier] = await Promise.all(
@@ -180,50 +234,77 @@ window.AppStore = (() => {
 
   async function refresh(keys) {
     const wanted = keys || Object.keys(LOADERS);
-    const results = await Promise.allSettled(wanted.map((k) => LOADERS[k]()));
-    results.forEach((r, i) => {
-      if (r.status === 'fulfilled') state[wanted[i]] = r.value;
-      else console.error(`Failed loading ${wanted[i]}:`, r.reason);
+    const results = await Promise.allSettled(wanted.map((k) => LOADERS[k](1)));
+    const { nextState, errors } = Helpers.aggregateRefreshResults(wanted, results);
+    wanted.forEach((k) => {
+      if (!(k in nextState)) return;
+      if (PAGED_COLLECTIONS.has(k)) {
+        state[k] = nextState[k].rows;
+        state.pageMeta[k] = nextState[k].meta;
+      } else {
+        state[k] = nextState[k];
+      }
+    });
+    errors.forEach(({ key, reason }) => {
+      console.error(`Failed loading ${key}:`, reason);
+      window.HillGoTelemetry?.captureError(reason, { source: 'AppStore.refresh', key });
     });
     emit();
   }
 
+  /** Fetch the next server page for a paginated collection and append it. */
+  async function loadMore(collection) {
+    if (!PAGED_COLLECTIONS.has(collection)) return;
+    const meta = state.pageMeta[collection];
+    if (!meta || !meta.hasMore) return;
+    const nextPage = (meta.page || 1) + 1;
+    try {
+      const { rows, meta: newMeta } = await LOADERS[collection](nextPage);
+      const existingIds = new Set(state[collection].map((r) => String(r.id)));
+      const fresh = rows.filter((r) => !existingIds.has(String(r.id)));
+      state[collection] = state[collection].concat(fresh);
+      state.pageMeta[collection] = newMeta;
+      emit();
+    } catch (err) {
+      fail(err);
+    }
+  }
+
+  function getPageMeta(collection) {
+    return state.pageMeta[collection] || { page: 1, hasMore: false };
+  }
+
   function emit() {
     listeners.forEach((fn) => {
-      try { fn(state); } catch (e) { console.error(e); }
+      try { fn(state); } catch (e) { console.error(e); window.HillGoTelemetry?.captureError(e, { source: 'AppStore.emit' }); }
     });
   }
 
   // Optimistic patch of a cached row, returns the row.
   function patchRow(collection, id, patch) {
-    const row = state[collection].find((x) => String(x.id) === String(id));
-    if (row) Object.assign(row, patch);
-    return row;
+    return Helpers.patchRow(state[collection], id, patch);
   }
 
   // Replace a cached row with the (string-id normalized) server version.
   function mergeRow(collection, serverRow) {
-    const norm = sid(serverRow);
-    const idx = state[collection].findIndex((x) => String(x.id) === norm.id);
-    if (idx >= 0) state[collection][idx] = { ...state[collection][idx], ...norm };
-    else state[collection].unshift(norm);
+    Helpers.mergeRow(state[collection], serverRow, sid);
     emit();
   }
 
   const api = {
     // —— Session ——
-    isAuthed: () => !!token(),
+    isAuthed: () => !!tokenStore.token(),
     currentUser: () => state.user,
     openAuthenticatedFile,
     async login(email, password) {
       const res = await http('POST', '/admin/auth/login', { email, password });
-      setToken(res.token);
+      tokenStore.setToken(res.token);
       state.user = res.user;
       return res.user;
     },
     async logout() {
       try { await http('POST', '/admin/auth/logout'); } catch (_) { /* token may already be dead */ }
-      clearToken();
+      tokenStore.clearToken();
       sessionStorage.removeItem('hillgo-search');
       state = emptyState();
       if (refreshTimer) clearInterval(refreshTimer);
@@ -246,6 +327,8 @@ window.AppStore = (() => {
       return () => listeners.delete(fn);
     },
     refresh,
+    loadMore,
+    getPageMeta,
     resetData() {
       refresh().then(() => UI?.notice?.('Data reloaded from server')).catch((e) => fail(e));
     },

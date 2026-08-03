@@ -1,5 +1,14 @@
 # HillGo Super Admin — Stitch Screen Spec
 
+> **Runtime note (updated in REMEDIATION_ADMIN_PANEL.md):** the live admin
+> panel (`ui/`) runs against the real Laravel API via `js/store.js` — it is
+> **not** frontend-only / mock data. The "frontend-only" / "mock data"
+> language below describes the **design-only Stitch mock HTML** in
+> `stitch_hillgo_super_admin_panel/` (used purely to generate visual specs
+> for new screens), not the shipped runtime. When implementing any screen
+> from this spec, wire it to `AppStore`/`store.js` exactly like the existing
+> screens — do not reintroduce `seed.js` or `localStorage` mock storage.
+>
 > Frontend-only expansion of the existing `Hill Go Admin Panel`.  
 > Source of truth for fields: actual code in Customer / Rider / Vendor / Courier apps.  
 > Use this MD in **Google Stitch** to generate the missing screens. Keep the same design set as the current admin UI.
@@ -8,7 +17,7 @@
 
 ## 1. Goal
 
-The super admin controls everything from one panel. Mobile apps have **no working backend** — this admin stays **full frontend / mock data**, same as today.
+The super admin controls everything from one panel. The shipped admin panel (`ui/`) runs against the live Laravel API (see runtime note above) — new screens generated from this spec should be wired the same way, not left as static/mock data.
 
 When the admin opens the panel they must clearly see:
 
@@ -580,7 +589,7 @@ Paste these into Stitch as the design system.
 
 1. Export / save Stitch frames into a folder (e.g. `Hill Go Admin Panel/stitch-exports/`).  
 2. Hand that folder back in chat.  
-3. Implementation pass will rebuild those screens into the existing vanilla HTML/CSS/JS admin (`ui/index.html`, `styles.css`, `app.js`, `data.js`) with mock data only — no backend.
+3. Implementation pass will rebuild those screens into the existing vanilla HTML/CSS/JS admin (`ui/index.html`, `js/app.js`, `js/store.js`, `js/pages/*.js`) wired to the live Laravel API via `store.js`, matching every other screen — no mock data / no `seed.js`.
 
 ---
 

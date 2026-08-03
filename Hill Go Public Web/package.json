@@ -1,0 +1,13 @@
+{
+  "name": "hillgo-public-web",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Static HillGo marketing site. No build step — this package.json exists only to run the js/api.js unit tests.",
+  "type": "commonjs",
+  "scripts": {
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "vitest": "^2.1.9"
+  }
+}
